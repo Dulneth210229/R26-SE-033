@@ -1,0 +1,1416 @@
+{
+  "document_control": {
+    "document_title": "Architecture Plan: Add & List Items",
+    "document_type": "Feature Architecture Plan",
+    "project_id": "proj_e373bcd3",
+    "project_name": "Retail Store",
+    "project_type": "E-commerce",
+    "feature_id": "feature_bd2b44a1",
+    "feature_name": "Add & List Items",
+    "target_stack": "Next.js",
+    "architecture_style": "modular",
+    "version": "v1",
+    "generated_by": "Architecture Agent",
+    "input_artifacts": [
+      "Approved SRS JSON",
+      "Approved Enhanced SRS JSON if available"
+    ],
+    "approval_status": "pending"
+  },
+  "feature_overview": {
+    "business_goal": "give the team a simple, working way to record items (with a visual reference via the image) and see everything that's been added in one place, without needing a spreadsheet or external tool.",
+    "scope": [
+      "Ability to add new items with an image and basic details.",
+      "Ability to view all added items in a list."
+    ],
+    "out_of_scope": [
+      "Pagination for item lists.",
+      "Advanced search or filtering options.",
+      "Item editing or deletion functionality."
+    ],
+    "user_roles": [
+      "any user"
+    ],
+    "feature_boundary": "This Architecture Plan covers only the Add & List Items feature and excludes unrelated features."
+  },
+  "requirement_interpretation": {
+    "functional_requirements": [
+      {
+        "id": "FR-001",
+        "description": "Users can add a new item (via a form).",
+        "priority": "Must Have"
+      },
+      {
+        "id": "FR-002",
+        "description": "Users can view the list of all added items.",
+        "priority": "Must Have"
+      },
+      {
+        "id": "FR-DOM-001",
+        "description": "Users can view the details of a specific item by clicking on it in the list.",
+        "origin": "domain_agent",
+        "domain_citation": {
+          "source_document": "product_catalog_and_inventory.txt",
+          "chunk_id": "product_catalog_and_inventory.txt#0"
+        },
+        "priority": "Should Have"
+      }
+    ],
+    "acceptance_criteria": [
+      {
+        "id": "AC-001",
+        "description": "Given a user fills in name, price, quantity, and an image, when they submit the form, then a new item is created and appears in the list immediately."
+      },
+      {
+        "id": "AC-002",
+        "description": "Given a user submits the form with a missing required field (name, price, or quantity) or a negative price/quantity, when they submit, then the form shows a clear validation error and does not create the item."
+      },
+      {
+        "id": "AC-003",
+        "description": "Given a user uploads a file that isn't an image or exceeds the size limit, when they submit, then the form shows a clear error message specifying the issue (e.g., 'File must be in JPEG, PNG, or WebP format and not exceed 5MB.') and does not create the item.",
+        "modified_by_domain_agent": true,
+        "original_description": "Given a user uploads a file that isn't an image or exceeds the size limit, when they submit, then the form shows a clear error and does not create the item.",
+        "domain_citation": {
+          "source_document": "checkout_and_cart_conventions.txt",
+          "chunk_id": "checkout_and_cart_conventions.txt#2"
+        }
+      },
+      {
+        "id": "AC-004",
+        "description": "Given no items have been added yet, when the list is opened, then a clear 'No items added yet' empty state is shown instead of a blank page."
+      },
+      {
+        "id": "AC-005",
+        "description": "Given items exist, when the list is opened, then every item's image, name, description, price, and quantity are displayed correctly."
+      }
+    ],
+    "validation_rules": [
+      {
+        "id": "VR-001",
+        "description": "Image must be in JPEG, PNG, or WebP format and not exceed 5MB."
+      },
+      {
+        "id": "VR-002",
+        "description": "Name must be a non-empty string."
+      },
+      {
+        "id": "VR-003",
+        "description": "Price must be a positive number."
+      },
+      {
+        "id": "VR-004",
+        "description": "Quantity must be a non-negative integer."
+      }
+    ],
+    "non_functional_requirements": [
+      {
+        "id": "NFR-001",
+        "description": "Image uploads are limited to common formats (JPEG, PNG, WebP) and a reasonable max size (e.g., 5MB) — reject anything else with a clear error.",
+        "category": "Data Integrity"
+      },
+      {
+        "id": "NFR-002",
+        "description": "The item list should load within a couple of seconds for a small catalog (under a few hundred items) — no pagination needed at this scale.",
+        "category": "Performance"
+      },
+      {
+        "id": "NFR-003",
+        "description": "Adding an item (including the image upload) should complete within a few seconds under normal conditions.",
+        "category": "Performance"
+      }
+    ]
+  },
+  "architecture_approach": {
+    "architecture_style": "modular",
+    "architecture_rationale": "Use modular to keep the Add & List Items feature separated into presentation, business logic, and data responsibilities where applicable.",
+    "frontend_overview": "Frontend design should provide the user-facing entry points, inputs, states, and feedback required by the approved SRS.",
+    "backend_overview": "Backend design should process feature requests, enforce business rules, validate inputs, and return structured responses.",
+    "data_overview": "Data design should support the data requirements defined in the approved SRS.",
+    "integration_overview": "Integration design should follow the API expectations and dependencies listed in the approved SRS.",
+    "design_tradeoffs": [
+      "Design is derived directly from the approved SRS to preserve traceability and feature scope.",
+      "Design is kept feature-scoped to preserve feature-by-feature SDLC development.",
+      "Internal generation or repair details are kept in backend logs and are not exposed in the approval-ready Architecture Plan."
+    ]
+  },
+  "design_views": {
+    "context_view": {
+      "actors": [
+        "any user"
+      ],
+      "external_systems": [
+        "A backend service capable of handling file uploads and storing item data.",
+        "An image hosting solution to store uploaded images."
+      ],
+      "feature_boundary": "Add & List Items feature boundary.",
+      "main_interactions": [
+        "any user interacts with the Add & List Items feature.",
+        "Users can add a new item (via a form).",
+        "Users can view the list of all added items.",
+        "Users can view the details of a specific item by clicking on it in the list."
+      ]
+    },
+    "logical_view": {
+      "frontend_modules": [
+        {
+          "name": "AddListItemsFrontendModule",
+          "responsibility": "Handle frontend responsibilities for the Add & List Items feature.",
+          "derived_from": [
+            "An 'Add Item' form with an image upload control, name, description, price, and quantity fields, and a submit button.",
+            "A grid or card-based list layout (so item images are visible at a glance), consistent with the app's existing styling.",
+            "Responsive on both desktop and mobile widths.",
+            "image: file upload (stored and served back as an image URL)",
+            "name: string",
+            "description: text (optional)",
+            "price: number",
+            "quantity: number"
+          ]
+        }
+      ],
+      "backend_modules": [
+        {
+          "name": "AddListItemsBackendModule",
+          "responsibility": "Handle backend responsibilities for the Add & List Items feature.",
+          "derived_from": [
+            "Users can add a new item (via a form).",
+            "Users can view the list of all added items.",
+            "Users can view the details of a specific item by clicking on it in the list.",
+            "Image must be in JPEG, PNG, or WebP format and not exceed 5MB.",
+            "Name must be a non-empty string.",
+            "Price must be a positive number.",
+            "Quantity must be a non-negative integer."
+          ]
+        }
+      ],
+      "domain_services": [
+        {
+          "name": "AddListItemsService",
+          "responsibility": "Apply business rules for the Add & List Items feature.",
+          "related_requirements": [
+            "FR-001",
+            "FR-002",
+            "FR-DOM-001"
+          ]
+        }
+      ],
+      "data_modules": [
+        {
+          "name": "AddListItemsDataModule",
+          "responsibility": "Manage data access required by the feature.",
+          "derived_from": [
+            "image: file upload (stored and served back as an image URL)",
+            "name: string",
+            "description: text (optional)",
+            "price: number",
+            "quantity: number",
+            "createdAt: date (set automatically when the item is created)"
+          ]
+        }
+      ],
+      "integration_points": [
+        {
+          "type": "API",
+          "description": "POST /api/items — creates a new item (including the uploaded image)."
+        },
+        {
+          "type": "API",
+          "description": "GET /api/items — returns the list of all items."
+        },
+        {
+          "type": "Dependency",
+          "description": "A backend service capable of handling file uploads and storing item data."
+        },
+        {
+          "type": "Dependency",
+          "description": "An image hosting solution to store uploaded images."
+        }
+      ]
+    },
+    "interface_view": {
+      "api_endpoints": [
+        {
+          "endpoint": "/api/items",
+          "method": "POST",
+          "purpose": "Support the Add & List Items feature.",
+          "request_model": "AddListItemsRequest",
+          "success_response_model": "AddListItemsSuccessResponse",
+          "error_response_model": "AddListItemsErrorResponse",
+          "related_requirements": [
+            "FR-001",
+            "FR-002",
+            "FR-DOM-001"
+          ]
+        },
+        {
+          "endpoint": "/api/items",
+          "method": "GET",
+          "purpose": "Support the Add & List Items feature.",
+          "request_model": "AddListItemsRequest",
+          "success_response_model": "AddListItemsSuccessResponse",
+          "error_response_model": "AddListItemsErrorResponse",
+          "related_requirements": [
+            "FR-001",
+            "FR-002",
+            "FR-DOM-001"
+          ]
+        }
+      ],
+      "request_models": [
+        {
+          "name": "AddListItemsRequest",
+          "fields": [
+            {
+              "name": "field",
+              "type": "string",
+              "format": "image: file upload (stored and served back as an image URL)",
+              "required": true
+            },
+            {
+              "name": "field",
+              "type": "string",
+              "format": "name: string",
+              "required": true
+            },
+            {
+              "name": "field",
+              "type": "string",
+              "format": "description: text (optional)",
+              "required": true
+            },
+            {
+              "name": "field",
+              "type": "string",
+              "format": "price: number",
+              "required": true
+            },
+            {
+              "name": "field",
+              "type": "string",
+              "format": "quantity: number",
+              "required": true
+            }
+          ],
+          "related_requirements": [
+            "FR-001",
+            "FR-002",
+            "FR-DOM-001"
+          ]
+        }
+      ],
+      "response_models": [
+        {
+          "name": "AddListItemsSuccessResponse",
+          "type": "success",
+          "fields": [
+            {
+              "name": "field",
+              "type": "string",
+              "description": "List of items with each item's image, name, description, price, and quantity."
+            }
+          ],
+          "related_requirements": [
+            "FR-001",
+            "FR-002",
+            "FR-DOM-001"
+          ]
+        },
+        {
+          "name": "AddListItemsErrorResponse",
+          "type": "error",
+          "fields": [],
+          "related_requirements": []
+        }
+      ]
+    },
+    "data_view": {
+      "data_entities": [
+        {
+          "name": "AddListItemsData",
+          "purpose": "Core data entity for the Add & List Items feature.",
+          "fields": [
+            {
+              "name": "image",
+              "type": "String",
+              "required": false
+            },
+            {
+              "name": "fileUpload",
+              "type": "String",
+              "required": false
+            },
+            {
+              "name": "storedAndServedBackAsAnIm",
+              "type": "String",
+              "required": false
+            },
+            {
+              "name": "ageURL",
+              "type": "String",
+              "required": false
+            },
+            {
+              "name": "name",
+              "type": "String",
+              "required": false
+            },
+            {
+              "name": "string",
+              "type": "String",
+              "required": false
+            },
+            {
+              "name": "description",
+              "type": "String",
+              "required": false
+            },
+            {
+              "name": "text",
+              "type": "String",
+              "required": false
+            },
+            {
+              "name": "optional",
+              "type": "String",
+              "required": false
+            },
+            {
+              "name": "price",
+              "type": "String",
+              "required": false
+            },
+            {
+              "name": "number",
+              "type": "String",
+              "required": false
+            },
+            {
+              "name": "quantity",
+              "type": "String",
+              "required": false
+            },
+            {
+              "name": "number",
+              "type": "String",
+              "required": false
+            },
+            {
+              "name": "createdAt",
+              "type": "String",
+              "required": false
+            },
+            {
+              "name": "date",
+              "type": "String",
+              "required": false
+            },
+            {
+              "name": "setAutomaticallyWhenTheItem",
+              "type": "String",
+              "required": false
+            },
+            {
+              "name": "isCreated",
+              "type": "String",
+              "required": false
+            }
+          ],
+          "relationships": [],
+          "indexes_or_constraints": [],
+          "related_requirements": [
+            "FR-DOM-001"
+          ]
+        }
+      ],
+      "storage_rules": [
+        "image: file upload (stored and served back as an image URL)",
+        "name: string",
+        "description: text (optional)",
+        "price: number",
+        "quantity: number",
+        "createdAt: date (set automatically when the item is created)"
+      ],
+      "data_validation_rules": [
+        {
+          "rule_id": "VR-001",
+          "rule": "Image must be in JPEG, PNG, or WebP format and not exceed 5MB.",
+          "related_requirements": [
+            "VR-001"
+          ]
+        },
+        {
+          "rule_id": "VR-002",
+          "rule": "Name must be a non-empty string.",
+          "related_requirements": [
+            "VR-002"
+          ]
+        },
+        {
+          "rule_id": "VR-003",
+          "rule": "Price must be a positive number.",
+          "related_requirements": [
+            "VR-003"
+          ]
+        },
+        {
+          "rule_id": "VR-004",
+          "rule": "Quantity must be a non-negative integer.",
+          "related_requirements": [
+            "VR-004"
+          ]
+        }
+      ]
+    },
+    "behavior_view": {
+      "main_success_flow": [
+        {
+          "id": "AC-001",
+          "description": "Given a user fills in name, price, quantity, and an image, when they submit the form, then a new item is created and appears in the list immediately.",
+          "related_requirements": [
+            "FR-001",
+            "FR-002",
+            "FR-DOM-001"
+          ]
+        },
+        {
+          "id": "AC-004",
+          "description": "Given no items have been added yet, when the list is opened, then a clear 'No items added yet' empty state is shown instead of a blank page.",
+          "related_requirements": [
+            "FR-002",
+            "FR-DOM-001"
+          ]
+        },
+        {
+          "id": "AC-005",
+          "description": "Given items exist, when the list is opened, then every item's image, name, description, price, and quantity are displayed correctly.",
+          "related_requirements": [
+            "FR-002",
+            "FR-DOM-001"
+          ]
+        }
+      ],
+      "alternative_flows": [],
+      "exception_flows": [
+        {
+          "id": "AC-002",
+          "description": "Given a user submits the form with a missing required field (name, price, or quantity) or a negative price/quantity, when they submit, then the form shows a clear validation error and does not create the item.",
+          "related_requirements": [
+            "FR-001",
+            "FR-DOM-001"
+          ]
+        },
+        {
+          "id": "AC-003",
+          "description": "Given a user uploads a file that isn't an image or exceeds the size limit, when they submit, then the form shows a clear error message specifying the issue (e.g., 'File must be in JPEG, PNG, or WebP format and not exceed 5MB.') and does not create the item.",
+          "related_requirements": [
+            "FR-001",
+            "FR-DOM-001"
+          ]
+        }
+      ],
+      "state_changes": [
+        {
+          "description": "Given a user fills in name, price, quantity, and an image, when they submit the form, then a new item is created and appears in the list immediately.",
+          "related_requirements": [
+            "AC-001"
+          ]
+        },
+        {
+          "description": "Given a user submits the form with a missing required field (name, price, or quantity) or a negative price/quantity, when they submit, then the form shows a clear validation error and does not create the item.",
+          "related_requirements": [
+            "AC-002"
+          ]
+        },
+        {
+          "description": "Given a user uploads a file that isn't an image or exceeds the size limit, when they submit, then the form shows a clear error message specifying the issue (e.g., 'File must be in JPEG, PNG, or WebP format and not exceed 5MB.') and does not create the item.",
+          "related_requirements": [
+            "AC-003"
+          ]
+        }
+      ]
+    },
+    "error_handling_view": {
+      "validation_errors": [
+        {
+          "source_id": "VR-001",
+          "condition": "Violation of VR-001",
+          "handling": "Reject the request with an HTTP 400 response referencing VR-001, show the user a message identifying the invalid field(s), and do not process or persist the request."
+        },
+        {
+          "source_id": "VR-002",
+          "condition": "Violation of VR-002",
+          "handling": "Reject the request with an HTTP 400 response referencing VR-002, show the user a message identifying the invalid field(s), and do not process or persist the request."
+        },
+        {
+          "source_id": "VR-003",
+          "condition": "Violation of VR-003",
+          "handling": "Reject the request with an HTTP 400 response referencing VR-003, show the user a message identifying the invalid field(s), and do not process or persist the request."
+        },
+        {
+          "source_id": "VR-004",
+          "condition": "Violation of VR-004",
+          "handling": "Reject the request with an HTTP 400 response referencing VR-004, show the user a message identifying the invalid field(s), and do not process or persist the request."
+        }
+      ],
+      "business_errors": [
+        {
+          "source_id": "AC-002",
+          "condition": "Given a user submits the form with a missing required field (name, price, or quantity) or a negative price/quantity, when they submit, then the form shows a clear validation error and does not create the item.",
+          "handling": "Return a clear, user-friendly error and prevent the invalid action."
+        },
+        {
+          "source_id": "AC-003",
+          "condition": "Given a user uploads a file that isn't an image or exceeds the size limit, when they submit, then the form shows a clear error message specifying the issue (e.g., 'File must be in JPEG, PNG, or WebP format and not exceed 5MB.') and does not create the item.",
+          "handling": "Return a clear, user-friendly error and prevent the invalid action."
+        }
+      ],
+      "authorization_errors": [],
+      "system_errors": [
+        "Unexpected system errors should return safe generic messages without exposing internal details."
+      ],
+      "user_message_rules": [
+        "Image uploads are limited to common formats (JPEG, PNG, WebP) and a reasonable max size (e.g., 5MB) — reject anything else with a clear error."
+      ]
+    },
+    "security_authorization_view": {
+      "authentication_design": [],
+      "authorization_design": [
+        "Apply role/access rules required by the SRS."
+      ],
+      "sensitive_data_rules": [
+        "Sensitive values must not be exposed in responses, logs, or generated artifacts."
+      ],
+      "risk_mitigations": [
+        {
+          "risk": "{'description': 'Large datasets could impact performance if not handled efficiently.'}",
+          "mitigation": "Apply suitable mitigation based on project security policy.",
+          "related_requirements": [
+            "FR-001",
+            "FR-002",
+            "FR-DOM-001"
+          ]
+        },
+        {
+          "risk": "{'description': 'Third-party services for image storage or processing might introduce dependencies and potential downtime.'}",
+          "mitigation": "Apply suitable mitigation based on project security policy.",
+          "related_requirements": [
+            "FR-001",
+            "FR-002",
+            "FR-DOM-001"
+          ]
+        }
+      ]
+    },
+    "quality_attributes_view": {
+      "performance": [
+        {
+          "nfr_id": "NFR-001",
+          "description": "Image uploads are limited to common formats (JPEG, PNG, WebP) and a reasonable max size (e.g., 5MB) — reject anything else with a clear error.",
+          "design_decision": "Optimize design to satisfy the stated performance expectation."
+        },
+        {
+          "nfr_id": "NFR-002",
+          "description": "The item list should load within a couple of seconds for a small catalog (under a few hundred items) — no pagination needed at this scale.",
+          "design_decision": "Optimize design to satisfy the stated performance expectation."
+        },
+        {
+          "nfr_id": "NFR-003",
+          "description": "Adding an item (including the image upload) should complete within a few seconds under normal conditions.",
+          "design_decision": "Optimize design to satisfy the stated performance expectation."
+        }
+      ],
+      "usability": [],
+      "reliability": [],
+      "scalability": [],
+      "maintainability": [],
+      "accessibility": []
+    }
+  },
+  "frontend_architecture_plan": {
+    "responsibilities": [
+      {
+        "name": "AddListItemsFrontendModule",
+        "responsibility": "Handle frontend responsibilities for the Add & List Items feature.",
+        "derived_from": [
+          "An 'Add Item' form with an image upload control, name, description, price, and quantity fields, and a submit button.",
+          "A grid or card-based list layout (so item images are visible at a glance), consistent with the app's existing styling.",
+          "Responsive on both desktop and mobile widths.",
+          "image: file upload (stored and served back as an image URL)",
+          "name: string",
+          "description: text (optional)",
+          "price: number",
+          "quantity: number"
+        ]
+      }
+    ],
+    "pages_or_components": [
+      {
+        "description": "An 'Add Item' form with an image upload control, name, description, price, and quantity fields, and a submit button."
+      },
+      {
+        "description": "A grid or card-based list layout (so item images are visible at a glance), consistent with the app's existing styling."
+      },
+      {
+        "description": "Responsive on both desktop and mobile widths."
+      }
+    ],
+    "state_and_feedback": [
+      "Given a user submits the form with a missing required field (name, price, or quantity) or a negative price/quantity, when they submit, then the form shows a clear validation error and does not create the item.",
+      "Given a user uploads a file that isn't an image or exceeds the size limit, when they submit, then the form shows a clear error message specifying the issue (e.g., 'File must be in JPEG, PNG, or WebP format and not exceed 5MB.') and does not create the item.",
+      "Given no items have been added yet, when the list is opened, then a clear 'No items added yet' empty state is shown instead of a blank page.",
+      "Given items exist, when the list is opened, then every item's image, name, description, price, and quantity are displayed correctly."
+    ]
+  },
+  "backend_architecture_plan": {
+    "responsibilities": [
+      {
+        "name": "AddListItemsBackendModule",
+        "responsibility": "Handle backend responsibilities for the Add & List Items feature.",
+        "derived_from": [
+          "Users can add a new item (via a form).",
+          "Users can view the list of all added items.",
+          "Users can view the details of a specific item by clicking on it in the list.",
+          "Image must be in JPEG, PNG, or WebP format and not exceed 5MB.",
+          "Name must be a non-empty string.",
+          "Price must be a positive number.",
+          "Quantity must be a non-negative integer."
+        ]
+      }
+    ],
+    "layers": [
+      {
+        "name": "AddListItemsService",
+        "responsibility": "Apply business rules for the Add & List Items feature.",
+        "related_requirements": [
+          "FR-001",
+          "FR-002",
+          "FR-DOM-001"
+        ]
+      },
+      {
+        "name": "AddListItemsDataModule",
+        "responsibility": "Manage data access required by the feature.",
+        "derived_from": [
+          "image: file upload (stored and served back as an image URL)",
+          "name: string",
+          "description: text (optional)",
+          "price: number",
+          "quantity: number",
+          "createdAt: date (set automatically when the item is created)"
+        ]
+      }
+    ],
+    "integration_points": [
+      {
+        "type": "API",
+        "description": "POST /api/items — creates a new item (including the uploaded image)."
+      },
+      {
+        "type": "API",
+        "description": "GET /api/items — returns the list of all items."
+      },
+      {
+        "type": "Dependency",
+        "description": "A backend service capable of handling file uploads and storing item data."
+      },
+      {
+        "type": "Dependency",
+        "description": "An image hosting solution to store uploaded images."
+      }
+    ]
+  },
+  "validation_plan": {
+    "input_validation": [
+      {
+        "rule_id": "VR-001",
+        "rule": "Image must be in JPEG, PNG, or WebP format and not exceed 5MB.",
+        "related_requirements": [
+          "VR-001"
+        ]
+      },
+      {
+        "rule_id": "VR-002",
+        "rule": "Name must be a non-empty string.",
+        "related_requirements": [
+          "VR-002"
+        ]
+      },
+      {
+        "rule_id": "VR-003",
+        "rule": "Price must be a positive number.",
+        "related_requirements": [
+          "VR-003"
+        ]
+      },
+      {
+        "rule_id": "VR-004",
+        "rule": "Quantity must be a non-negative integer.",
+        "related_requirements": [
+          "VR-004"
+        ]
+      }
+    ],
+    "processing_validation": [
+      {
+        "rule_id": "VR-001",
+        "rule": "Image must be in JPEG, PNG, or WebP format and not exceed 5MB.",
+        "related_requirements": [
+          "VR-001"
+        ]
+      },
+      {
+        "rule_id": "VR-002",
+        "rule": "Name must be a non-empty string.",
+        "related_requirements": [
+          "VR-002"
+        ]
+      },
+      {
+        "rule_id": "VR-003",
+        "rule": "Price must be a positive number.",
+        "related_requirements": [
+          "VR-003"
+        ]
+      },
+      {
+        "rule_id": "VR-004",
+        "rule": "Quantity must be a non-negative integer.",
+        "related_requirements": [
+          "VR-004"
+        ]
+      }
+    ]
+  },
+  "coder_implementation_tasks": [
+    {
+      "task_id": "TASK-001",
+      "task": "Create or update frontend screen/components for the Add & List Items feature.",
+      "layer": "frontend",
+      "suggested_files": [
+        "app/add-list-items/page.tsx",
+        "components/AddListItemsForm.tsx"
+      ],
+      "related_requirements": [
+        "FR-001",
+        "FR-002",
+        "FR-DOM-001",
+        "AC-001",
+        "AC-002",
+        "AC-003",
+        "AC-004",
+        "AC-005"
+      ]
+    },
+    {
+      "task_id": "TASK-002",
+      "task": "Implement Next.js Route Handler(s) for the Add & List Items API expectations.",
+      "layer": "backend",
+      "suggested_files": [
+        "app/api/add-list-items/route.ts",
+        "models/AddListItems.ts"
+      ],
+      "related_requirements": [
+        "FR-001",
+        "FR-002",
+        "FR-DOM-001",
+        "AC-001",
+        "AC-002",
+        "AC-003",
+        "AC-004",
+        "AC-005"
+      ]
+    },
+    {
+      "task_id": "TASK-003",
+      "task": "Create or update data model/repository required by the Add & List Items feature.",
+      "layer": "data",
+      "suggested_files": [
+        "backend/models/add_list_items.model.js",
+        "backend/repositories/add_list_items.repository.js"
+      ],
+      "related_requirements": [
+        "FR-001",
+        "FR-002",
+        "FR-DOM-001"
+      ]
+    },
+    {
+      "task_id": "TASK-004",
+      "task": "Implement validation rules before processing feature requests.",
+      "layer": "validation",
+      "suggested_files": [
+        "backend/validators/add_list_items.validator.js"
+      ],
+      "related_requirements": [
+        "VR-001",
+        "VR-002",
+        "VR-003",
+        "VR-004"
+      ]
+    },
+    {
+      "task_id": "TASK-005",
+      "task": "Implement success, alternative, and exception handling according to acceptance criteria.",
+      "layer": "backend/frontend",
+      "suggested_files": [],
+      "related_requirements": [
+        "AC-001",
+        "AC-002",
+        "AC-003",
+        "AC-004",
+        "AC-005"
+      ]
+    },
+    {
+      "task_id": "TASK-006",
+      "task": "Implement security controls required by the feature, including authentication/authorization or sensitive data handling where applicable.",
+      "layer": "security",
+      "suggested_files": [],
+      "related_requirements": [
+        "FR-001",
+        "FR-002",
+        "FR-DOM-001",
+        "NFR-001",
+        "NFR-002",
+        "NFR-003"
+      ]
+    }
+  ],
+  "implementation_plan": {
+    "backend": {
+      "files": [
+        {
+          "path": "app/api/items/route.ts",
+          "action": "create",
+          "purpose": "Next.js Route Handler implementing GET, POST for Add & List Items (/api/items, /api/items), with request validation before any handler logic.",
+          "implements_endpoints": [
+            "/api/items",
+            "/api/items"
+          ]
+        },
+        {
+          "path": "models/AddListItemsData.ts",
+          "action": "create",
+          "purpose": "Mongoose model for the AddListItemsData entity (must use the `mongoose.models.AddListItemsData || mongoose.model(...)` guard to avoid OverwriteModelError).",
+          "implements_endpoints": []
+        }
+      ],
+      "endpoints": [
+        {
+          "method": "POST",
+          "path": "/api/items",
+          "request_body": [
+            {
+              "field": "field",
+              "type": "string",
+              "required": true,
+              "validation": "image: file upload (stored and served back as an image URL)"
+            },
+            {
+              "field": "field",
+              "type": "string",
+              "required": true,
+              "validation": "name: string"
+            },
+            {
+              "field": "field",
+              "type": "string",
+              "required": true,
+              "validation": "description: text (optional)"
+            },
+            {
+              "field": "field",
+              "type": "string",
+              "required": true,
+              "validation": "price: number"
+            },
+            {
+              "field": "field",
+              "type": "string",
+              "required": true,
+              "validation": "quantity: number"
+            }
+          ],
+          "response": "AddListItemsSuccessResponse",
+          "error_cases": [
+            "400 when required request fields are missing or invalid",
+            "{'source_id': 'VR-001', 'condition': 'Violation of VR-001', 'handling': 'Reject the request with an HTTP 400 response referencing VR-001, show the user a message identifying the invalid field(s), and do not process or persist the request.'}",
+            "{'source_id': 'VR-002', 'condition': 'Violation of VR-002', 'handling': 'Reject the request with an HTTP 400 response referencing VR-002, show the user a message identifying the invalid field(s), and do not process or persist the request.'}",
+            "{'source_id': 'VR-003', 'condition': 'Violation of VR-003', 'handling': 'Reject the request with an HTTP 400 response referencing VR-003, show the user a message identifying the invalid field(s), and do not process or persist the request.'}",
+            "500 when an unexpected server error occurs"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "/api/items",
+          "request_body": [
+            {
+              "field": "field",
+              "type": "string",
+              "required": true,
+              "validation": "image: file upload (stored and served back as an image URL)"
+            },
+            {
+              "field": "field",
+              "type": "string",
+              "required": true,
+              "validation": "name: string"
+            },
+            {
+              "field": "field",
+              "type": "string",
+              "required": true,
+              "validation": "description: text (optional)"
+            },
+            {
+              "field": "field",
+              "type": "string",
+              "required": true,
+              "validation": "price: number"
+            },
+            {
+              "field": "field",
+              "type": "string",
+              "required": true,
+              "validation": "quantity: number"
+            }
+          ],
+          "response": "AddListItemsSuccessResponse",
+          "error_cases": [
+            "400 when required request fields are missing or invalid",
+            "{'source_id': 'VR-001', 'condition': 'Violation of VR-001', 'handling': 'Reject the request with an HTTP 400 response referencing VR-001, show the user a message identifying the invalid field(s), and do not process or persist the request.'}",
+            "{'source_id': 'VR-002', 'condition': 'Violation of VR-002', 'handling': 'Reject the request with an HTTP 400 response referencing VR-002, show the user a message identifying the invalid field(s), and do not process or persist the request.'}",
+            "{'source_id': 'VR-003', 'condition': 'Violation of VR-003', 'handling': 'Reject the request with an HTTP 400 response referencing VR-003, show the user a message identifying the invalid field(s), and do not process or persist the request.'}",
+            "500 when an unexpected server error occurs"
+          ]
+        }
+      ],
+      "models": [
+        {
+          "name": "AddListItemsData",
+          "file": "models/AddListItemsData.ts",
+          "fields": [
+            {
+              "name": "image",
+              "type": "String",
+              "constraints": ""
+            },
+            {
+              "name": "fileUpload",
+              "type": "String",
+              "constraints": ""
+            },
+            {
+              "name": "storedAndServedBackAsAnIm",
+              "type": "String",
+              "constraints": ""
+            },
+            {
+              "name": "ageURL",
+              "type": "String",
+              "constraints": ""
+            },
+            {
+              "name": "name",
+              "type": "String",
+              "constraints": ""
+            },
+            {
+              "name": "string",
+              "type": "String",
+              "constraints": ""
+            },
+            {
+              "name": "description",
+              "type": "String",
+              "constraints": ""
+            },
+            {
+              "name": "text",
+              "type": "String",
+              "constraints": ""
+            },
+            {
+              "name": "optional",
+              "type": "String",
+              "constraints": ""
+            },
+            {
+              "name": "price",
+              "type": "String",
+              "constraints": ""
+            },
+            {
+              "name": "number",
+              "type": "String",
+              "constraints": ""
+            },
+            {
+              "name": "quantity",
+              "type": "String",
+              "constraints": ""
+            },
+            {
+              "name": "number",
+              "type": "String",
+              "constraints": ""
+            },
+            {
+              "name": "createdAt",
+              "type": "String",
+              "constraints": ""
+            },
+            {
+              "name": "date",
+              "type": "String",
+              "constraints": ""
+            },
+            {
+              "name": "setAutomaticallyWhenTheItem",
+              "type": "String",
+              "constraints": ""
+            },
+            {
+              "name": "isCreated",
+              "type": "String",
+              "constraints": ""
+            }
+          ]
+        }
+      ]
+    },
+    "frontend": {
+      "pages": [
+        {
+          "path": "app/add-list-items/page.tsx",
+          "route": "/add-list-items",
+          "purpose": "Main page for the Add & List Items feature. UI expectations: An 'Add Item' form with an image upload control, name, description, price, and quantity fields, and a submit button.; A grid or card-based list layout (so item images are visible at a glance), consistent with the app's existing styling.; Responsive on both desktop and mobile widths.",
+          "uses_components": []
+        }
+      ],
+      "components_to_reuse": [],
+      "services": [
+        {
+          "path": "lib/api/addListItems.ts",
+          "functions": [
+            {
+              "name": "postItems",
+              "calls_endpoint": "POST /api/items"
+            },
+            {
+              "name": "getItems",
+              "calls_endpoint": "GET /api/items"
+            }
+          ]
+        }
+      ],
+      "routing": {
+        "new_routes": [
+          {
+            "path": "/add-list-items",
+            "component": "AddListItemsPage"
+          }
+        ],
+        "nav_links": [
+          {
+            "to": "/add-list-items",
+            "label": "Add & List Items"
+          }
+        ]
+      }
+    },
+    "implementation_order": [
+      "Create the Mongoose model(s): models/AddListItemsData.ts",
+      "Create app/api/items/route.ts implementing /api/items, /api/items, validating required request fields before use (400 on missing/malformed) -- it is automatically live the instant the file exists, no separate mount step needed.",
+      "Create lib/api/addListItems.ts with one function per endpoint.",
+      "Create app/add-list-items/page.tsx (a Client Component, `\"use client\"` as its first line), reusing approved UI/UX components where available instead of re-authoring their markup.",
+      "Register a real <Link href=\"/add-list-items\"> in app/page.tsx at the FEATURE_LINKS markers -- a page with no link to it is not complete."
+    ],
+    "constraints": [
+      "The Next.js App Router scaffold already exists and works -- never recreate app/layout.tsx, next.config.mjs, tsconfig.json, or lib/mongodb.ts.",
+      "A Route Handler (route.ts) is live the instant it exists -- there is no router to mount it on, unlike an Express app.js.",
+      "Register new pages by adding a real <Link href=\"...\"> in app/page.tsx (FEATURE_LINKS markers) -- an unreachable page is not done.",
+      "Every Mongoose model file must use the `mongoose.models.X || mongoose.model(...)` guard to avoid OverwriteModelError.",
+      "Approved UI/UX output is a visual reference, not code to import -- use read_ui_component_design/read_ui_page_design to see the approved HTML+Tailwind design, then write real TSX that faithfully matches its structure/classes/content."
+    ]
+  },
+  "traceability_matrix": [
+    {
+      "source_id": "FR-001",
+      "source_type": "FR",
+      "architecture_plan_section": "Design Views / Detailed Design Decisions",
+      "design_element": "Users can add a new item (via a form).",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "FR-002",
+      "source_type": "FR",
+      "architecture_plan_section": "Design Views / Detailed Design Decisions",
+      "design_element": "Users can view the list of all added items.",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "FR-DOM-001",
+      "source_type": "FR",
+      "architecture_plan_section": "Design Views / Detailed Design Decisions",
+      "design_element": "Users can view the details of a specific item by clicking on it in the list.",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "AC-001",
+      "source_type": "AC",
+      "architecture_plan_section": "Behavior View / Error Handling View",
+      "design_element": "Given a user fills in name, price, quantity, and an image, when they submit the form, then a new item is created and appears in the list immediately.",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "AC-002",
+      "source_type": "AC",
+      "architecture_plan_section": "Behavior View / Error Handling View",
+      "design_element": "Given a user submits the form with a missing required field (name, price, or quantity) or a negative price/quantity, when they submit, then the form shows a clear validation error and does not create the item.",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "AC-003",
+      "source_type": "AC",
+      "architecture_plan_section": "Behavior View / Error Handling View",
+      "design_element": "Given a user uploads a file that isn't an image or exceeds the size limit, when they submit, then the form shows a clear error message specifying the issue (e.g., 'File must be in JPEG, PNG, or WebP format and not exceed 5MB.') and does not create the item.",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "AC-004",
+      "source_type": "AC",
+      "architecture_plan_section": "Behavior View / Error Handling View",
+      "design_element": "Given no items have been added yet, when the list is opened, then a clear 'No items added yet' empty state is shown instead of a blank page.",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "AC-005",
+      "source_type": "AC",
+      "architecture_plan_section": "Behavior View / Error Handling View",
+      "design_element": "Given items exist, when the list is opened, then every item's image, name, description, price, and quantity are displayed correctly.",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "VR-001",
+      "source_type": "VR",
+      "architecture_plan_section": "Interface View / Data View / Error Handling View",
+      "design_element": "Image must be in JPEG, PNG, or WebP format and not exceed 5MB.",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "VR-002",
+      "source_type": "VR",
+      "architecture_plan_section": "Interface View / Data View / Error Handling View",
+      "design_element": "Name must be a non-empty string.",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "VR-003",
+      "source_type": "VR",
+      "architecture_plan_section": "Interface View / Data View / Error Handling View",
+      "design_element": "Price must be a positive number.",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "VR-004",
+      "source_type": "VR",
+      "architecture_plan_section": "Interface View / Data View / Error Handling View",
+      "design_element": "Quantity must be a non-negative integer.",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "NFR-001",
+      "source_type": "NFR",
+      "architecture_plan_section": "Quality Attributes View",
+      "design_element": "Image uploads are limited to common formats (JPEG, PNG, WebP) and a reasonable max size (e.g., 5MB) — reject anything else with a clear error.",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "NFR-002",
+      "source_type": "NFR",
+      "architecture_plan_section": "Quality Attributes View",
+      "design_element": "The item list should load within a couple of seconds for a small catalog (under a few hundred items) — no pagination needed at this scale.",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "NFR-003",
+      "source_type": "NFR",
+      "architecture_plan_section": "Quality Attributes View",
+      "design_element": "Adding an item (including the image upload) should complete within a few seconds under normal conditions.",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "CONSTRAINT-001",
+      "source_type": "Constraint",
+      "architecture_plan_section": "Design Considerations / Architecture Overview",
+      "design_element": "The application uses the Next.js framework.",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "CONSTRAINT-002",
+      "source_type": "Constraint",
+      "architecture_plan_section": "Design Considerations / Architecture Overview",
+      "design_element": "The system should handle image uploads efficiently.",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "CONSTRAINT-003",
+      "source_type": "Constraint",
+      "architecture_plan_section": "Design Considerations / Architecture Overview",
+      "design_element": "The system must support multiple currencies for price storage and display, with explicit currency codes.",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "CONSTRAINT-004",
+      "source_type": "Constraint",
+      "architecture_plan_section": "Design Considerations / Architecture Overview",
+      "design_element": "The system must support guest checkout, capturing a valid email address and shipping address even if the user does not create an account.",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "CONSTRAINT-005",
+      "source_type": "Constraint",
+      "architecture_plan_section": "Design Considerations / Architecture Overview",
+      "design_element": "The system must comply with GDPR (General Data Protection Regulation) regarding user data storage and processing, including obtaining explicit consent for data collection and providing users with the ability to access, modify, or delete their personal data.",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "CONSTRAINT-006",
+      "source_type": "Constraint",
+      "architecture_plan_section": "Design Considerations / Architecture Overview",
+      "design_element": "The system must comply with GDPR (General Data Protection Regulation) regarding user data storage and processing, including obtaining explicit consent for data collection and providing users with the ability to access, modify, or delete their personal data.",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "RISK-001",
+      "source_type": "Risk",
+      "architecture_plan_section": "Design Considerations / Security and Authorization View",
+      "design_element": "Large datasets could impact performance if not handled efficiently.",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "RISK-002",
+      "source_type": "Risk",
+      "architecture_plan_section": "Design Considerations / Security and Authorization View",
+      "design_element": "Third-party services for image storage or processing might introduce dependencies and potential downtime.",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "DEPENDENCY-001",
+      "source_type": "Dependency",
+      "architecture_plan_section": "Design Context / Logical View",
+      "design_element": "A backend service capable of handling file uploads and storing item data.",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "DEPENDENCY-002",
+      "source_type": "Dependency",
+      "architecture_plan_section": "Design Context / Logical View",
+      "design_element": "An image hosting solution to store uploaded images.",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "DATA-001",
+      "source_type": "Data",
+      "architecture_plan_section": "Data View",
+      "design_element": "image: file upload (stored and served back as an image URL)",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "DATA-002",
+      "source_type": "Data",
+      "architecture_plan_section": "Data View",
+      "design_element": "name: string",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "DATA-003",
+      "source_type": "Data",
+      "architecture_plan_section": "Data View",
+      "design_element": "description: text (optional)",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "DATA-004",
+      "source_type": "Data",
+      "architecture_plan_section": "Data View",
+      "design_element": "price: number",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "DATA-005",
+      "source_type": "Data",
+      "architecture_plan_section": "Data View",
+      "design_element": "quantity: number",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "DATA-006",
+      "source_type": "Data",
+      "architecture_plan_section": "Data View",
+      "design_element": "createdAt: date (set automatically when the item is created)",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "API-001",
+      "source_type": "API",
+      "architecture_plan_section": "Interface View",
+      "design_element": "POST /api/items — creates a new item (including the uploaded image).",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "API-002",
+      "source_type": "API",
+      "architecture_plan_section": "Interface View",
+      "design_element": "GET /api/items — returns the list of all items.",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "UI-001",
+      "source_type": "UI",
+      "architecture_plan_section": "Context View / Logical View",
+      "design_element": "An 'Add Item' form with an image upload control, name, description, price, and quantity fields, and a submit button.",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "UI-002",
+      "source_type": "UI",
+      "architecture_plan_section": "Context View / Logical View",
+      "design_element": "A grid or card-based list layout (so item images are visible at a glance), consistent with the app's existing styling.",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "UI-003",
+      "source_type": "UI",
+      "architecture_plan_section": "Context View / Logical View",
+      "design_element": "Responsive on both desktop and mobile widths.",
+      "coverage_status": "covered"
+    }
+  ],
+  "assumptions": [
+    "UI expectations and API endpoints were inferred from functional requirements since they were not specified in BA Input.",
+    "No specific constraints were provided, so only general architectural considerations are listed."
+  ],
+  "constraints": [
+    "The application uses the Next.js framework.",
+    "The system should handle image uploads efficiently.",
+    "The system must support multiple currencies for price storage and display, with explicit currency codes.",
+    "The system must support guest checkout, capturing a valid email address and shipping address even if the user does not create an account.",
+    "The system must comply with GDPR (General Data Protection Regulation) regarding user data storage and processing, including obtaining explicit consent for data collection and providing users with the ability to access, modify, or delete their personal data.",
+    "The system must comply with GDPR (General Data Protection Regulation) regarding user data storage and processing, including obtaining explicit consent for data collection and providing users with the ability to access, modify, or delete their personal data."
+  ],
+  "risks": [
+    {
+      "description": "Large datasets could impact performance if not handled efficiently."
+    },
+    {
+      "description": "Third-party services for image storage or processing might introduce dependencies and potential downtime."
+    }
+  ],
+  "dependencies": [
+    "A backend service capable of handling file uploads and storing item data.",
+    "An image hosting solution to store uploaded images."
+  ],
+  "revision_metadata": null,
+  "human_approval_note": "This Architecture Plan must be reviewed and approved before the UI/UX Agent or Coder Agent starts.\n\nAutomatic checks found a few issues to look at before approving:\n\nUse case name conjoins multiple distinct capabilities into one entry: 'Add List Items' -- split into separate use cases, one per capability (add, list)."
+}

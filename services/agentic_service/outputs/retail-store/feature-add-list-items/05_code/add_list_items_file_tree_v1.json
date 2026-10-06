@@ -1,0 +1,14 @@
+{
+  "added": [
+    "app/add-list-items/page.tsx",
+    "app/api/items/route.ts",
+    "lib/api/addListItems.ts",
+    "lib/types/AddListItemsData.ts",
+    "models/AddListItemsData.ts",
+    "package-lock.json"
+  ],
+  "modified": [
+    "app/page.tsx"
+  ],
+  "deleted": []
+}

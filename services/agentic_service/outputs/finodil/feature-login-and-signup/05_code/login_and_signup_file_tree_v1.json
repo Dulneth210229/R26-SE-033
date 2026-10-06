@@ -1,0 +1,14 @@
+{
+  "added": [
+    "app/api/auth/login/route.ts",
+    "app/api/auth/logout/route.ts",
+    "app/api/auth/signup/route.ts",
+    "app/login-and-signup/page.tsx",
+    "lib/api/loginAndSignup.ts",
+    "models/LoginAndSignupData.ts"
+  ],
+  "modified": [
+    "app/page.tsx"
+  ],
+  "deleted": []
+}

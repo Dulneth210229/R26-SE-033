@@ -1,0 +1,98 @@
+{
+  "project_name": "Finodil",
+  "feature_name": "Login and Signup",
+  "generated_at": "2026-08-25T13:20:02.943646+00:00",
+  "scan_type": "ai_model_deep_scan",
+  "gate_decision": "review",
+  "findings_count": 6,
+  "critical_count": 0,
+  "moderate_count": 3,
+  "warning_count": 3,
+  "findings": [
+    {
+      "id": "SEC-JS-006:app\\api\\auth\\login\\route.ts:39",
+      "rule_id": "SEC-JS-006",
+      "layer": "pattern",
+      "severity": "medium",
+      "cwe": "CWE-915",
+      "file": "app\\api\\auth\\login\\route.ts",
+      "line": 39,
+      "message": "Dynamic bracket property access keyed directly by a request-controlled parameter name (e.g. obj[req.query.sort]) is an object-injection / prototype-pollution-adjacent pattern; the accessor should be validated against an explicit allow-list of field names.",
+      "root_cause": "A dynamic bracket property access (obj[key]) was found at app\\api\\auth\\login\\route.ts:39, using a request-controlled value as the property name.",
+      "recommendation": "Validate the property name against an explicit allow-list of known-safe field names before using it to index the object."
+    },
+    {
+      "rule_id": "SEC-AI-DEEPSCAN",
+      "layer": "ai_model_deep_scan",
+      "severity": "high",
+      "cwe": "CWE-89",
+      "file": "app/api/auth/login/route.ts",
+      "line": 31,
+      "message": "NoSQL Injection -- The code allows user-controlled input to be used in a database query without proper validation, which can lead to NoSQL injection attacks.",
+      "root_cause": "The `filter` object is directly used in the query without sanitization, allowing user-controlled fields to be included.",
+      "recommendation": "Sanitize and validate all user inputs before using them in database queries. Only allow specific fields that are necessary for the query.",
+      "id": "SEC-AI-DEEPSCAN:1"
+    },
+    {
+      "rule_id": "SEC-AI-DEEPSCAN",
+      "layer": "ai_model_deep_scan",
+      "severity": "medium",
+      "cwe": "CWE-200",
+      "file": "app/api/auth/login/route.ts",
+      "line": 71,
+      "message": "Sensitive Data Exposure -- The code returns sensitive user information (id, name, email) in the API response after a successful login.",
+      "root_cause": "The `user` object, which contains sensitive information, is returned in the API response.",
+      "recommendation": "Only return necessary user information that does not include sensitive data like passwords or other personal details.",
+      "id": "SEC-AI-DEEPSCAN:2"
+    },
+    {
+      "rule_id": "SEC-AI-DEEPSCAN",
+      "layer": "ai_model_deep_scan",
+      "severity": "low",
+      "cwe": "CWE-312",
+      "file": "app/api/auth/login/route.ts",
+      "line": 65,
+      "message": "Security Misconfiguration -- The code logs error messages to the console, which can leak internal information about the application.",
+      "root_cause": "The `console.error` statement logs error messages to the console, which can be accessed by attackers.",
+      "recommendation": "Avoid logging sensitive information in error messages. Use a structured logging system that does not expose internal details.",
+      "id": "SEC-AI-DEEPSCAN:3"
+    },
+    {
+      "rule_id": "SEC-AI-DEEPSCAN",
+      "layer": "ai_model_deep_scan",
+      "severity": "low",
+      "cwe": "CWE-312",
+      "file": "app/api/auth/signup/route.ts",
+      "line": 75,
+      "message": "Security Misconfiguration -- The code logs error messages to the console, which can leak internal information about the application.",
+      "root_cause": "The `console.error` statement logs error messages to the console, which can be accessed by attackers.",
+      "recommendation": "Avoid logging sensitive information in error messages. Use a structured logging system that does not expose internal details.",
+      "id": "SEC-AI-DEEPSCAN:4"
+    },
+    {
+      "rule_id": "SEC-AI-DEEPSCAN",
+      "layer": "ai_model_deep_scan",
+      "severity": "low",
+      "cwe": "CWE-312",
+      "file": "app/api/auth/logout/route.ts",
+      "line": 10,
+      "message": "Security Misconfiguration -- The code logs error messages to the console, which can leak internal information about the application.",
+      "root_cause": "The `console.error` statement logs error messages to the console, which can be accessed by attackers.",
+      "recommendation": "Avoid logging sensitive information in error messages. Use a structured logging system that does not expose internal details.",
+      "id": "SEC-AI-DEEPSCAN:5"
+    }
+  ],
+  "dependency_scan": {
+    "audit_exit_code": 0,
+    "audit_ran_offline": true,
+    "dependency_summary": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0,
+      "total": 0
+    }
+  },
+  "llm_review_status": "AI model deep scan ran over 3 batch(es) of real source code (3 succeeded, 0 failed): 5 finding(s)."
+}

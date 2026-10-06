@@ -1,0 +1,88 @@
+{
+  "pages": [
+    {
+      "page_id": "item-listing-page",
+      "name": "Item Listing",
+      "route": "/items",
+      "actors": [
+        "logged-in users"
+      ],
+      "covers_requirements": [
+        "FR-001",
+        "US-001",
+        "AC-001",
+        "AC-002",
+        "AC-003",
+        "AC-004",
+        "AC-005",
+        "AC-006"
+      ],
+      "components": [
+        {
+          "name": "ItemList",
+          "reused_from_design_system": false,
+          "new_component_justification": "No existing component in the design system fits the specific needs of displaying a list of items with detailed information.",
+          "covers_ui_expectations": [
+            "A clean grid or table layout consistent with the rest of the app's existing styling",
+            "Responsive on both desktop and mobile widths"
+          ],
+          "content_elements": [
+            "name",
+            "description",
+            "price",
+            "quantity",
+            "category"
+          ]
+        },
+        {
+          "name": "LoadingIndicator",
+          "reused_from_design_system": false,
+          "new_component_justification": "No existing component in the design system fits the specific needs of displaying a loading indicator for item listing.",
+          "covers_ui_expectations": [
+            "While items are loading, the page shows a loading indicator"
+          ],
+          "content_elements": [
+            "Loading..."
+          ]
+        },
+        {
+          "name": "ErrorMessage",
+          "reused_from_design_system": false,
+          "new_component_justification": "No existing component in the design system fits the specific needs of displaying an error message for item listing.",
+          "covers_ui_expectations": [
+            "If the fetch fails, it shows a clear error message instead of a blank page"
+          ],
+          "content_elements": [
+            "Failed to load items. Please try again later."
+          ]
+        },
+        {
+          "name": "EmptyState",
+          "reused_from_design_system": false,
+          "new_component_justification": "No existing component in the design system fits the specific needs of displaying an empty state for item listing.",
+          "covers_ui_expectations": [
+            "If there are no items, the page shows a clear empty state ('No items found')"
+          ],
+          "content_elements": [
+            "No items found."
+          ]
+        }
+      ],
+      "states": [
+        "idle",
+        "loading",
+        "error",
+        "success"
+      ],
+      "new_design_tokens": [
+        {
+          "token": "color.primary",
+          "value": "#3B82F6",
+          "justification": "A new primary color is needed to differentiate the item listing feature from other parts of the app."
+        }
+      ]
+    }
+  ],
+  "color_theme": "indigo",
+  "notes": ""
+}

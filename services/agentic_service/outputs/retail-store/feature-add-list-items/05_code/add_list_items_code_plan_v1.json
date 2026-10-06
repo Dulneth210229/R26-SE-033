@@ -1,0 +1,60 @@
+{
+  "summary": "This plan implements the 'Add & List Items' feature by creating a Mongoose model for item data, backend API endpoints to handle item creation and listing, a frontend page with form and grid components to manage and display items, and integrating the new feature into the main navigation. The implementation covers all required endpoints, entities, and functional requirements while adhering to the existing Next.js scaffold and design guidelines.",
+  "files": [
+    {
+      "path": "models/AddListItemsData.ts",
+      "action": "create",
+      "rationale": "Mongoose schema for the AddListItemsData entity to store item information including image URL, name, description, price, quantity, and creation timestamp.",
+      "maps_to": [
+        "AddListItemsData",
+        "FR-001",
+        "FR-002",
+        "FR-DOM-001"
+      ]
+    },
+    {
+      "path": "app/api/items/route.ts",
+      "action": "create",
+      "rationale": "Route Handler implementing the item collection endpoints (create/list) with validation for required fields and image constraints.",
+      "maps_to": [
+        "/api/items",
+        "/api/items",
+        "FR-001",
+        "FR-002",
+        "FR-DOM-001"
+      ]
+    },
+    {
+      "path": "lib/api/addListItems.ts",
+      "action": "create",
+      "rationale": "API service layer to encapsulate calls to the backend endpoints for adding and retrieving items.",
+      "maps_to": [
+        "FR-001",
+        "FR-002",
+        "FR-DOM-001"
+      ]
+    },
+    {
+      "path": "app/add-list-items/page.tsx",
+      "action": "create",
+      "rationale": "Main page component for the Add & List Items feature, including form for adding items and grid for listing them, matching the approved UI design.",
+      "maps_to": [
+        "FR-001",
+        "FR-002",
+        "FR-DOM-001"
+      ]
+    },
+    {
+      "path": "app/page.tsx",
+      "action": "modify",
+      "rationale": "Add a navigation link to the new 'Add & List Items' page from the home page.",
+      "maps_to": [
+        "FR-001",
+        "FR-002",
+        "FR-DOM-001"
+      ]
+    }
+  ],
+  "new_dependencies": [],
+  "env_vars_needed": []
+}

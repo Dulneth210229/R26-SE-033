@@ -1,0 +1,103 @@
+{
+  "project_name": "Finodil",
+  "feature_name": "Login and Signup",
+  "generated_at": "2026-08-23T05:33:45.115314+00:00",
+  "scan_type": "ai_model_deep_scan",
+  "gate_decision": "fail",
+  "findings_count": 7,
+  "critical_count": 2,
+  "moderate_count": 5,
+  "warning_count": 0,
+  "findings": [
+    {
+      "id": "SEC-JS-005:app\\login-and-signup\\page.tsx:166",
+      "rule_id": "SEC-JS-005",
+      "layer": "pattern",
+      "severity": "high",
+      "cwe": "CWE-79",
+      "file": "app\\login-and-signup\\page.tsx",
+      "line": 166,
+      "message": "dangerouslySetInnerHTML bypasses React's default escaping; unsanitized HTML here is stored/DOM XSS.",
+      "root_cause": "A dangerouslySetInnerHTML attribute was found at app\\login-and-signup\\page.tsx:166, rendering raw HTML without React's default escaping.",
+      "recommendation": "Remove dangerouslySetInnerHTML and render the content as plain text/JSX, or sanitize the HTML through a trusted library (e.g. DOMPurify) before rendering it."
+    },
+    {
+      "id": "SEC-SECRET-MONGO-URI:lib\\mongodb.ts:6",
+      "rule_id": "SEC-SECRET-MONGO-URI",
+      "layer": "secret",
+      "severity": "critical",
+      "cwe": "CWE-798",
+      "file": "lib\\mongodb.ts",
+      "line": 6,
+      "message": "MongoDB connection string with an embedded, hardcoded credential",
+      "root_cause": "A hardcoded secret literal (mongodb connection string with an embedded, hardcoded credential) was found directly in source at lib\\mongodb.ts:6.",
+      "recommendation": "Move this value to `.env.local` (gitignored) and read it via `process.env.X` at runtime; rotate the exposed credential/key immediately, since it may already be compromised."
+    },
+    {
+      "rule_id": "SEC-AI-DEEPSCAN",
+      "layer": "ai_model_deep_scan",
+      "severity": "high",
+      "cwe": "CWE-532",
+      "file": "app/api/auth/login/route.ts",
+      "line": 17,
+      "message": "Plaintext Password Logging -- The login endpoint logs the plaintext password to the console, which can lead to sensitive information exposure.",
+      "root_cause": "console.log('Login attempt:', email, password);",
+      "recommendation": "Remove or replace the line that logs the plaintext password.",
+      "id": "SEC-AI-DEEPSCAN:1"
+    },
+    {
+      "rule_id": "SEC-AI-DEEPSCAN",
+      "layer": "ai_model_deep_scan",
+      "severity": "critical",
+      "cwe": "CWE-943",
+      "file": "app/api/auth/login/route.ts",
+      "line": 35,
+      "message": "NoSQL Injection via Query Parameters -- The login endpoint merges a client-supplied `filter` object directly into the MongoDB query, allowing for NoSQL injection attacks.",
+      "root_cause": "const user = await LoginAndSignupData.findOne({ email, ...filter });",
+      "recommendation": "Sanitize or validate the `filter` object to prevent injection attacks.",
+      "id": "SEC-AI-DEEPSCAN:2"
+    },
+    {
+      "rule_id": "SEC-AI-DEEPSCAN",
+      "layer": "ai_model_deep_scan",
+      "severity": "high",
+      "cwe": "CWE-916",
+      "file": "app/api/auth/signup/route.ts",
+      "line": 54,
+      "message": "Weak Bcrypt Cost Factor -- The signup endpoint uses a bcrypt cost factor of 1, which is too weak and makes brute-forcing the hash cheap.",
+      "root_cause": "const hashedPassword = await bcrypt.hash(password, 1);",
+      "recommendation": "Increase the bcrypt cost factor to a value of at least 10.",
+      "id": "SEC-AI-DEEPSCAN:3"
+    },
+    {
+      "rule_id": "SEC-AI-DEEPSCAN",
+      "layer": "ai_model_deep_scan",
+      "severity": "high",
+      "cwe": "CWE-79",
+      "file": "app\\login-and-signup\\page.tsx",
+      "line": 145,
+      "message": "Cross-Site Scripting (XSS) Vulnerability -- The error message is rendered using dangerouslySetInnerHTML without proper sanitization, which can allow an attacker to inject malicious scripts.",
+      "root_cause": "The use of dangerouslySetInnerHTML with the error message variable that can include unsanitized user input.",
+      "recommendation": "Sanitize the error message before rendering it using dangerouslySetInnerHTML. Consider using a library like DOMPurify to sanitize HTML content.",
+      "id": "SEC-AI-DEEPSCAN:4"
+    },
+    {
+      "rule_id": "SEC-AI-DEEPSCAN",
+      "layer": "ai_model_deep_scan",
+      "severity": "high",
+      "cwe": "CWE-798",
+      "file": "lib\\mongodb.ts",
+      "line": 5,
+      "message": "Hardcoded MongoDB Connection String -- The code contains a hardcoded MongoDB connection string with an embedded, fake-but-realistic credential. This can lead to unauthorized access if the code is exposed or misused.",
+      "root_cause": "The hardcoded MongoDB URI with credentials: `const FALLBACK_MONGODB_URI = \"mongodb+srv://finodil_admin:Sup3rSecretPass!@cluster0.abcde.mongodb.net/finodil\";`",
+      "recommendation": "Remove the hardcoded connection string and use environment variables to store sensitive information securely.",
+      "id": "SEC-AI-DEEPSCAN:5"
+    }
+  ],
+  "dependency_scan": {
+    "audit_exit_code": 1,
+    "audit_ran_offline": true,
+    "dependency_summary": {}
+  },
+  "llm_review_status": "AI model deep scan ran over 4 batch(es) of real source code (4 succeeded, 0 failed): 5 finding(s)."
+}

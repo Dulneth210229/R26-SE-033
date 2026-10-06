@@ -1,0 +1,62 @@
+{
+  "project_name": "Finodil",
+  "feature_name": "Login and Signup",
+  "generated_at": "2026-08-25T07:52:45.679041+00:00",
+  "scan_type": "ai_model_deep_scan",
+  "gate_decision": "fail",
+  "findings_count": 3,
+  "critical_count": 2,
+  "moderate_count": 1,
+  "warning_count": 0,
+  "findings": [
+    {
+      "rule_id": "SEC-AI-DEEPSCAN",
+      "layer": "ai_model_deep_scan",
+      "severity": "high",
+      "cwe": "CWE-532",
+      "file": "app/api/auth/login/route.ts",
+      "line": 14,
+      "message": "Plaintext Password Logging -- The code logs the plaintext password in the console, which can lead to sensitive information exposure.",
+      "root_cause": "console.log('Login attempt:', email, password);",
+      "recommendation": "Remove or replace the line with a non-sensitive logging statement.",
+      "id": "SEC-AI-DEEPSCAN:1"
+    },
+    {
+      "rule_id": "SEC-AI-DEEPSCAN",
+      "layer": "ai_model_deep_scan",
+      "severity": "critical",
+      "cwe": "CWE-943",
+      "file": "app/api/auth/login/route.ts",
+      "line": 27,
+      "message": "NoSQL Injection via Query Parameters -- The code merges user-supplied `filter` object directly into the MongoDB query, allowing for NoSQL injection attacks.",
+      "root_cause": "const user = await LoginAndSignupData.findOne({ email, ...filter });",
+      "recommendation": "Sanitize and validate the `filter` object to prevent injection attacks.",
+      "id": "SEC-AI-DEEPSCAN:2"
+    },
+    {
+      "rule_id": "SEC-AI-DEEPSCAN",
+      "layer": "ai_model_deep_scan",
+      "severity": "critical",
+      "cwe": "CWE-916",
+      "file": "app/api/auth/signup/route.ts",
+      "line": 42,
+      "message": "Weak Password Hashing Cost Factor -- The bcrypt cost factor is set to 1, which is too weak and makes brute-forcing the hash cheap.",
+      "root_cause": "const hashedPassword = await bcrypt.hash(password, 1);",
+      "recommendation": "Increase the cost factor to a value of at least 10.",
+      "id": "SEC-AI-DEEPSCAN:3"
+    }
+  ],
+  "dependency_scan": {
+    "audit_exit_code": 0,
+    "audit_ran_offline": true,
+    "dependency_summary": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0,
+      "total": 0
+    }
+  },
+  "llm_review_status": "AI model deep scan ran over 2 batch(es) of real source code (2 succeeded, 0 failed): 3 finding(s)."
+}

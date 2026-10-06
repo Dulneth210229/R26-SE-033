@@ -1,0 +1,125 @@
+{
+  "files": [
+    {
+      "path": "models/ItemListingData.ts",
+      "action": "modify",
+      "description": "Removed junk auto-derived fields (itemsTable, a duplicate name, a field literally named 'string') inherited from the Architecture Plan's crude fallback field list, keeping only the real SRS-derived fields (name, description, price, quantity, category, createdAt).",
+      "maps_to": [
+        "FR-002",
+        "FR-DOM-003",
+        "AC-002"
+      ],
+      "actually_touched": true
+    },
+    {
+      "path": "lib/types/ItemListing.ts",
+      "action": "create",
+      "description": "Shared request/response type (ItemListingItem/ItemListingResponse) so the frontend no longer imports the server-only Mongoose Document interface.",
+      "maps_to": [
+        "FR-002"
+      ],
+      "actually_touched": true
+    },
+    {
+      "path": "lib/seedData.ts",
+      "action": "modify",
+      "description": "Rewrote the Item Listing seed block: same junk-field removal as the model, 8 items to satisfy the 8-10 pre-seeded item requirement, with the last item deliberately at quantity 0 for a real out-of-stock example.",
+      "maps_to": [
+        "FR-003",
+        "AC-003"
+      ],
+      "actually_touched": true
+    },
+    {
+      "path": "app/api/items/route.ts",
+      "action": "modify",
+      "description": "GET handler serves seed data when connectToDatabase() returns null; when a real DB is connected and genuinely empty, auto-seeds it via insertMany before reading (FR-003 for a real connection too, not just the fallback path); maps Mongoose documents to the shared ItemListingItem shape with inStock computed from quantity > 0 (FR-DOM-003).",
+      "maps_to": [
+        "FR-002",
+        "FR-003",
+        "FR-DOM-003",
+        "AC-002",
+        "AC-003"
+      ],
+      "actually_touched": true
+    },
+    {
+      "path": "lib/mongodb.ts",
+      "action": "modify",
+      "description": "connectToDatabase() now catches a real connection failure (not just an unset MONGODB_URI) and fails fast via serverSelectionTimeoutMS, degrading to seed data instead of hanging or throwing a 500 -- a cross-feature fix shared with Login and Signup.",
+      "maps_to": [
+        "NFR-001"
+      ],
+      "actually_touched": true
+    },
+    {
+      "path": "lib/api/itemListing.ts",
+      "action": "modify",
+      "description": "Uses the shared ItemListingResponse type instead of importing the Mongoose interface directly.",
+      "maps_to": [
+        "FR-002"
+      ],
+      "actually_touched": true
+    },
+    {
+      "path": "lib/auth/session.ts",
+      "action": "create",
+      "description": "Minimal shared client-side session marker (localStorage-based), since Login and Signup's backend never issues a real cookie/JWT session -- this fills that real gap so FR-001/AC-001's auth gate has something real to check.",
+      "maps_to": [
+        "FR-001",
+        "AC-001"
+      ],
+      "actually_touched": true
+    },
+    {
+      "path": "lib/api/loginAndSignup.ts",
+      "action": "modify",
+      "description": "Calls saveSession()/clearSession() on successful login/signup/logout so the new session marker is actually written.",
+      "maps_to": [
+        "FR-001",
+        "AC-001"
+      ],
+      "actually_touched": true
+    },
+    {
+      "path": "app/login-and-signup/page.tsx",
+      "action": "modify",
+      "description": "Replaced a dead no-op useEffect with a real getSession() check so the Logout link reflects genuine login state.",
+      "maps_to": [
+        "FR-001"
+      ],
+      "actually_touched": true
+    },
+    {
+      "path": "app/item-listing/page.tsx",
+      "action": "modify",
+      "description": "Full auth gate via getSession() + redirect to /login-and-signup when absent (FR-001/AC-001); loading/error/empty/success states faithfully matching the approved UI/UX design (the approved LoadingIndicator asset was itself mismatched/off-topic, substituted with a new but design-consistent loading state); success grid includes a quantity + in-stock/out-of-stock badge row per FR-DOM-003.",
+      "maps_to": [
+        "FR-001",
+        "FR-002",
+        "FR-004",
+        "FR-005",
+        "FR-DOM-003",
+        "AC-001",
+        "AC-002",
+        "AC-004",
+        "AC-005"
+      ],
+      "actually_touched": true
+    },
+    {
+      "path": "qa_results_debug.json",
+      "action": "delete",
+      "description": "Debris from an earlier QA run, unreferenced by any code.",
+      "maps_to": [],
+      "actually_touched": false
+    },
+    {
+      "path": "qa_results_debug2.json",
+      "action": "delete",
+      "description": "Debris from an earlier QA run, unreferenced by any code.",
+      "maps_to": [],
+      "actually_touched": false
+    }
+  ]
+}

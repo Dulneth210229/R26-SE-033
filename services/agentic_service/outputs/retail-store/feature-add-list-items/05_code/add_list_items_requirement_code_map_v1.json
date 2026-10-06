@@ -1,0 +1,62 @@
+{
+  "files": [
+    {
+      "path": "app/add-list-items/page.tsx",
+      "planned": true,
+      "maps_to": [
+        "FR-001",
+        "FR-002",
+        "FR-DOM-001"
+      ]
+    },
+    {
+      "path": "app/api/items/route.ts",
+      "planned": true,
+      "maps_to": [
+        "/api/items",
+        "/api/items",
+        "FR-001",
+        "FR-002",
+        "FR-DOM-001"
+      ]
+    },
+    {
+      "path": "app/page.tsx",
+      "planned": true,
+      "maps_to": [
+        "FR-001",
+        "FR-002",
+        "FR-DOM-001"
+      ]
+    },
+    {
+      "path": "lib/api/addListItems.ts",
+      "planned": true,
+      "maps_to": [
+        "FR-001",
+        "FR-002",
+        "FR-DOM-001"
+      ]
+    },
+    {
+      "path": "lib/types/AddListItemsData.ts",
+      "planned": false,
+      "maps_to": []
+    },
+    {
+      "path": "models/AddListItemsData.ts",
+      "planned": true,
+      "maps_to": [
+        "AddListItemsData",
+        "FR-001",
+        "FR-002",
+        "FR-DOM-001"
+      ]
+    },
+    {
+      "path": "package-lock.json",
+      "planned": false,
+      "maps_to": []
+    }
+  ]
+}

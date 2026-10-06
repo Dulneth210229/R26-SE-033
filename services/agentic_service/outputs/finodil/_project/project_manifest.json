@@ -1,0 +1,40 @@
+{
+  "routes": [],
+  "api_endpoints": [
+    "/api/auth/signup",
+    "/api/auth/login",
+    "/api/auth/logout"
+  ],
+  "models": [],
+  "shared_components": [],
+  "features": {
+    "feature_917b691e": {
+      "feature_name": "Login and Signup",
+      "files": [
+        "app/api/auth/login/route.ts",
+        "app/api/auth/signup/route.ts"
+      ]
+    },
+    "feature_5ff762e5": {
+      "feature_name": "Item Listing",
+      "files": [
+        "app/api/items/route.ts",
+        "app/item-listing/page.tsx",
+        "app/login-and-signup/page.tsx",
+        "app/page.tsx",
+        "babel.config.qa.js",
+        "generated_tests/mongodb.unit.test.ts",
+        "jest.config.qa.js",
+        "lib/api/itemListing.ts",
+        "lib/api/loginAndSignup.ts",
+        "lib/auth/session.ts",
+        "lib/mongodb.ts",
+        "lib/seedData.ts",
+        "lib/types/ItemListing.ts",
+        "models/ItemListingData.ts",
+        "package-lock.json",
+        "package.json"
+      ]
+    }
+  }
+}

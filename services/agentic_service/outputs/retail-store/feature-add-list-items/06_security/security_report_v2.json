@@ -1,0 +1,86 @@
+{
+  "project_name": "Retail Store",
+  "feature_name": "Add & List Items",
+  "generated_at": "2026-08-31T10:15:07.249128+00:00",
+  "scan_type": "ai_model_deep_scan",
+  "gate_decision": "review",
+  "findings_count": 5,
+  "critical_count": 0,
+  "moderate_count": 5,
+  "warning_count": 0,
+  "findings": [
+    {
+      "rule_id": "SEC-AI-DEEPSCAN",
+      "layer": "ai_model_deep_scan",
+      "severity": "medium",
+      "cwe": "CWE-209",
+      "file": "app\\api\\items\\route.ts",
+      "line": 38,
+      "message": "Sensitive Data Exposure in Error Response -- The error message 'Failed to fetch items' and 'Failed to create item' are returned in the response, which could potentially leak internal information about the application's state.",
+      "root_cause": "Returning detailed error messages in API responses.",
+      "recommendation": "Replace the detailed error message with a generic one, such as 'An error occurred while processing your request.'",
+      "id": "SEC-AI-DEEPSCAN:1"
+    },
+    {
+      "rule_id": "SEC-AI-DEEPSCAN",
+      "layer": "ai_model_deep_scan",
+      "severity": "medium",
+      "cwe": "CWE-798",
+      "file": "lib\\mongodb.ts",
+      "line": 8,
+      "message": "Hardcoded Secrets in Environment Variable Access -- The `MONGODB_URI` environment variable is accessed directly without any validation or sanitization. If this variable contains sensitive information, it should be handled carefully.",
+      "root_cause": "Accessing `MONGODB_URI` directly from environment variables.",
+      "recommendation": "Ensure that the `MONGODB_URI` is properly configured and validated in your deployment environment. Avoid hardcoding sensitive information directly in the codebase.",
+      "id": "SEC-AI-DEEPSCAN:2"
+    },
+    {
+      "rule_id": "SEC-AI-DEEPSCAN",
+      "layer": "ai_model_deep_scan",
+      "severity": "medium",
+      "cwe": "CWE-20",
+      "file": "app\\api\\items\\route.ts",
+      "line": 56,
+      "message": "Lack of Input Validation for All Fields -- The POST endpoint does not validate all fields, such as `description`, which could lead to unexpected behavior or data integrity issues.",
+      "root_cause": "Lack of validation for the `description` field.",
+      "recommendation": "Add validation for the `description` field to ensure it meets any required criteria, such as length or content restrictions.",
+      "id": "SEC-AI-DEEPSCAN:3"
+    },
+    {
+      "rule_id": "SEC-AI-DEEPSCAN",
+      "layer": "ai_model_deep_scan",
+      "severity": "high",
+      "cwe": "CWE-79",
+      "file": "app\\page.tsx",
+      "line": 14,
+      "message": "Cross-Site Scripting (XSS) Vulnerability -- The application does not sanitize user inputs before rendering them in the UI. This could lead to XSS attacks if an attacker can inject malicious scripts into fields like `name` or `description`.",
+      "root_cause": "Rendering user inputs without sanitization.",
+      "recommendation": "Sanitize all user inputs before rendering them in the UI. Use libraries like `DOMPurify` to prevent XSS attacks.",
+      "id": "SEC-AI-DEEPSCAN:4"
+    },
+    {
+      "rule_id": "SEC-AI-DEEPSCAN",
+      "layer": "ai_model_deep_scan",
+      "severity": "medium",
+      "cwe": "CWE-502",
+      "file": "models\\AddListItemsData.ts",
+      "line": 1,
+      "message": "Potential Insecure Deserialization -- The application uses Mongoose models, which could potentially lead to insecure deserialization if not handled correctly. Ensure that all data being deserialized is validated and sanitized.",
+      "root_cause": "Using Mongoose models for data handling.",
+      "recommendation": "Ensure that all data being deserialized is validated and sanitized. Use Mongoose middleware to enforce validation rules.",
+      "id": "SEC-AI-DEEPSCAN:5"
+    }
+  ],
+  "dependency_scan": {
+    "audit_exit_code": 0,
+    "audit_ran_offline": true,
+    "dependency_summary": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0,
+      "total": 0
+    }
+  },
+  "llm_review_status": "AI model deep scan ran over 2 batch(es) of real source code (2 succeeded, 0 failed): 5 finding(s)."
+}

@@ -1,0 +1,84 @@
+{
+  "project_name": "Finodil",
+  "feature_name": "Login and Signup",
+  "generated_at": "2026-08-26T15:55:43.669139+00:00",
+  "framework_used": "jest",
+  "tests_generated": 3,
+  "tests_passed": 0,
+  "tests_failed": 0,
+  "tests_skipped": 0,
+  "tests_by_category": {
+    "unit": {
+      "total": 1,
+      "passed": 0,
+      "failed": 0,
+      "skipped": 1
+    },
+    "integration": {
+      "total": 0,
+      "passed": 0,
+      "failed": 0,
+      "skipped": 0
+    },
+    "regression": {
+      "total": 2,
+      "passed": 0,
+      "failed": 0,
+      "skipped": 2
+    }
+  },
+  "test_cases": [
+    {
+      "name": "connectToDatabase() resolves without throwing when its required env var is unset",
+      "category": "unit",
+      "target_file": "lib/mongodb.ts",
+      "target_function": "connectToDatabase",
+      "inputs": "called with no real database connection configured",
+      "expected_behavior": "resolves to null or a defined value, never throws",
+      "test_file": "mongodb.unit.test.ts",
+      "method": "deterministic-fallback",
+      "status": "skipped",
+      "duration_ms": null,
+      "failure_message": "This test file did not produce a matching result -- it may have failed to load/parse; see stderr below.",
+      "root_cause": null,
+      "recommendation": null
+    },
+    {
+      "name": "AC-003: Given valid login credentials, when the user submits the login form, then they are logged in within 3 seconds and redirected to the sample home page, with the nav bar showing their logged-in state",
+      "category": "regression",
+      "target_file": "",
+      "target_function": "",
+      "inputs": "",
+      "expected_behavior": "The user should be logged in successfully and redirected to the home page.",
+      "test_file": "Login-and-Signup.regression.test.ts",
+      "method": "llm",
+      "status": "skipped",
+      "duration_ms": null,
+      "failure_message": "This test file did not produce a matching result -- it may have failed to load/parse; see stderr below.",
+      "root_cause": null,
+      "recommendation": null
+    },
+    {
+      "name": "AC-004: Given invalid login credentials (wrong email or wrong password), when the user submits the login form, then they see a generic 'Invalid email or password' error and remain on the login page",
+      "category": "regression",
+      "target_file": "",
+      "target_function": "",
+      "inputs": "",
+      "expected_behavior": "The user should receive an 'Invalid email or password' error and stay on the login page.",
+      "test_file": "Login-and-Signup.regression.test.ts",
+      "method": "llm",
+      "status": "skipped",
+      "duration_ms": null,
+      "failure_message": "This test file did not produce a matching result -- it may have failed to load/parse; see stderr below.",
+      "root_cause": null,
+      "recommendation": null
+    }
+  ],
+  "out_of_scope_modules": [
+    "app/layout.tsx",
+    "app/login-and-signup/page.tsx",
+    "app/page.tsx",
+    "components/PreviewRouteAnnouncer.tsx"
+  ],
+  "raw_stderr": ""
+}

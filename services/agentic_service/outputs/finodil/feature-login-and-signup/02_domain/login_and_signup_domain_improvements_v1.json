@@ -1,0 +1,66 @@
+{
+  "summary": "Enriched the SRS with account lockout after failed attempts, password reset token expiry, and email verification gating checkout based on domain knowledge.",
+  "knowledge_sources_used": [
+    {
+      "source_document": "user_account_and_authentication.txt",
+      "chunks_used": 3
+    }
+  ],
+  "additions": [
+    {
+      "target_section": "functional_requirements",
+      "new_id": "FR-DOM-001",
+      "description": "After a defined number of consecutive failed login attempts (5), the account should be temporarily locked for a cooldown period (15 minutes) or until the account owner resets their password, whichever comes first.",
+      "rationale": "Prevents brute-force password guessing attacks and improves security.",
+      "domain_citation": {
+        "source_document": "user_account_and_authentication.txt",
+        "chunk_id": "user_account_and_authentication.txt#0"
+      }
+    },
+    {
+      "target_section": "functional_requirements",
+      "new_id": "FR-DOM-002",
+      "description": "When a user requests a password reset, the system issues a single-use, time-limited reset token (expiring after 30 minutes) sent to the account's verified email address. The token must be invalidated immediately after first use.",
+      "rationale": "Ensures secure and timely password recovery without security risks.",
+      "domain_citation": {
+        "source_document": "user_account_and_authentication.txt",
+        "chunk_id": "user_account_and_authentication.txt#1"
+      }
+    },
+    {
+      "target_section": "functional_requirements",
+      "new_id": "FR-DOM-003",
+      "description": "Placing an order (checkout) with a newly registered account requires email verification. The customer must be given a clear, immediate way to resend the verification email without losing their cart.",
+      "rationale": "Ensures that the email address is valid and reachable for important communications.",
+      "domain_citation": {
+        "source_document": "user_account_and_authentication.txt",
+        "chunk_id": "user_account_and_authentication.txt#2"
+      }
+    }
+  ],
+  "modifications": [
+    {
+      "target_section": "acceptance_criteria",
+      "id": "AC-003",
+      "original_description": "Given valid login credentials, when the user submits the login form, then they are logged in within 3 seconds and redirected to the sample home page, with the nav bar showing their logged-in state",
+      "enhanced_description": "Given valid login credentials, when the user submits the login form, then they are logged in within 3 seconds and redirected to the sample home page, with the nav bar showing their logged-in state. Additionally, if there have been 5 consecutive failed login attempts, further login attempts should be rejected for a cooldown period of 15 minutes.",
+      "rationale": "Account lockout after failed attempts is a critical security measure.",
+      "domain_citation": {
+        "source_document": "user_account_and_authentication.txt",
+        "chunk_id": "user_account_and_authentication.txt#0"
+      }
+    },
+    {
+      "target_section": "acceptance_criteria",
+      "id": "AC-001",
+      "original_description": "Given a new, unused email and a valid password, when the user submits the signup form, then their account is created, their password is hashed before storage, and they are automatically logged in and redirected to the home page",
+      "enhanced_description": "Given a new, unused email and a valid password, when the user submits the signup form, then their account is created, their password is hashed before storage, and they are automatically logged in and redirected to the home page. Additionally, if the user's email is not verified, placing an order should be blocked until verification is completed.",
+      "rationale": "Email verification gating checkout ensures that the email address is valid and reachable.",
+      "domain_citation": {
+        "source_document": "user_account_and_authentication.txt",
+        "chunk_id": "user_account_and_authentication.txt#2"
+      }
+    }
+  ],
+  "no_changes_note": null
+}

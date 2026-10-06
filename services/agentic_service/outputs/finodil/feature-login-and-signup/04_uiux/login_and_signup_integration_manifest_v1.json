@@ -1,0 +1,129 @@
+{
+  "pages": [
+    {
+      "page_id": "login-page",
+      "route": "/login",
+      "nav_entry": "Login Page",
+      "components": [
+        {
+          "name": "LoginForm",
+          "reused_from_design_system": false,
+          "content_elements": [
+            "email",
+            "password"
+          ]
+        },
+        {
+          "name": "PasswordToggleButton",
+          "reused_from_design_system": false,
+          "content_elements": [
+            "show-password",
+            "hide-password"
+          ]
+        },
+        {
+          "name": "ForgotPasswordLink",
+          "reused_from_design_system": false,
+          "content_elements": [
+            "forgot-password-link-text"
+          ]
+        },
+        {
+          "name": "SignupLink",
+          "reused_from_design_system": false,
+          "content_elements": [
+            "signup-link-text"
+          ]
+        }
+      ],
+      "actors": [
+        "Guest",
+        "Registered User"
+      ],
+      "covers_requirements": [
+        "FR-001",
+        "FR-002",
+        "FR-003",
+        "FR-004",
+        "FR-005",
+        "FR-006",
+        "FR-007",
+        "FR-008",
+        "AC-001",
+        "AC-002",
+        "AC-003",
+        "AC-004",
+        "AC-005",
+        "AC-006"
+      ]
+    },
+    {
+      "page_id": "signup-page",
+      "route": "/signup",
+      "nav_entry": "Signup Page",
+      "components": [
+        {
+          "name": "SignupForm",
+          "reused_from_design_system": false,
+          "content_elements": [
+            "name",
+            "email",
+            "password",
+            "confirm-password"
+          ]
+        },
+        {
+          "name": "LoginLink",
+          "reused_from_design_system": false,
+          "content_elements": [
+            "login-link-text"
+          ]
+        }
+      ],
+      "actors": [
+        "Guest"
+      ],
+      "covers_requirements": [
+        "FR-009",
+        "FR-010",
+        "FR-011",
+        "FR-012",
+        "FR-013",
+        "FR-014",
+        "FR-015",
+        "AC-001",
+        "AC-002"
+      ]
+    },
+    {
+      "page_id": "user-profile-page",
+      "route": "/profile",
+      "nav_entry": "User Profile Page",
+      "components": [
+        {
+          "name": "UserProfileCard",
+          "reused_from_design_system": false,
+          "content_elements": [
+            "user-name",
+            "email",
+            "profile-image"
+          ]
+        },
+        {
+          "name": "EditProfileButton",
+          "reused_from_design_system": false,
+          "content_elements": [
+            "edit-profile-button-text"
+          ]
+        }
+      ],
+      "actors": [
+        "Registered User"
+      ],
+      "covers_requirements": [
+        "US-001",
+        "US-002"
+      ]
+    }
+  ]
+}

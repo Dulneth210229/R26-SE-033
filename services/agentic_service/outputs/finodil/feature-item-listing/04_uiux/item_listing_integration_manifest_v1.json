@@ -1,0 +1,56 @@
+{
+  "pages": [
+    {
+      "page_id": "item-listing-page",
+      "route": "/items",
+      "nav_entry": "Item Listing",
+      "components": [
+        {
+          "name": "ItemList",
+          "reused_from_design_system": false,
+          "content_elements": [
+            "name",
+            "description",
+            "price",
+            "quantity",
+            "category"
+          ]
+        },
+        {
+          "name": "LoadingIndicator",
+          "reused_from_design_system": false,
+          "content_elements": [
+            "Loading..."
+          ]
+        },
+        {
+          "name": "ErrorMessage",
+          "reused_from_design_system": false,
+          "content_elements": [
+            "Failed to load items. Please try again later."
+          ]
+        },
+        {
+          "name": "EmptyState",
+          "reused_from_design_system": false,
+          "content_elements": [
+            "No items found."
+          ]
+        }
+      ],
+      "actors": [
+        "logged-in users"
+      ],
+      "covers_requirements": [
+        "FR-001",
+        "US-001",
+        "AC-001",
+        "AC-002",
+        "AC-003",
+        "AC-004",
+        "AC-005",
+        "AC-006"
+      ]
+    }
+  ]
+}

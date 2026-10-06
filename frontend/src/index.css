@@ -1,0 +1,301 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+/* Class-based dark mode (not the media-query default) -- ThemeSwitcher toggles `.dark` on
+   <html>, so `dark:` utilities anywhere in the app respond to that explicit choice rather than
+   only the OS preference, and the choice can be persisted/restored on load. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* A real, confirmed bug: native form controls (a <select>'s own open dropdown list, date
+   pickers, scrollbars) are painted by the BROWSER, not by this app's CSS -- Tailwind's
+   `dark:bg-*`/`dark:text-*` utilities only ever style the closed <select> box itself, never the
+   popup list the OS/browser renders on open. The browser decides that popup's own light/dark
+   palette purely from the CSS `color-scheme` property, which was never set anywhere in this app
+   -- so every <select> (Provider/Model pickers in LLM Settings, both Global Default and every
+   per-agent override) opened its list in the browser's LIGHT default even while the rest of the
+   page was dark, showing white-on-white/illegible options. Scoped to `.dark` so light mode is
+   completely unaffected. */
+.dark {
+  color-scheme: dark;
+}
+
+/* Belt-and-suspenders on top of `color-scheme: dark` above -- confirmed via a real, direct
+   browser test that `color-scheme` alone does NOT reliably darken every browser/platform's
+   native <select> popup (Chromium's own classic combo-box popup kept rendering light even with
+   `color-scheme: dark` correctly computed on the element itself). Unlike most of a native
+   select's popup chrome, `background-color`/`color` on individual <option> elements IS real,
+   widely-supported CSS -- setting them directly here fixes the popup everywhere `color-scheme`
+   alone doesn't. */
+.dark select option {
+  background-color: var(--color-gray-800);
+  color: var(--color-gray-100);
+}
+
+/* Custom color tokens (used as bg-accent-600, text-accent-700, etc. throughout the app instead
+   of a hardcoded Tailwind color like indigo) -- Tailwind v4's @theme values compile to real CSS
+   custom properties, so overriding --color-accent-* at :root at runtime (see ThemeSwitcher)
+   re-colors every element using an accent-* utility class, with no per-component changes needed.
+   Defaulted to Tailwind's own accent-* hex values so this is a no-op until a user picks a
+   different palette. */
+@theme {
+  --color-accent-50: #eef2ff;
+  --color-accent-100: #e0e7ff;
+  --color-accent-200: #c7d2fe;
+  --color-accent-500: #6366f1;
+  --color-accent-600: #4f46e5;
+  --color-accent-700: #4338ca;
+  --color-accent-800: #3730a3;
+  --color-accent-900: #312e81;
+
+  /* Overrides Tailwind's default font-sans stack too, so any future font-sans utility class
+     resolves to Poppins as well, not just the body-inherited default below. */
+  --font-sans: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+  /* Tailwind's default `gray` scale is a cool, slightly blue-tinted gray (gray-900 = #111827,
+     where blue is nearly 2x red/green) -- with ~480 `dark:bg/border/text-gray-*` utility classes
+     already used throughout the app, that tint is what reads as "dark blue" rather than "black"
+     everywhere at once. Re-pointing the gray-* tokens at Tailwind's `neutral` scale (truly
+     hue-free) recolors the entire app's dark mode to neutral black/gray with no per-component
+     changes needed -- same override mechanism already used for --color-accent-* above. */
+  --color-gray-50: #fafafa;
+  --color-gray-100: #f5f5f5;
+  --color-gray-200: #e5e5e5;
+  --color-gray-300: #d4d4d4;
+  --color-gray-400: #a3a3a3;
+  --color-gray-500: #737373;
+  --color-gray-600: #525252;
+  --color-gray-700: #404040;
+  --color-gray-800: #262626;
+  --color-gray-900: #171717;
+  --color-gray-950: #0a0a0a;
+}
+
+body {
+  margin: 0;
+  font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  /* Matches AppShell.jsx's root bg-gray-200 (see the neutral gray-* override above) so there's
+     no color flash before the stylesheet/CSS variables are ready. */
+  background-color: #e5e5e5;
+}
+
+html.dark body {
+  background-color: #0a0a0a;
+}
+
+/* Modern, theme-aware scrollbars -- thin, rounded, subtle -- replacing each browser's bulky
+   default chrome. Applied globally (not just the chat/output panels) so every scrollable surface
+   in the app looks consistent; a themed scrollbar next to the browser's default one would look
+   worse than leaving both alone. Firefox uses scrollbar-width/scrollbar-color; Chrome/Edge/Safari
+   use the ::-webkit-scrollbar pseudo-elements -- both are declared since neither engine supports
+   the other's properties. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+html.dark * {
+  scrollbar-color: #404040 transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: #94a3b8;
+}
+
+html.dark *::-webkit-scrollbar-thumb {
+  background-color: #404040;
+}
+
+html.dark *::-webkit-scrollbar-thumb:hover {
+  background-color: #525252;
+}
+
+*::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* 3D rotating-cube loader (https://uiverse.io/AqFox/young-dragon-29), used by LoadingSpinner --
+   the one "waiting for the agent" indicator every agent's chat already renders through, so this
+   single component swap is what makes the loader consistent everywhere without touching each
+   call site. Colored via the app's own --color-accent-* tokens (see @theme above) instead of the
+   original's hardcoded blue, so it re-colors automatically if the accent palette ever changes,
+   same as every other accent-colored element in the app. --cube-size is set inline per instance
+   (LoadingSpinner's `size` prop) so every face's translateZ offset scales together correctly. */
+.cube-loader {
+  --cube-size: 28px;
+  width: var(--cube-size);
+  height: var(--cube-size);
+  position: relative;
+  flex-shrink: 0;
+  animation: cube-loader-spin 2s infinite ease;
+  transform-style: preserve-3d;
+}
+
+.cube-loader > div {
+  background-color: color-mix(in srgb, var(--color-accent-600) 20%, transparent);
+  height: 100%;
+  position: absolute;
+  width: 100%;
+  border: 1.5px solid var(--color-accent-600);
+}
+
+.cube-loader > div:nth-of-type(1) {
+  transform: translateZ(calc(var(--cube-size) / -2)) rotateY(180deg);
+}
+
+.cube-loader > div:nth-of-type(2) {
+  transform: rotateY(-270deg) translateX(50%);
+  transform-origin: top right;
+}
+
+.cube-loader > div:nth-of-type(3) {
+  transform: rotateY(270deg) translateX(-50%);
+  transform-origin: center left;
+}
+
+.cube-loader > div:nth-of-type(4) {
+  transform: rotateX(90deg) translateY(-50%);
+  transform-origin: top center;
+}
+
+.cube-loader > div:nth-of-type(5) {
+  transform: rotateX(-90deg) translateY(50%);
+  transform-origin: bottom center;
+}
+
+.cube-loader > div:nth-of-type(6) {
+  transform: translateZ(calc(var(--cube-size) / 2));
+}
+
+@keyframes cube-loader-spin {
+  0% {
+    transform: rotate(45deg) rotateX(-25deg) rotateY(25deg);
+  }
+  50% {
+    transform: rotate(45deg) rotateX(-385deg) rotateY(25deg);
+  }
+  100% {
+    transform: rotate(45deg) rotateX(-385deg) rotateY(385deg);
+  }
+}
+
+/* "Light Horse" gooey loader (https://uiverse.io/RiccardoRapelli/light-horse-54), used by
+   LightHorseLoader.jsx -- direct user request, shown only while a chat is waiting for an agent to
+   start responding. Reproduces the original markup/animation exactly except the color: the
+   original hardcodes a blue/purple gradient, replaced here with the app's own --color-accent-*
+   tokens (see @theme above) so it automatically matches the user's selected accent preset, same
+   convention as .cube-loader above. Class names prefixed light-horse- (the original's .loading-
+   content/.liquid/.svg names are too generic for this app's global stylesheet). */
+.light-horse-loading-content {
+  position: relative;
+  width: 180px;
+  height: 180px;
+  animation: light-horse-rotate 4s ease-in-out infinite;
+}
+
+@keyframes light-horse-rotate {
+  0% {
+    transform: rotate(360deg);
+  }
+  50% {
+    transform: rotate(360deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+.light-horse-liquid {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: linear-gradient(90deg, var(--color-accent-500) 0%, var(--color-accent-700) 100%);
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  --ani-dur: 4s;
+}
+
+.light-horse-liquid:nth-child(1) {
+  top: 0;
+  animation: light-horse-animate1 var(--ani-dur) ease-in-out infinite;
+}
+
+.light-horse-liquid:nth-child(2) {
+  left: 0;
+  animation: light-horse-animate2 var(--ani-dur) ease-in-out infinite;
+}
+
+.light-horse-liquid:nth-child(3) {
+  left: 100%;
+  animation: light-horse-animate3 var(--ani-dur) ease-in-out infinite;
+}
+
+.light-horse-liquid:nth-child(4) {
+  top: 100%;
+  animation: light-horse-animate4 var(--ani-dur) ease-in-out infinite;
+}
+
+@keyframes light-horse-animate1 {
+  0% {
+    top: 0;
+  }
+  50% {
+    top: 100%;
+  }
+  100% {
+    top: 100%;
+  }
+}
+
+@keyframes light-horse-animate2 {
+  0% {
+    left: 0;
+  }
+  50% {
+    left: 100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+@keyframes light-horse-animate3 {
+  0% {
+    left: 100%;
+  }
+  50% {
+    left: 0;
+  }
+  100% {
+    left: 0;
+  }
+}
+
+@keyframes light-horse-animate4 {
+  0% {
+    top: 100%;
+  }
+  50% {
+    top: 0;
+  }
+  100% {
+    top: 0;
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "project_name": "Deep Scan Test",
+  "feature_name": "Deep Scan Test Feature",
+  "generated_at": "2026-08-31T09:35:59.447086+00:00",
+  "scan_type": "ai_model_deep_scan",
+  "gate_decision": "fail",
+  "findings_count": 1,
+  "critical_count": 1,
+  "moderate_count": 0,
+  "warning_count": 0,
+  "findings": [
+    {
+      "id": "SEC-AI-DEEPSCAN:1",
+      "rule_id": "SEC-AI-DEEPSCAN",
+      "layer": "ai_model_deep_scan",
+      "severity": "critical",
+      "cwe": "CWE-943",
+      "file": "app/api/auth/login/route.ts",
+      "line": 20,
+      "message": "NoSQL injection -- client filter merged into query.",
+      "root_cause": "req.body fields are spread directly into the Mongoose query filter.",
+      "recommendation": "Only allow a fixed set of known-safe query fields."
+    }
+  ],
+  "dependency_scan": {
+    "audit_exit_code": 0,
+    "audit_ran_offline": true,
+    "dependency_summary": {}
+  },
+  "llm_review_status": "AI model deep scan ran over 1 batch(es)..."
+}

@@ -1,0 +1,28 @@
+{
+  "colors": {},
+  "typography": {},
+  "spacing": {},
+  "components": {
+    "AddItemForm": {
+      "content_elements": [
+        "image",
+        "name",
+        "description",
+        "price",
+        "quantity"
+      ],
+      "introduced_by_feature": "Add & List Items"
+    },
+    "ItemListGrid": {
+      "content_elements": [
+        "image",
+        "name",
+        "description",
+        "price",
+        "quantity"
+      ],
+      "introduced_by_feature": "Add & List Items"
+    }
+  },
+  "tokens": {}
+}

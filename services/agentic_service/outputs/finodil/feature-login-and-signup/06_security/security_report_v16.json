@@ -1,0 +1,98 @@
+{
+  "project_name": "Finodil",
+  "feature_name": "Login and Signup",
+  "generated_at": "2026-08-25T13:31:12.772962+00:00",
+  "scan_type": "ai_model_deep_scan",
+  "gate_decision": "review",
+  "findings_count": 6,
+  "critical_count": 0,
+  "moderate_count": 6,
+  "warning_count": 0,
+  "findings": [
+    {
+      "id": "SEC-JS-006:app\\api\\auth\\login\\route.ts:39",
+      "rule_id": "SEC-JS-006",
+      "layer": "pattern",
+      "severity": "medium",
+      "cwe": "CWE-915",
+      "file": "app\\api\\auth\\login\\route.ts",
+      "line": 39,
+      "message": "Dynamic bracket property access keyed directly by a request-controlled parameter name (e.g. obj[req.query.sort]) is an object-injection / prototype-pollution-adjacent pattern; the accessor should be validated against an explicit allow-list of field names.",
+      "root_cause": "A dynamic bracket property access (obj[key]) was found at app\\api\\auth\\login\\route.ts:39, using a request-controlled value as the property name.",
+      "recommendation": "Validate the property name against an explicit allow-list of known-safe field names before using it to index the object."
+    },
+    {
+      "rule_id": "SEC-AI-DEEPSCAN",
+      "layer": "ai_model_deep_scan",
+      "severity": "high",
+      "cwe": "CWE-89",
+      "file": "app/api/auth/login/route.ts",
+      "line": 35,
+      "message": "NoSQL Injection -- The `filter` object is not properly sanitized before being used in the database query, which could lead to NoSQL injection attacks.",
+      "root_cause": "The `filter` object is directly merged into the query without proper validation or sanitization.",
+      "recommendation": "Ensure that only allowed fields are included in the `filter` object and validate their values. For example, add a whitelist of allowed operators and types for each field.",
+      "id": "SEC-AI-DEEPSCAN:1"
+    },
+    {
+      "rule_id": "SEC-AI-DEEPSCAN",
+      "layer": "ai_model_deep_scan",
+      "severity": "medium",
+      "cwe": "CWE-200",
+      "file": "app/api/auth/login/route.ts",
+      "line": 74,
+      "message": "Sensitive Data Exposure -- The API response includes sensitive user information such as `id`, `name`, and `email` after successful login.",
+      "root_cause": "The response includes user details that are not necessary for the client to know.",
+      "recommendation": "Only return essential information in the API response. For example, remove `name` and `email` from the response if they are not needed by the client.",
+      "id": "SEC-AI-DEEPSCAN:2"
+    },
+    {
+      "rule_id": "SEC-AI-DEEPSCAN",
+      "layer": "ai_model_deep_scan",
+      "severity": "medium",
+      "cwe": "CWE-200",
+      "file": "app/api/auth/signup/route.ts",
+      "line": 89,
+      "message": "Sensitive Data Exposure -- The API response includes sensitive user information such as `id`, `name`, and `email` after successful signup.",
+      "root_cause": "The response includes user details that are not necessary for the client to know.",
+      "recommendation": "Only return essential information in the API response. For example, remove `name` and `email` from the response if they are not needed by the client.",
+      "id": "SEC-AI-DEEPSCAN:3"
+    },
+    {
+      "rule_id": "SEC-AI-DEEPSCAN",
+      "layer": "ai_model_deep_scan",
+      "severity": "medium",
+      "cwe": "CWE-20",
+      "file": "app/api/auth/login/route.ts",
+      "line": 35,
+      "message": "Security Misconfiguration -- The application does not have proper input validation for the `filter` object in the login route, which could lead to unexpected behavior or security issues.",
+      "root_cause": "Lack of validation for the `filter` object before using it in the database query.",
+      "recommendation": "Implement comprehensive input validation and sanitization for all user inputs, especially those used in database queries.",
+      "id": "SEC-AI-DEEPSCAN:4"
+    },
+    {
+      "rule_id": "SEC-AI-DEEPSCAN",
+      "layer": "ai_model_deep_scan",
+      "severity": "high",
+      "cwe": "CWE-203",
+      "file": "models\\LoginAndSignupData.ts",
+      "line": 14,
+      "message": "Password Storage Vulnerability -- The password field is stored in plaintext, which poses a risk of sensitive data exposure if the database is compromised.",
+      "root_cause": "The password field is defined with type String and stored directly without any encryption or hashing.",
+      "recommendation": "Hash the password using a strong cryptographic hash function before storing it in the database. For example, use bcrypt to hash the password.",
+      "id": "SEC-AI-DEEPSCAN:5"
+    }
+  ],
+  "dependency_scan": {
+    "audit_exit_code": 0,
+    "audit_ran_offline": true,
+    "dependency_summary": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0,
+      "total": 0
+    }
+  },
+  "llm_review_status": "AI model deep scan ran over 3 batch(es) of real source code (3 succeeded, 0 failed): 5 finding(s)."
+}

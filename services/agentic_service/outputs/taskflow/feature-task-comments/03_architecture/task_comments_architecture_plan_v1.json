@@ -1,0 +1,595 @@
+{
+  "document_control": {
+    "document_title": "Architecture Plan: Task Comments",
+    "document_type": "Feature Architecture Plan",
+    "project_id": "proj_run_stream_test",
+    "project_name": "TaskFlow",
+    "project_type": "General",
+    "feature_id": "feature_run_stream_test",
+    "feature_name": "Task Comments",
+    "target_stack": "MERN",
+    "architecture_style": "mvc",
+    "version": "v1",
+    "generated_by": "Architecture Agent",
+    "input_artifacts": [
+      "Approved SRS JSON",
+      "Approved Enhanced SRS JSON if available"
+    ],
+    "approval_status": "pending"
+  },
+  "feature_overview": {
+    "business_goal": "Support the Task Comments feature.",
+    "scope": [
+      "Design the approved Task Comments feature only."
+    ],
+    "out_of_scope": [],
+    "user_roles": [
+      "Registered User"
+    ],
+    "feature_boundary": "This Architecture Plan covers only the Task Comments feature and excludes unrelated features."
+  },
+  "requirement_interpretation": {
+    "functional_requirements": [
+      {
+        "id": "FR-001",
+        "description": "Users can add a comment to a task."
+      }
+    ],
+    "acceptance_criteria": [
+      {
+        "id": "AC-001",
+        "description": "A new comment is displayed."
+      }
+    ],
+    "validation_rules": [
+      {
+        "id": "VR-001",
+        "description": "Comment text must not be empty."
+      }
+    ],
+    "non_functional_requirements": [
+      {
+        "id": "NFR-001",
+        "description": "Comments load fast."
+      }
+    ]
+  },
+  "architecture_approach": {
+    "architecture_style": "mvc",
+    "architecture_rationale": "Use mvc to keep the Task Comments feature separated into presentation, business logic, and data responsibilities where applicable.",
+    "frontend_overview": "Frontend design should provide the user-facing entry points, inputs, states, and feedback required by the approved SRS.",
+    "backend_overview": "Backend design should process feature requests, enforce business rules, validate inputs, and return structured responses.",
+    "data_overview": "Data design should support the data requirements defined in the approved SRS.",
+    "integration_overview": "Integration design should follow the API expectations and dependencies listed in the approved SRS.",
+    "design_tradeoffs": [
+      "Design is derived directly from the approved SRS to preserve traceability and feature scope.",
+      "Design is kept feature-scoped to preserve feature-by-feature SDLC development.",
+      "Internal generation or repair details are kept in backend logs and are not exposed in the approval-ready Architecture Plan."
+    ]
+  },
+  "design_views": {
+    "context_view": {
+      "actors": [
+        "Registered User"
+      ],
+      "external_systems": [],
+      "feature_boundary": "Task Comments feature boundary.",
+      "main_interactions": [
+        "Registered User interacts with the Task Comments feature.",
+        "Users can add a comment to a task."
+      ]
+    },
+    "logical_view": {
+      "frontend_modules": [
+        {
+          "name": "TaskCommentsFrontendModule",
+          "responsibility": "Handle frontend responsibilities for the Task Comments feature.",
+          "derived_from": [
+            "A comment input box",
+            "Comment body"
+          ]
+        }
+      ],
+      "backend_modules": [
+        {
+          "name": "TaskCommentsBackendModule",
+          "responsibility": "Handle backend responsibilities for the Task Comments feature.",
+          "derived_from": [
+            "Users can add a comment to a task.",
+            "Comment text must not be empty."
+          ]
+        }
+      ],
+      "domain_services": [
+        {
+          "name": "TaskCommentsService",
+          "responsibility": "Apply business rules for the Task Comments feature.",
+          "related_requirements": [
+            "FR-001"
+          ]
+        }
+      ],
+      "data_modules": [
+        {
+          "name": "TaskCommentsDataModule",
+          "responsibility": "Manage data access required by the feature.",
+          "derived_from": [
+            "Stores comment text, author, task id"
+          ]
+        }
+      ],
+      "integration_points": [
+        {
+          "type": "API",
+          "description": "Create a comment"
+        }
+      ]
+    },
+    "interface_view": {
+      "api_endpoints": [
+        {
+          "endpoint": "/api/task-comments",
+          "method": "POST",
+          "purpose": "Create a comment",
+          "request_model": "TaskCommentsRequest",
+          "success_response_model": "TaskCommentsSuccessResponse",
+          "error_response_model": "TaskCommentsErrorResponse",
+          "related_requirements": [
+            "FR-001"
+          ]
+        }
+      ],
+      "request_models": [
+        {
+          "name": "TaskCommentsRequest",
+          "fields": [
+            {
+              "name": "text",
+              "type": "string",
+              "format": "Comment body",
+              "required": true
+            }
+          ],
+          "related_requirements": [
+            "FR-001"
+          ]
+        }
+      ],
+      "response_models": [
+        {
+          "name": "TaskCommentsSuccessResponse",
+          "type": "success",
+          "fields": [
+            {
+              "name": "comment",
+              "type": "object",
+              "description": "Saved comment"
+            }
+          ],
+          "related_requirements": [
+            "FR-001"
+          ]
+        },
+        {
+          "name": "TaskCommentsErrorResponse",
+          "type": "error",
+          "fields": [],
+          "related_requirements": []
+        }
+      ]
+    },
+    "data_view": {
+      "data_entities": [
+        {
+          "name": "TaskCommentsData",
+          "purpose": "Core data entity for the Task Comments feature.",
+          "fields": [
+            {
+              "name": "storesCommentText",
+              "type": "String",
+              "required": false
+            },
+            {
+              "name": "author",
+              "type": "String",
+              "required": false
+            },
+            {
+              "name": "taskId",
+              "type": "String",
+              "required": false
+            }
+          ],
+          "relationships": [],
+          "indexes_or_constraints": [],
+          "related_requirements": [
+            "FR-001"
+          ]
+        }
+      ],
+      "storage_rules": [
+        "Stores comment text, author, task id"
+      ],
+      "data_validation_rules": [
+        {
+          "rule_id": "VR-001",
+          "rule": "Comment text must not be empty.",
+          "related_requirements": [
+            "VR-001"
+          ]
+        }
+      ]
+    },
+    "behavior_view": {
+      "main_success_flow": [
+        {
+          "id": "AC-001",
+          "description": "A new comment is displayed.",
+          "related_requirements": [
+            "FR-001"
+          ]
+        }
+      ],
+      "alternative_flows": [],
+      "exception_flows": [],
+      "state_changes": [
+        {
+          "description": "Feature state changes should follow the approved Task Comments acceptance criteria.",
+          "related_requirements": []
+        }
+      ]
+    },
+    "error_handling_view": {
+      "validation_errors": [
+        {
+          "source_id": "VR-001",
+          "condition": "Violation of VR-001",
+          "handling": "Reject the request with an HTTP 400 response referencing VR-001, show the user a message identifying the invalid field(s), and do not process or persist the request."
+        }
+      ],
+      "business_errors": [],
+      "authorization_errors": [],
+      "system_errors": [
+        "Unexpected system errors should return safe generic messages without exposing internal details."
+      ],
+      "user_message_rules": [
+        "All user-facing errors must be clear, non-technical, and aligned with the approved SRS."
+      ]
+    },
+    "security_authorization_view": {
+      "authentication_design": [],
+      "authorization_design": [],
+      "sensitive_data_rules": [],
+      "risk_mitigations": []
+    },
+    "quality_attributes_view": {
+      "performance": [
+        {
+          "nfr_id": "NFR-001",
+          "description": "Comments load fast.",
+          "design_decision": "Optimize design to satisfy the stated performance expectation."
+        }
+      ],
+      "usability": [],
+      "reliability": [],
+      "scalability": [],
+      "maintainability": [],
+      "accessibility": []
+    }
+  },
+  "frontend_architecture_plan": {
+    "responsibilities": [
+      {
+        "name": "TaskCommentsFrontendModule",
+        "responsibility": "Handle frontend responsibilities for the Task Comments feature.",
+        "derived_from": [
+          "A comment input box",
+          "Comment body"
+        ]
+      }
+    ],
+    "pages_or_components": [
+      {
+        "id": "UI-001",
+        "description": "A comment input box"
+      }
+    ],
+    "state_and_feedback": [
+      "A new comment is displayed."
+    ]
+  },
+  "backend_architecture_plan": {
+    "responsibilities": [
+      {
+        "name": "TaskCommentsBackendModule",
+        "responsibility": "Handle backend responsibilities for the Task Comments feature.",
+        "derived_from": [
+          "Users can add a comment to a task.",
+          "Comment text must not be empty."
+        ]
+      }
+    ],
+    "layers": [
+      {
+        "name": "TaskCommentsService",
+        "responsibility": "Apply business rules for the Task Comments feature.",
+        "related_requirements": [
+          "FR-001"
+        ]
+      },
+      {
+        "name": "TaskCommentsDataModule",
+        "responsibility": "Manage data access required by the feature.",
+        "derived_from": [
+          "Stores comment text, author, task id"
+        ]
+      }
+    ],
+    "integration_points": [
+      {
+        "type": "API",
+        "description": "Create a comment"
+      }
+    ]
+  },
+  "validation_plan": {
+    "input_validation": [
+      {
+        "rule_id": "VR-001",
+        "rule": "Comment text must not be empty.",
+        "related_requirements": [
+          "VR-001"
+        ]
+      }
+    ],
+    "processing_validation": [
+      {
+        "rule_id": "VR-001",
+        "rule": "Comment text must not be empty.",
+        "related_requirements": [
+          "VR-001"
+        ]
+      }
+    ]
+  },
+  "coder_implementation_tasks": [
+    {
+      "task_id": "TASK-001",
+      "task": "Create or update frontend screen/components for the Task Comments feature.",
+      "layer": "frontend",
+      "suggested_files": [
+        "app/task-comments/page.tsx",
+        "components/TaskCommentsForm.tsx"
+      ],
+      "related_requirements": [
+        "FR-001",
+        "AC-001"
+      ]
+    },
+    {
+      "task_id": "TASK-002",
+      "task": "Implement Next.js Route Handler(s) for the Task Comments API expectations.",
+      "layer": "backend",
+      "suggested_files": [
+        "app/api/task-comments/route.ts",
+        "models/TaskComments.ts"
+      ],
+      "related_requirements": [
+        "FR-001",
+        "AC-001"
+      ]
+    },
+    {
+      "task_id": "TASK-003",
+      "task": "Create or update data model/repository required by the Task Comments feature.",
+      "layer": "data",
+      "suggested_files": [
+        "backend/models/task_comments.model.js",
+        "backend/repositories/task_comments.repository.js"
+      ],
+      "related_requirements": [
+        "FR-001"
+      ]
+    },
+    {
+      "task_id": "TASK-004",
+      "task": "Implement validation rules before processing feature requests.",
+      "layer": "validation",
+      "suggested_files": [
+        "backend/validators/task_comments.validator.js"
+      ],
+      "related_requirements": [
+        "VR-001"
+      ]
+    },
+    {
+      "task_id": "TASK-005",
+      "task": "Implement success, alternative, and exception handling according to acceptance criteria.",
+      "layer": "backend/frontend",
+      "suggested_files": [],
+      "related_requirements": [
+        "AC-001"
+      ]
+    },
+    {
+      "task_id": "TASK-006",
+      "task": "Implement security controls required by the feature, including authentication/authorization or sensitive data handling where applicable.",
+      "layer": "security",
+      "suggested_files": [],
+      "related_requirements": [
+        "FR-001",
+        "NFR-001"
+      ]
+    }
+  ],
+  "implementation_plan": {
+    "backend": {
+      "files": [
+        {
+          "path": "app/api/task-comments/route.ts",
+          "action": "create",
+          "purpose": "Next.js Route Handler implementing POST for Task Comments (/api/task-comments), with request validation before any handler logic.",
+          "implements_endpoints": [
+            "/api/task-comments"
+          ]
+        },
+        {
+          "path": "models/TaskCommentsData.ts",
+          "action": "create",
+          "purpose": "Mongoose model for the TaskCommentsData entity (must use the `mongoose.models.TaskCommentsData || mongoose.model(...)` guard to avoid OverwriteModelError).",
+          "implements_endpoints": []
+        }
+      ],
+      "endpoints": [
+        {
+          "method": "POST",
+          "path": "/api/task-comments",
+          "request_body": [
+            {
+              "field": "text",
+              "type": "string",
+              "required": true,
+              "validation": "Comment body"
+            }
+          ],
+          "response": "TaskCommentsSuccessResponse",
+          "error_cases": [
+            "400 when required request fields are missing or invalid",
+            "{'source_id': 'VR-001', 'condition': 'Violation of VR-001', 'handling': 'Reject the request with an HTTP 400 response referencing VR-001, show the user a message identifying the invalid field(s), and do not process or persist the request.'}",
+            "500 when an unexpected server error occurs"
+          ]
+        }
+      ],
+      "models": [
+        {
+          "name": "TaskCommentsData",
+          "file": "models/TaskCommentsData.ts",
+          "fields": [
+            {
+              "name": "storesCommentText",
+              "type": "String",
+              "constraints": ""
+            },
+            {
+              "name": "author",
+              "type": "String",
+              "constraints": ""
+            },
+            {
+              "name": "taskId",
+              "type": "String",
+              "constraints": ""
+            }
+          ]
+        }
+      ]
+    },
+    "frontend": {
+      "pages": [
+        {
+          "path": "app/task-comments/page.tsx",
+          "route": "/task-comments",
+          "purpose": "Main page for the Task Comments feature. UI expectations: A comment input box",
+          "uses_components": []
+        }
+      ],
+      "components_to_reuse": [],
+      "services": [
+        {
+          "path": "lib/api/taskComments.ts",
+          "functions": [
+            {
+              "name": "postTaskComments",
+              "calls_endpoint": "POST /api/task-comments"
+            }
+          ]
+        }
+      ],
+      "routing": {
+        "new_routes": [
+          {
+            "path": "/task-comments",
+            "component": "TaskCommentsPage"
+          }
+        ],
+        "nav_links": [
+          {
+            "to": "/task-comments",
+            "label": "Task Comments"
+          }
+        ]
+      }
+    },
+    "implementation_order": [
+      "Create the Mongoose model(s): models/TaskCommentsData.ts",
+      "Create app/api/task-comments/route.ts implementing /api/task-comments, validating required request fields before use (400 on missing/malformed) -- it is automatically live the instant the file exists, no separate mount step needed.",
+      "Create lib/api/taskComments.ts with one function per endpoint.",
+      "Create app/task-comments/page.tsx (a Client Component, `\"use client\"` as its first line), reusing approved UI/UX components where available instead of re-authoring their markup.",
+      "Register a real <Link href=\"/task-comments\"> in app/page.tsx at the FEATURE_LINKS markers -- a page with no link to it is not complete."
+    ],
+    "constraints": [
+      "The Next.js App Router scaffold already exists and works -- never recreate app/layout.tsx, next.config.mjs, tsconfig.json, or lib/mongodb.ts.",
+      "A Route Handler (route.ts) is live the instant it exists -- there is no router to mount it on, unlike an Express app.js.",
+      "Register new pages by adding a real <Link href=\"...\"> in app/page.tsx (FEATURE_LINKS markers) -- an unreachable page is not done.",
+      "Every Mongoose model file must use the `mongoose.models.X || mongoose.model(...)` guard to avoid OverwriteModelError.",
+      "Approved UI/UX output is a visual reference, not code to import -- use read_ui_component_design/read_ui_page_design to see the approved HTML+Tailwind design, then write real TSX that faithfully matches its structure/classes/content."
+    ]
+  },
+  "traceability_matrix": [
+    {
+      "source_id": "FR-001",
+      "source_type": "FR",
+      "architecture_plan_section": "Design Views / Detailed Design Decisions",
+      "design_element": "Users can add a comment to a task.",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "AC-001",
+      "source_type": "AC",
+      "architecture_plan_section": "Behavior View / Error Handling View",
+      "design_element": "A new comment is displayed.",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "VR-001",
+      "source_type": "VR",
+      "architecture_plan_section": "Interface View / Data View / Error Handling View",
+      "design_element": "Comment text must not be empty.",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "NFR-001",
+      "source_type": "NFR",
+      "architecture_plan_section": "Quality Attributes View",
+      "design_element": "Comments load fast.",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "DATA-001",
+      "source_type": "Data",
+      "architecture_plan_section": "Data View",
+      "design_element": "Stores comment text, author, task id",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "API-001",
+      "source_type": "API",
+      "architecture_plan_section": "Interface View",
+      "design_element": "Create a comment",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "UI-001",
+      "source_type": "UI",
+      "architecture_plan_section": "Context View / Logical View",
+      "design_element": "A comment input box",
+      "coverage_status": "covered"
+    }
+  ],
+  "assumptions": [],
+  "constraints": [],
+  "risks": [],
+  "dependencies": [],
+  "revision_metadata": null,
+  "human_approval_note": "This Architecture Plan must be reviewed and approved before the UI/UX Agent or Coder Agent starts."
+}

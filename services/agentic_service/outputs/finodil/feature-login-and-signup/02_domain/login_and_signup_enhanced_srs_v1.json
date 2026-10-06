@@ -1,0 +1,380 @@
+{
+  "project_id": "proj_2ba24bc0",
+  "project_name": "Finodil",
+  "project_type": "E-commerce",
+  "feature_id": "feature_917b691e",
+  "feature_name": "Login and Signup",
+  "target_stack": "Next.js",
+  "architectural_style": "monolithic",
+  "business_goal": "To provide secure, reliable user authentication so visitors can create an account and returning users can access the application quickly, with passwords and sessions handled safely by default.",
+  "scope": [
+    "Implement login functionality including form validation and session management.",
+    "Implement signup functionality including form validation and password hashing."
+  ],
+  "out_of_scope": [
+    "Social media login integration",
+    "Two-factor authentication"
+  ],
+  "user_roles": [
+    "Guest",
+    "Registered User"
+  ],
+  "functional_requirements": [
+    {
+      "id": "FR-001",
+      "description": "User can enter email and password into the login form",
+      "priority": "Must Have"
+    },
+    {
+      "id": "FR-002",
+      "description": "User can click 'Login'",
+      "priority": "Must Have"
+    },
+    {
+      "id": "FR-003",
+      "description": "System validates the input (both fields required, email format correct)",
+      "priority": "Must Have"
+    },
+    {
+      "id": "FR-004",
+      "description": "On valid credentials: user receives a success response, is issued an auth session/token, and is redirected to the home page",
+      "priority": "Must Have"
+    },
+    {
+      "id": "FR-005",
+      "description": "On invalid credentials: user receives a generic error message ('Invalid email or password') without revealing which field was wrong",
+      "priority": "Must Have"
+    },
+    {
+      "id": "FR-006",
+      "description": "User can click 'Show password' to toggle password visibility",
+      "priority": "Should Have"
+    },
+    {
+      "id": "FR-007",
+      "description": "User can click a 'Forgot password?' link",
+      "priority": "Nice To Have"
+    },
+    {
+      "id": "FR-008",
+      "description": "User can click a link to go to the Signup page instead",
+      "priority": "Must Have"
+    },
+    {
+      "id": "FR-009",
+      "description": "User can enter name, email, password, and confirm password into the signup form",
+      "priority": "Must Have"
+    },
+    {
+      "id": "FR-010",
+      "description": "User can click 'Sign Up'",
+      "priority": "Must Have"
+    },
+    {
+      "id": "FR-011",
+      "description": "System validates the input (all fields required, valid email format, password meets minimum strength, password and confirm-password match)",
+      "priority": "Must Have"
+    },
+    {
+      "id": "FR-012",
+      "description": "System checks whether the email is already registered",
+      "priority": "Must Have"
+    },
+    {
+      "id": "FR-013",
+      "description": "If the email is already taken: user receives a clear error message ('An account with this email already exists') and stays on the form",
+      "priority": "Must Have"
+    },
+    {
+      "id": "FR-014",
+      "description": "On success: user's account is created, password is hashed before storage, user receives a success confirmation, is automatically logged in, and is redirected to the home page",
+      "priority": "Must Have"
+    },
+    {
+      "id": "FR-015",
+      "description": "User can click a link to go to the Login page instead",
+      "priority": "Must Have"
+    },
+    {
+      "id": "FR-DOM-001",
+      "description": "After a defined number of consecutive failed login attempts (5), the account should be temporarily locked for a cooldown period (15 minutes) or until the account owner resets their password, whichever comes first.",
+      "origin": "domain_agent",
+      "domain_citation": {
+        "source_document": "user_account_and_authentication.txt",
+        "chunk_id": "user_account_and_authentication.txt#0"
+      },
+      "priority": "Must Have"
+    },
+    {
+      "id": "FR-DOM-002",
+      "description": "When a user requests a password reset, the system issues a single-use, time-limited reset token (expiring after 30 minutes) sent to the account's verified email address. The token must be invalidated immediately after first use.",
+      "origin": "domain_agent",
+      "domain_citation": {
+        "source_document": "user_account_and_authentication.txt",
+        "chunk_id": "user_account_and_authentication.txt#1"
+      },
+      "priority": "Must Have"
+    },
+    {
+      "id": "FR-DOM-003",
+      "description": "Placing an order (checkout) with a newly registered account requires email verification. The customer must be given a clear, immediate way to resend the verification email without losing their cart.",
+      "origin": "domain_agent",
+      "domain_citation": {
+        "source_document": "user_account_and_authentication.txt",
+        "chunk_id": "user_account_and_authentication.txt#2"
+      },
+      "priority": "Must Have"
+    }
+  ],
+  "non_functional_requirements": [
+    {
+      "id": "NFR-001",
+      "description": "Login and signup responses should complete within 2 seconds under normal load",
+      "category": "Performance"
+    },
+    {
+      "id": "NFR-002",
+      "description": "The system should handle at least 50 concurrent login attempts per second without significant latency",
+      "category": "Performance"
+    },
+    {
+      "id": "NFR-003",
+      "description": "Passwords must be hashed (never stored or logged in plain text) and never returned in any API response",
+      "category": "Security"
+    },
+    {
+      "id": "NFR-004",
+      "description": "Auth session/token must persist across a page refresh and expire after a reasonable period of inactivity (e.g. 7 days)",
+      "category": "Session Management"
+    },
+    {
+      "id": "NFR-005",
+      "description": "Form validation errors must be shown inline, without a full page reload",
+      "category": "User Experience"
+    },
+    {
+      "id": "NFR-006",
+      "description": "Failed login attempts should not reveal whether the email or the password was incorrect (prevents account enumeration)",
+      "category": "Security"
+    }
+  ],
+  "user_stories": [
+    {
+      "id": "US-001",
+      "role": "Guest",
+      "goal": "Create a new account on the platform",
+      "benefit": "Can access personalized features and services offered by Finodil."
+    },
+    {
+      "id": "US-002",
+      "role": "Registered User",
+      "goal": "Log in to access their account",
+      "benefit": "Can continue using the platform with saved preferences and data."
+    }
+  ],
+  "acceptance_criteria": [
+    {
+      "id": "AC-001",
+      "description": "Given a new, unused email and a valid password, when the user submits the signup form, then their account is created, their password is hashed before storage, and they are automatically logged in and redirected to the home page. Additionally, if the user's email is not verified, placing an order should be blocked until verification is completed.",
+      "modified_by_domain_agent": true,
+      "original_description": "Given a new, unused email and a valid password, when the user submits the signup form, then their account is created, their password is hashed before storage, and they are automatically logged in and redirected to the home page",
+      "domain_citation": {
+        "source_document": "user_account_and_authentication.txt",
+        "chunk_id": "user_account_and_authentication.txt#2"
+      }
+    },
+    {
+      "id": "AC-002",
+      "description": "Given an email that's already registered, when the user submits the signup form, then they see a clear 'An account with this email already exists' error and remain on the signup page"
+    },
+    {
+      "id": "AC-003",
+      "description": "Given valid login credentials, when the user submits the login form, then they are logged in within 3 seconds and redirected to the sample home page, with the nav bar showing their logged-in state. Additionally, if there have been 5 consecutive failed login attempts, further login attempts should be rejected for a cooldown period of 15 minutes.",
+      "modified_by_domain_agent": true,
+      "original_description": "Given valid login credentials, when the user submits the login form, then they are logged in within 3 seconds and redirected to the sample home page, with the nav bar showing their logged-in state",
+      "domain_citation": {
+        "source_document": "user_account_and_authentication.txt",
+        "chunk_id": "user_account_and_authentication.txt#0"
+      }
+    },
+    {
+      "id": "AC-004",
+      "description": "Given invalid login credentials (wrong email or wrong password), when the user submits the login form, then they see a generic 'Invalid email or password' error and remain on the login page"
+    },
+    {
+      "id": "AC-005",
+      "description": "Given a logged-in user, when they click 'Logout', then their session ends and they are redirected to the login page"
+    },
+    {
+      "id": "AC-006",
+      "description": "Given a logged-in user, when they refresh the page, then they remain logged in (session persists)"
+    }
+  ],
+  "input_requirements": [
+    "name — string, required (user's full name or display name)",
+    "email — string, required, unique, valid email format (used as the login identifier)",
+    "password — string, required, stored as a hashed value only, never in plain text"
+  ],
+  "output_requirements": [],
+  "ui_expectations": [
+    "A clean, modern design with clear input fields and error messages."
+  ],
+  "api_expectations": [
+    "POST /api/auth/signup",
+    "POST /api/auth/login",
+    "GET /api/auth/logout"
+  ],
+  "data_requirements": [
+    "name — string, required (user's full name or display name)",
+    "email — string, required, unique, valid email format (used as the login identifier)",
+    "password — string, required, stored as a hashed value only, never in plain text",
+    "created_at — timestamp, auto-generated on account creation",
+    "updated_at — timestamp, auto-updated whenever the user record changes",
+    "last_login_at — timestamp, updated on each successful login (useful for the 'session persists' acceptance criterion and any future activity tracking)"
+  ],
+  "validation_rules": [
+    {
+      "id": "VR-001",
+      "description": "Email must be in a valid format."
+    },
+    {
+      "id": "VR-002",
+      "description": "Password must meet minimum strength requirements."
+    },
+    {
+      "id": "VR-003",
+      "description": "Confirm password must match the password field."
+    }
+  ],
+  "constraints": [
+    "The system should use Next.js for frontend development.",
+    "Passwords must be hashed using a secure algorithm before storage."
+  ],
+  "assumptions": [
+    "UI expectations are not detailed, so I'll assume a clean, modern design with clear input fields and error messages.",
+    "API endpoints will follow RESTful conventions."
+  ],
+  "risks": [
+    "Security vulnerabilities related to password handling and session management.",
+    "Performance issues under high load."
+  ],
+  "dependencies": [
+    "A secure hashing algorithm for password storage.",
+    "Session management library compatible with Next.js."
+  ],
+  "traceability": [
+    {
+      "requirement_id": "FR-001",
+      "related_acceptance_criteria": [
+        "AC-003"
+      ],
+      "notes": ""
+    },
+    {
+      "requirement_id": "FR-002",
+      "related_acceptance_criteria": [
+        "AC-003"
+      ],
+      "notes": ""
+    },
+    {
+      "requirement_id": "FR-003",
+      "related_acceptance_criteria": [
+        "AC-003",
+        "AC-004"
+      ],
+      "notes": ""
+    },
+    {
+      "requirement_id": "FR-004",
+      "related_acceptance_criteria": [
+        "AC-003"
+      ],
+      "notes": ""
+    },
+    {
+      "requirement_id": "FR-005",
+      "related_acceptance_criteria": [
+        "AC-004"
+      ],
+      "notes": ""
+    },
+    {
+      "requirement_id": "FR-006",
+      "related_acceptance_criteria": [],
+      "notes": "Optional feature, not directly tied to acceptance criteria."
+    },
+    {
+      "requirement_id": "FR-007",
+      "related_acceptance_criteria": [],
+      "notes": "Optional feature, not directly tied to acceptance criteria."
+    },
+    {
+      "requirement_id": "FR-008",
+      "related_acceptance_criteria": [
+        "AC-001"
+      ],
+      "notes": ""
+    },
+    {
+      "requirement_id": "FR-009",
+      "related_acceptance_criteria": [
+        "AC-001",
+        "AC-002"
+      ],
+      "notes": ""
+    },
+    {
+      "requirement_id": "FR-010",
+      "related_acceptance_criteria": [
+        "AC-001",
+        "AC-002"
+      ],
+      "notes": ""
+    },
+    {
+      "requirement_id": "FR-011",
+      "related_acceptance_criteria": [
+        "AC-001",
+        "AC-002"
+      ],
+      "notes": ""
+    },
+    {
+      "requirement_id": "FR-012",
+      "related_acceptance_criteria": [
+        "AC-001",
+        "AC-002"
+      ],
+      "notes": ""
+    },
+    {
+      "requirement_id": "FR-013",
+      "related_acceptance_criteria": [
+        "AC-002"
+      ],
+      "notes": ""
+    },
+    {
+      "requirement_id": "FR-014",
+      "related_acceptance_criteria": [
+        "AC-001"
+      ],
+      "notes": ""
+    },
+    {
+      "requirement_id": "FR-015",
+      "related_acceptance_criteria": [],
+      "notes": "Optional feature, not directly tied to acceptance criteria."
+    }
+  ],
+  "domain_enrichment_metadata": {
+    "generated_at": "2026-08-20T12:45:51.618026+00:00",
+    "based_on_srs_version": 1,
+    "knowledge_sources_considered": [
+      "payment_and_pci_basics.txt",
+      "user_account_and_authentication.txt"
+    ],
+    "fallback_used": false
+  }
+}

@@ -1,0 +1,202 @@
+{
+  "pages": [
+    {
+      "page_id": "login-page",
+      "name": "Login Page",
+      "route": "/login",
+      "actors": [
+        "Guest",
+        "Registered User"
+      ],
+      "covers_requirements": [
+        "FR-001",
+        "FR-002",
+        "FR-003",
+        "FR-004",
+        "FR-005",
+        "FR-006",
+        "FR-007",
+        "FR-008",
+        "AC-001",
+        "AC-002",
+        "AC-003",
+        "AC-004",
+        "AC-005",
+        "AC-006"
+      ],
+      "components": [
+        {
+          "name": "LoginForm",
+          "reused_from_design_system": false,
+          "new_component_justification": "No existing component in the design system fits the specific requirements of this login form.",
+          "covers_ui_expectations": [
+            "A clean, modern design with clear input fields and error messages"
+          ],
+          "content_elements": [
+            "email",
+            "password"
+          ]
+        },
+        {
+          "name": "PasswordToggleButton",
+          "reused_from_design_system": false,
+          "new_component_justification": "No existing component in the design system fits the specific requirements of this password toggle button.",
+          "covers_ui_expectations": [
+            "A clean, modern design with clear input fields and error messages"
+          ],
+          "content_elements": [
+            "show-password",
+            "hide-password"
+          ]
+        },
+        {
+          "name": "ForgotPasswordLink",
+          "reused_from_design_system": false,
+          "new_component_justification": "No existing component in the design system fits the specific requirements of this forgot password link.",
+          "covers_ui_expectations": [
+            "A clean, modern design with clear input fields and error messages"
+          ],
+          "content_elements": [
+            "forgot-password-link-text"
+          ]
+        },
+        {
+          "name": "SignupLink",
+          "reused_from_design_system": false,
+          "new_component_justification": "No existing component in the design system fits the specific requirements of this signup link.",
+          "covers_ui_expectations": [
+            "A clean, modern design with clear input fields and error messages"
+          ],
+          "content_elements": [
+            "signup-link-text"
+          ]
+        }
+      ],
+      "states": [
+        "idle",
+        "loading",
+        "error",
+        "success"
+      ],
+      "new_design_tokens": [
+        {
+          "token": "color.danger",
+          "value": "#B00020",
+          "justification": "This color is needed for error messages to stand out against the primary theme."
+        }
+      ]
+    },
+    {
+      "page_id": "signup-page",
+      "name": "Signup Page",
+      "route": "/signup",
+      "actors": [
+        "Guest"
+      ],
+      "covers_requirements": [
+        "FR-009",
+        "FR-010",
+        "FR-011",
+        "FR-012",
+        "FR-013",
+        "FR-014",
+        "FR-015",
+        "AC-001",
+        "AC-002"
+      ],
+      "components": [
+        {
+          "name": "SignupForm",
+          "reused_from_design_system": false,
+          "new_component_justification": "No existing component in the design system fits the specific requirements of this signup form.",
+          "covers_ui_expectations": [
+            "A clean, modern design with clear input fields and error messages"
+          ],
+          "content_elements": [
+            "name",
+            "email",
+            "password",
+            "confirm-password"
+          ]
+        },
+        {
+          "name": "LoginLink",
+          "reused_from_design_system": false,
+          "new_component_justification": "No existing component in the design system fits the specific requirements of this login link.",
+          "covers_ui_expectations": [
+            "A clean, modern design with clear input fields and error messages"
+          ],
+          "content_elements": [
+            "login-link-text"
+          ]
+        }
+      ],
+      "states": [
+        "idle",
+        "loading",
+        "error",
+        "success"
+      ],
+      "new_design_tokens": [
+        {
+          "token": "color.danger",
+          "value": "#B00020",
+          "justification": "This color is needed for error messages to stand out against the primary theme."
+        }
+      ]
+    },
+    {
+      "page_id": "user-profile-page",
+      "name": "User Profile Page",
+      "route": "/profile",
+      "actors": [
+        "Registered User"
+      ],
+      "covers_requirements": [
+        "US-001",
+        "US-002"
+      ],
+      "components": [
+        {
+          "name": "UserProfileCard",
+          "reused_from_design_system": false,
+          "new_component_justification": "No existing component in the design system fits the specific requirements of this user profile card.",
+          "covers_ui_expectations": [
+            "A clean, modern design with clear input fields and error messages"
+          ],
+          "content_elements": [
+            "user-name",
+            "email",
+            "profile-image"
+          ]
+        },
+        {
+          "name": "EditProfileButton",
+          "reused_from_design_system": false,
+          "new_component_justification": "No existing component in the design system fits the specific requirements of this edit profile button.",
+          "covers_ui_expectations": [
+            "A clean, modern design with clear input fields and error messages"
+          ],
+          "content_elements": [
+            "edit-profile-button-text"
+          ]
+        }
+      ],
+      "states": [
+        "idle",
+        "loading",
+        "error",
+        "success"
+      ],
+      "new_design_tokens": [
+        {
+          "token": "color.danger",
+          "value": "#B00020",
+          "justification": "This color is needed for error messages to stand out against the primary theme."
+        }
+      ]
+    }
+  ],
+  "color_theme": "indigo",
+  "notes": ""
+}

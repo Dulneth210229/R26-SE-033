@@ -1,0 +1,38 @@
+Order Lifecycle States (E-Commerce Domain Knowledge)
+
+Canonical Order State Machine
+A well-designed e-commerce order should move through these canonical states, in this order,
+with only the specific backward transitions listed explicitly allowed:
+
+1. pending -- order created, payment not yet confirmed.
+2. confirmed -- customer has completed checkout and the order details are final, but payment
+   capture is still in progress or awaiting confirmation (e.g. awaiting a 3-D Secure challenge).
+3. paid -- payment has been successfully captured/settled.
+4. fulfilled -- the warehouse/fulfillment center has picked and packed the order, ready to ship.
+5. shipped -- the order has left the warehouse and a tracking number (if applicable) is
+   available.
+6. delivered -- the carrier has confirmed delivery to the customer.
+
+Two terminal states can occur instead of progressing further:
+- cancelled -- the order was cancelled before shipment (by the customer or the merchant), and any
+  captured payment must be voided or refunded and any reserved stock released.
+- refunded -- the order was returned or disputed after shipment/delivery, and the payment has
+  been refunded; this can happen after "shipped" or "delivered."
+
+Valid Transitions and Who Can Trigger Them
+- pending -> confirmed: triggered automatically once checkout completes.
+- confirmed -> paid: triggered by the payment gateway's webhook/callback confirming capture.
+- confirmed/paid -> cancelled: can be triggered by the customer (if not yet fulfilled) or by the
+  merchant/admin (at any point before shipment).
+- paid -> fulfilled: triggered by warehouse/fulfillment staff or an integrated fulfillment system.
+- fulfilled -> shipped: triggered when a shipping label/tracking number is generated.
+- shipped -> delivered: triggered by carrier tracking webhook or manual confirmation.
+- shipped/delivered -> refunded: triggered by a return/refund request being approved.
+
+Invalid Transitions
+An order must never move backward in the pending -> confirmed -> paid -> fulfilled -> shipped ->
+delivered sequence (e.g. "shipped" can never go back to "paid"). An order that is already
+"cancelled" or "refunded" is terminal and must not transition to any other state. Any code path
+implementing order status changes should validate the current state before applying a
+transition, rejecting invalid transitions with a clear error rather than silently overwriting
+the status.

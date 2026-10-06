@@ -1,0 +1,24 @@
+{
+  "added": [
+    "app/api/items/route.ts",
+    "app/item-listing/page.tsx",
+    "babel.config.qa.js",
+    "generated_tests/Login-and-Signup.regression.test.ts",
+    "generated_tests/mongodb.unit.test.ts",
+    "jest.config.qa.js",
+    "lib/api/itemListing.ts",
+    "lib/auth/session.ts",
+    "lib/types/ItemListing.ts",
+    "models/ItemListingData.ts"
+  ],
+  "modified": [
+    "app/login-and-signup/page.tsx",
+    "app/page.tsx",
+    "lib/api/loginAndSignup.ts",
+    "lib/mongodb.ts",
+    "lib/seedData.ts",
+    "package-lock.json",
+    "package.json"
+  ],
+  "deleted": []
+}

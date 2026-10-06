@@ -1,0 +1,50 @@
+{
+  "project_name": "Finodil",
+  "feature_name": "Login and Signup",
+  "generated_at": "2026-08-25T09:58:35.554393+00:00",
+  "scan_type": "standard",
+  "gate_decision": "review",
+  "findings_count": 2,
+  "critical_count": 0,
+  "moderate_count": 2,
+  "warning_count": 0,
+  "findings": [
+    {
+      "id": "SEC-JS-006:app\\api\\auth\\login\\route.ts:39",
+      "rule_id": "SEC-JS-006",
+      "layer": "pattern",
+      "severity": "medium",
+      "cwe": "CWE-915",
+      "file": "app\\api\\auth\\login\\route.ts",
+      "line": 39,
+      "message": "Dynamic bracket property access keyed directly by a request-controlled parameter name (e.g. obj[req.query.sort]) is an object-injection / prototype-pollution-adjacent pattern; the accessor should be validated against an explicit allow-list of field names.",
+      "root_cause": "A dynamic bracket property access (obj[key]) was found at app\\api\\auth\\login\\route.ts:39, using a request-controlled value as the property name.",
+      "recommendation": "Validate the property name against an explicit allow-list of known-safe field names before using it to index the object."
+    },
+    {
+      "id": "SEC-LLM:1",
+      "rule_id": "SEC-LLM-REVIEW",
+      "layer": "llm",
+      "severity": "high",
+      "cwe": "CWE-787",
+      "file": "app\\api\\auth\\login\\route.ts",
+      "line": 39,
+      "message": "Potential Prototype Pollution via Dynamic Property Access -- The use of dynamic bracket property access with a request-controlled parameter can lead to prototype pollution, where malicious input could modify the Object.prototype. This can be exploited to inject arbitrary properties into objects, potentially leading to security vulnerabilities.",
+      "root_cause": "The code uses obj[req.query.sort] without validating the 'sort' parameter against an allow-list of field names.",
+      "recommendation": "Validate the 'sort' parameter against a predefined list of allowed field names before using it in dynamic property access. For example, use a whitelist to ensure only expected properties are accessed."
+    }
+  ],
+  "dependency_scan": {
+    "audit_exit_code": 0,
+    "audit_ran_offline": true,
+    "dependency_summary": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0,
+      "total": 0
+    }
+  },
+  "llm_review_status": "LLM review layer ran successfully: 1 additional finding(s)."
+}

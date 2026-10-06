@@ -1,0 +1,40 @@
+Product Catalog and Inventory Conventions (E-Commerce Domain Knowledge)
+
+SKU and Variant Modeling
+A product (e.g. "T-Shirt") is distinct from its purchasable variants (e.g. "T-Shirt, Size M,
+Color Blue"). Each variant must have its own unique SKU (Stock Keeping Unit) code, its own price
+(variants may differ in price), and its own stock count. The parent product record holds shared
+information (title, description, category, images common to all variants), while each variant
+holds the attributes that differ (size, color, stock, SKU, price delta).
+
+Reserved vs. Available Stock
+Total stock for a variant should be tracked as two numbers: "on-hand" (physically in the
+warehouse) and "available" (on-hand minus quantity already reserved by carts/pending orders that
+have not yet shipped). When a customer adds an item to their cart, or completes checkout but
+before fulfillment, that quantity should be reserved (deducted from "available" but not from
+"on-hand") so two customers cannot both purchase the last unit. Reservations that are not
+converted to a completed order within a defined window (e.g. cart reservation expiring after 15
+minutes, or order payment window expiring after 30 minutes) must be released back to available
+stock.
+
+Backorder Handling
+When a variant's available stock reaches zero, the system may still allow ordering it as a
+"backorder" only if the merchant has explicitly enabled backorders for that product. In that
+case, the customer must be clearly shown an estimated availability/ship date, and the order
+must be flagged internally as a backorder so fulfillment does not attempt to ship it before
+restocking.
+
+Price History and Currency
+Product prices change over time (promotions, cost changes). The system should retain a price
+history so that a completed order always shows the price the customer actually paid, even if the
+product's current listed price later changes -- an order's recorded price must never be
+recalculated retroactively from the catalog's current price. All prices must be stored with an
+explicit currency code, not assumed from a single default currency, especially once the system
+supports more than one storefront region.
+
+Category and Search Indexing
+Every product should belong to at least one category for browsing, and its title/description
+should be indexed for keyword search. Out-of-stock products should still be searchable and
+viewable (so customers can see they exist and get notified when restocked) but should be clearly
+marked unavailable rather than hidden entirely, unless the merchant explicitly wants a product
+delisted.

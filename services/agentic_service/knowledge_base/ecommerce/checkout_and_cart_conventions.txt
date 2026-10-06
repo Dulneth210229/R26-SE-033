@@ -1,0 +1,35 @@
+Checkout and Cart Conventions (E-Commerce Domain Knowledge)
+
+Guest Cart Merge on Login
+When a guest user (not signed in) adds items to their shopping cart and later logs in or
+registers, the guest cart must be merged with any existing saved cart already associated with
+that account. Items that exist in both carts should have their quantities summed, capped at
+available stock. The guest cart must never simply replace or discard the account's existing
+cart contents, since that silently deletes items the user intentionally saved earlier.
+
+Abandoned Cart Handling
+A cart is considered abandoned when it has not been modified or checked out within 24 hours of
+the last item being added. Abandoned carts should trigger a reminder notification (email or
+in-app) to the account holder, if one exists. Abandoned carts should not be deleted automatically;
+they should be retained for at least 30 days so the customer can resume checkout later.
+
+Guest Checkout
+Guest checkout must be supported for e-commerce systems unless the business explicitly requires
+account creation. When a guest checks out without an account, the system must still capture a
+valid email address and shipping address, and should offer the option to create an account from
+the same details after the order is placed, without asking the user to re-enter information.
+
+Stock Re-Validation at Checkout
+Because time passes between a product being added to a cart and the user completing checkout,
+stock levels may have changed (other customers may have purchased the remaining stock). The
+system must re-validate stock availability for every line item in the cart immediately before
+payment is authorized. If any item is no longer available in the requested quantity, checkout
+must be blocked for that item specifically (not the whole cart) and the customer must be shown
+which item is affected and offered the choice to reduce quantity, remove the item, or continue
+without it.
+
+Cart Quantity Limits
+Each product in a cart should be capped at either the item's configured maximum-purchase-quantity
+(if the merchant sets one, e.g. for limited promotional items) or the currently available stock,
+whichever is lower. Attempting to add more than the allowed quantity should not silently fail --
+the system should clearly tell the customer the maximum quantity currently allowed for that item.

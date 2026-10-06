@@ -1,0 +1,2091 @@
+{
+  "document_control": {
+    "document_title": "Architecture Plan: Login and Signup",
+    "document_type": "Feature Architecture Plan",
+    "project_id": "proj_2ba24bc0",
+    "project_name": "Finodil",
+    "project_type": "E-commerce",
+    "feature_id": "feature_917b691e",
+    "feature_name": "Login and Signup",
+    "target_stack": "Next.js",
+    "architecture_style": "monolithic",
+    "version": "v1",
+    "generated_by": "Architecture Agent",
+    "input_artifacts": [
+      "Approved SRS JSON",
+      "Approved Enhanced SRS JSON if available"
+    ],
+    "approval_status": "pending"
+  },
+  "feature_overview": {
+    "business_goal": "To provide secure, reliable user authentication so visitors can create an account and returning users can access the application quickly, with passwords and sessions handled safely by default.",
+    "scope": [
+      "Implement login functionality including form validation and session management.",
+      "Implement signup functionality including form validation and password hashing."
+    ],
+    "out_of_scope": [
+      "Social media login integration",
+      "Two-factor authentication"
+    ],
+    "user_roles": [
+      "Guest",
+      "Registered User"
+    ],
+    "feature_boundary": "This Architecture Plan covers only the Login and Signup feature and excludes unrelated features."
+  },
+  "requirement_interpretation": {
+    "functional_requirements": [
+      {
+        "id": "FR-001",
+        "description": "User can enter email and password into the login form",
+        "priority": "Must Have"
+      },
+      {
+        "id": "FR-002",
+        "description": "User can click 'Login'",
+        "priority": "Must Have"
+      },
+      {
+        "id": "FR-003",
+        "description": "System validates the input (both fields required, email format correct)",
+        "priority": "Must Have"
+      },
+      {
+        "id": "FR-004",
+        "description": "On valid credentials: user receives a success response, is issued an auth session/token, and is redirected to the home page",
+        "priority": "Must Have"
+      },
+      {
+        "id": "FR-005",
+        "description": "On invalid credentials: user receives a generic error message ('Invalid email or password') without revealing which field was wrong",
+        "priority": "Must Have"
+      },
+      {
+        "id": "FR-006",
+        "description": "User can click 'Show password' to toggle password visibility",
+        "priority": "Should Have"
+      },
+      {
+        "id": "FR-007",
+        "description": "User can click a 'Forgot password?' link",
+        "priority": "Nice To Have"
+      },
+      {
+        "id": "FR-008",
+        "description": "User can click a link to go to the Signup page instead",
+        "priority": "Must Have"
+      },
+      {
+        "id": "FR-009",
+        "description": "User can enter name, email, password, and confirm password into the signup form",
+        "priority": "Must Have"
+      },
+      {
+        "id": "FR-010",
+        "description": "User can click 'Sign Up'",
+        "priority": "Must Have"
+      },
+      {
+        "id": "FR-011",
+        "description": "System validates the input (all fields required, valid email format, password meets minimum strength, password and confirm-password match)",
+        "priority": "Must Have"
+      },
+      {
+        "id": "FR-012",
+        "description": "System checks whether the email is already registered",
+        "priority": "Must Have"
+      },
+      {
+        "id": "FR-013",
+        "description": "If the email is already taken: user receives a clear error message ('An account with this email already exists') and stays on the form",
+        "priority": "Must Have"
+      },
+      {
+        "id": "FR-014",
+        "description": "On success: user's account is created, password is hashed before storage, user receives a success confirmation, is automatically logged in, and is redirected to the home page",
+        "priority": "Must Have"
+      },
+      {
+        "id": "FR-015",
+        "description": "User can click a link to go to the Login page instead",
+        "priority": "Must Have"
+      },
+      {
+        "id": "FR-DOM-001",
+        "description": "After a defined number of consecutive failed login attempts (5), the account should be temporarily locked for a cooldown period (15 minutes) or until the account owner resets their password, whichever comes first.",
+        "origin": "domain_agent",
+        "domain_citation": {
+          "source_document": "user_account_and_authentication.txt",
+          "chunk_id": "user_account_and_authentication.txt#0"
+        },
+        "priority": "Must Have"
+      },
+      {
+        "id": "FR-DOM-002",
+        "description": "When a user requests a password reset, the system issues a single-use, time-limited reset token (expiring after 30 minutes) sent to the account's verified email address. The token must be invalidated immediately after first use.",
+        "origin": "domain_agent",
+        "domain_citation": {
+          "source_document": "user_account_and_authentication.txt",
+          "chunk_id": "user_account_and_authentication.txt#1"
+        },
+        "priority": "Must Have"
+      },
+      {
+        "id": "FR-DOM-003",
+        "description": "Placing an order (checkout) with a newly registered account requires email verification. The customer must be given a clear, immediate way to resend the verification email without losing their cart.",
+        "origin": "domain_agent",
+        "domain_citation": {
+          "source_document": "user_account_and_authentication.txt",
+          "chunk_id": "user_account_and_authentication.txt#2"
+        },
+        "priority": "Must Have"
+      }
+    ],
+    "acceptance_criteria": [
+      {
+        "id": "AC-001",
+        "description": "Given a new, unused email and a valid password, when the user submits the signup form, then their account is created, their password is hashed before storage, and they are automatically logged in and redirected to the home page. Additionally, if the user's email is not verified, placing an order should be blocked until verification is completed.",
+        "modified_by_domain_agent": true,
+        "original_description": "Given a new, unused email and a valid password, when the user submits the signup form, then their account is created, their password is hashed before storage, and they are automatically logged in and redirected to the home page",
+        "domain_citation": {
+          "source_document": "user_account_and_authentication.txt",
+          "chunk_id": "user_account_and_authentication.txt#2"
+        }
+      },
+      {
+        "id": "AC-002",
+        "description": "Given an email that's already registered, when the user submits the signup form, then they see a clear 'An account with this email already exists' error and remain on the signup page"
+      },
+      {
+        "id": "AC-003",
+        "description": "Given valid login credentials, when the user submits the login form, then they are logged in within 3 seconds and redirected to the sample home page, with the nav bar showing their logged-in state. Additionally, if there have been 5 consecutive failed login attempts, further login attempts should be rejected for a cooldown period of 15 minutes.",
+        "modified_by_domain_agent": true,
+        "original_description": "Given valid login credentials, when the user submits the login form, then they are logged in within 3 seconds and redirected to the sample home page, with the nav bar showing their logged-in state",
+        "domain_citation": {
+          "source_document": "user_account_and_authentication.txt",
+          "chunk_id": "user_account_and_authentication.txt#0"
+        }
+      },
+      {
+        "id": "AC-004",
+        "description": "Given invalid login credentials (wrong email or wrong password), when the user submits the login form, then they see a generic 'Invalid email or password' error and remain on the login page"
+      },
+      {
+        "id": "AC-005",
+        "description": "Given a logged-in user, when they click 'Logout', then their session ends and they are redirected to the login page"
+      },
+      {
+        "id": "AC-006",
+        "description": "Given a logged-in user, when they refresh the page, then they remain logged in (session persists)"
+      }
+    ],
+    "validation_rules": [
+      {
+        "id": "VR-001",
+        "description": "Email must be in a valid format."
+      },
+      {
+        "id": "VR-002",
+        "description": "Password must meet minimum strength requirements."
+      },
+      {
+        "id": "VR-003",
+        "description": "Confirm password must match the password field."
+      }
+    ],
+    "non_functional_requirements": [
+      {
+        "id": "NFR-001",
+        "description": "Login and signup responses should complete within 2 seconds under normal load",
+        "category": "Performance"
+      },
+      {
+        "id": "NFR-002",
+        "description": "The system should handle at least 50 concurrent login attempts per second without significant latency",
+        "category": "Performance"
+      },
+      {
+        "id": "NFR-003",
+        "description": "Passwords must be hashed (never stored or logged in plain text) and never returned in any API response",
+        "category": "Security"
+      },
+      {
+        "id": "NFR-004",
+        "description": "Auth session/token must persist across a page refresh and expire after a reasonable period of inactivity (e.g. 7 days)",
+        "category": "Session Management"
+      },
+      {
+        "id": "NFR-005",
+        "description": "Form validation errors must be shown inline, without a full page reload",
+        "category": "User Experience"
+      },
+      {
+        "id": "NFR-006",
+        "description": "Failed login attempts should not reveal whether the email or the password was incorrect (prevents account enumeration)",
+        "category": "Security"
+      }
+    ]
+  },
+  "architecture_approach": {
+    "architecture_style": "monolithic",
+    "architecture_rationale": "Use monolithic to keep the Login and Signup feature separated into presentation, business logic, and data responsibilities where applicable.",
+    "frontend_overview": "Frontend design should provide the user-facing entry points, inputs, states, and feedback required by the approved SRS.",
+    "backend_overview": "Backend design should process feature requests, enforce business rules, validate inputs, and return structured responses.",
+    "data_overview": "Data design should support the data requirements defined in the approved SRS.",
+    "integration_overview": "Integration design should follow the API expectations and dependencies listed in the approved SRS.",
+    "design_tradeoffs": [
+      "Design is derived directly from the approved SRS to preserve traceability and feature scope.",
+      "Design is kept feature-scoped to preserve feature-by-feature SDLC development.",
+      "Internal generation or repair details are kept in backend logs and are not exposed in the approval-ready Architecture Plan."
+    ]
+  },
+  "design_views": {
+    "context_view": {
+      "actors": [
+        "Guest",
+        "Registered User"
+      ],
+      "external_systems": [
+        "A secure hashing algorithm for password storage.",
+        "Session management library compatible with Next.js."
+      ],
+      "feature_boundary": "Login and Signup feature boundary.",
+      "main_interactions": [
+        "Guest interacts with the Login and Signup feature.",
+        "Registered User interacts with the Login and Signup feature.",
+        "User can enter email and password into the login form",
+        "User can click 'Login'",
+        "System validates the input (both fields required, email format correct)",
+        "On valid credentials: user receives a success response, is issued an auth session/token, and is redirected to the home page",
+        "On invalid credentials: user receives a generic error message ('Invalid email or password') without revealing which field was wrong",
+        "User can click 'Show password' to toggle password visibility",
+        "User can click a 'Forgot password?' link",
+        "User can click a link to go to the Signup page instead",
+        "User can enter name, email, password, and confirm password into the signup form",
+        "User can click 'Sign Up'",
+        "System validates the input (all fields required, valid email format, password meets minimum strength, password and confirm-password match)",
+        "System checks whether the email is already registered",
+        "If the email is already taken: user receives a clear error message ('An account with this email already exists') and stays on the form",
+        "On success: user's account is created, password is hashed before storage, user receives a success confirmation, is automatically logged in, and is redirected to the home page",
+        "User can click a link to go to the Login page instead",
+        "After a defined number of consecutive failed login attempts (5), the account should be temporarily locked for a cooldown period (15 minutes) or until the account owner resets their password, whichever comes first.",
+        "When a user requests a password reset, the system issues a single-use, time-limited reset token (expiring after 30 minutes) sent to the account's verified email address. The token must be invalidated immediately after first use.",
+        "Placing an order (checkout) with a newly registered account requires email verification. The customer must be given a clear, immediate way to resend the verification email without losing their cart."
+      ]
+    },
+    "logical_view": {
+      "frontend_modules": [
+        {
+          "name": "LoginAndSignupFrontendModule",
+          "responsibility": "Handle frontend responsibilities for the Login and Signup feature.",
+          "derived_from": [
+            "A clean, modern design with clear input fields and error messages.",
+            "name — string, required (user's full name or display name)",
+            "email — string, required, unique, valid email format (used as the login identifier)",
+            "password — string, required, stored as a hashed value only, never in plain text"
+          ]
+        }
+      ],
+      "backend_modules": [
+        {
+          "name": "LoginAndSignupBackendModule",
+          "responsibility": "Handle backend responsibilities for the Login and Signup feature.",
+          "derived_from": [
+            "User can enter email and password into the login form",
+            "User can click 'Login'",
+            "System validates the input (both fields required, email format correct)",
+            "On valid credentials: user receives a success response, is issued an auth session/token, and is redirected to the home page",
+            "On invalid credentials: user receives a generic error message ('Invalid email or password') without revealing which field was wrong",
+            "User can click 'Show password' to toggle password visibility",
+            "User can click a 'Forgot password?' link",
+            "User can click a link to go to the Signup page instead",
+            "User can enter name, email, password, and confirm password into the signup form",
+            "User can click 'Sign Up'",
+            "System validates the input (all fields required, valid email format, password meets minimum strength, password and confirm-password match)",
+            "System checks whether the email is already registered",
+            "If the email is already taken: user receives a clear error message ('An account with this email already exists') and stays on the form",
+            "On success: user's account is created, password is hashed before storage, user receives a success confirmation, is automatically logged in, and is redirected to the home page",
+            "User can click a link to go to the Login page instead",
+            "After a defined number of consecutive failed login attempts (5), the account should be temporarily locked for a cooldown period (15 minutes) or until the account owner resets their password, whichever comes first.",
+            "When a user requests a password reset, the system issues a single-use, time-limited reset token (expiring after 30 minutes) sent to the account's verified email address. The token must be invalidated immediately after first use.",
+            "Placing an order (checkout) with a newly registered account requires email verification. The customer must be given a clear, immediate way to resend the verification email without losing their cart.",
+            "Email must be in a valid format.",
+            "Password must meet minimum strength requirements.",
+            "Confirm password must match the password field."
+          ]
+        }
+      ],
+      "domain_services": [
+        {
+          "name": "LoginAndSignupService",
+          "responsibility": "Apply business rules for the Login and Signup feature.",
+          "related_requirements": [
+            "FR-001",
+            "FR-002",
+            "FR-003",
+            "FR-004",
+            "FR-005",
+            "FR-006",
+            "FR-007",
+            "FR-008",
+            "FR-009",
+            "FR-010",
+            "FR-011",
+            "FR-012",
+            "FR-013",
+            "FR-014",
+            "FR-015",
+            "FR-DOM-001",
+            "FR-DOM-002",
+            "FR-DOM-003"
+          ]
+        }
+      ],
+      "data_modules": [
+        {
+          "name": "LoginAndSignupDataModule",
+          "responsibility": "Manage data access required by the feature.",
+          "derived_from": [
+            "name — string, required (user's full name or display name)",
+            "email — string, required, unique, valid email format (used as the login identifier)",
+            "password — string, required, stored as a hashed value only, never in plain text",
+            "created_at — timestamp, auto-generated on account creation",
+            "updated_at — timestamp, auto-updated whenever the user record changes",
+            "last_login_at — timestamp, updated on each successful login (useful for the 'session persists' acceptance criterion and any future activity tracking)"
+          ]
+        }
+      ],
+      "integration_points": [
+        {
+          "type": "API",
+          "description": "POST /api/auth/signup"
+        },
+        {
+          "type": "API",
+          "description": "POST /api/auth/login"
+        },
+        {
+          "type": "API",
+          "description": "GET /api/auth/logout"
+        },
+        {
+          "type": "Dependency",
+          "description": "A secure hashing algorithm for password storage."
+        },
+        {
+          "type": "Dependency",
+          "description": "Session management library compatible with Next.js."
+        }
+      ]
+    },
+    "interface_view": {
+      "api_endpoints": [
+        {
+          "endpoint": "/api/auth/signup",
+          "method": "POST",
+          "purpose": "Support the Login and Signup feature.",
+          "request_model": "LoginAndSignupRequest",
+          "success_response_model": "LoginAndSignupSuccessResponse",
+          "error_response_model": "LoginAndSignupErrorResponse",
+          "related_requirements": [
+            "FR-001",
+            "FR-002",
+            "FR-003",
+            "FR-004",
+            "FR-005",
+            "FR-006",
+            "FR-007",
+            "FR-008",
+            "FR-009",
+            "FR-010",
+            "FR-011",
+            "FR-012",
+            "FR-013",
+            "FR-014",
+            "FR-015",
+            "FR-DOM-001",
+            "FR-DOM-002",
+            "FR-DOM-003"
+          ]
+        },
+        {
+          "endpoint": "/api/auth/login",
+          "method": "POST",
+          "purpose": "Support the Login and Signup feature.",
+          "request_model": "LoginAndSignupRequest",
+          "success_response_model": "LoginAndSignupSuccessResponse",
+          "error_response_model": "LoginAndSignupErrorResponse",
+          "related_requirements": [
+            "FR-001",
+            "FR-002",
+            "FR-003",
+            "FR-004",
+            "FR-005",
+            "FR-006",
+            "FR-007",
+            "FR-008",
+            "FR-009",
+            "FR-010",
+            "FR-011",
+            "FR-012",
+            "FR-013",
+            "FR-014",
+            "FR-015",
+            "FR-DOM-001",
+            "FR-DOM-002",
+            "FR-DOM-003"
+          ]
+        },
+        {
+          "endpoint": "/api/auth/logout",
+          "method": "GET",
+          "purpose": "Support the Login and Signup feature.",
+          "request_model": "LoginAndSignupRequest",
+          "success_response_model": "LoginAndSignupSuccessResponse",
+          "error_response_model": "LoginAndSignupErrorResponse",
+          "related_requirements": [
+            "FR-001",
+            "FR-002",
+            "FR-003",
+            "FR-004",
+            "FR-005",
+            "FR-006",
+            "FR-007",
+            "FR-008",
+            "FR-009",
+            "FR-010",
+            "FR-011",
+            "FR-012",
+            "FR-013",
+            "FR-014",
+            "FR-015",
+            "FR-DOM-001",
+            "FR-DOM-002",
+            "FR-DOM-003"
+          ]
+        }
+      ],
+      "request_models": [
+        {
+          "name": "LoginAndSignupRequest",
+          "fields": [
+            {
+              "name": "field",
+              "type": "string",
+              "format": "name — string, required (user's full name or display name)",
+              "required": true
+            },
+            {
+              "name": "field",
+              "type": "string",
+              "format": "email — string, required, unique, valid email format (used as the login identifier)",
+              "required": true
+            },
+            {
+              "name": "field",
+              "type": "string",
+              "format": "password — string, required, stored as a hashed value only, never in plain text",
+              "required": true
+            }
+          ],
+          "related_requirements": [
+            "FR-001",
+            "FR-002",
+            "FR-003",
+            "FR-004",
+            "FR-005",
+            "FR-006",
+            "FR-007",
+            "FR-008",
+            "FR-009",
+            "FR-010",
+            "FR-011",
+            "FR-012",
+            "FR-013",
+            "FR-014",
+            "FR-015",
+            "FR-DOM-001",
+            "FR-DOM-002",
+            "FR-DOM-003"
+          ]
+        }
+      ],
+      "response_models": [
+        {
+          "name": "LoginAndSignupSuccessResponse",
+          "type": "success",
+          "fields": [],
+          "related_requirements": [
+            "FR-001",
+            "FR-002",
+            "FR-003",
+            "FR-004",
+            "FR-005",
+            "FR-006",
+            "FR-007",
+            "FR-008",
+            "FR-009",
+            "FR-010",
+            "FR-011",
+            "FR-012",
+            "FR-013",
+            "FR-014",
+            "FR-015",
+            "FR-DOM-001",
+            "FR-DOM-002",
+            "FR-DOM-003"
+          ]
+        },
+        {
+          "name": "LoginAndSignupErrorResponse",
+          "type": "error",
+          "fields": [],
+          "related_requirements": []
+        }
+      ]
+    },
+    "data_view": {
+      "data_entities": [
+        {
+          "name": "LoginAndSignupData",
+          "purpose": "Core data entity for the Login and Signup feature.",
+          "fields": [
+            {
+              "name": "name",
+              "type": "String",
+              "required": false
+            },
+            {
+              "name": "string",
+              "type": "String",
+              "required": false
+            },
+            {
+              "name": "required",
+              "type": "String",
+              "required": false
+            },
+            {
+              "name": "user",
+              "type": "String",
+              "required": false
+            },
+            {
+              "name": "sFullNameOrDisplayName",
+              "type": "String",
+              "required": false
+            },
+            {
+              "name": "email",
+              "type": "String",
+              "required": false
+            },
+            {
+              "name": "string",
+              "type": "String",
+              "required": false
+            },
+            {
+              "name": "required",
+              "type": "String",
+              "required": false
+            },
+            {
+              "name": "unique",
+              "type": "String",
+              "required": false
+            },
+            {
+              "name": "validEmailFormat",
+              "type": "String",
+              "required": false
+            },
+            {
+              "name": "password",
+              "type": "String",
+              "required": false
+            },
+            {
+              "name": "string",
+              "type": "String",
+              "required": false
+            },
+            {
+              "name": "required",
+              "type": "String",
+              "required": false
+            },
+            {
+              "name": "storedAsAHashedValueOnly",
+              "type": "String",
+              "required": false
+            },
+            {
+              "name": "neverInPlainText",
+              "type": "String",
+              "required": false
+            },
+            {
+              "name": "createdAt",
+              "type": "String",
+              "required": false
+            },
+            {
+              "name": "timestamp",
+              "type": "String",
+              "required": false
+            },
+            {
+              "name": "auto",
+              "type": "String",
+              "required": false
+            },
+            {
+              "name": "generatedOnAccountCreation",
+              "type": "String",
+              "required": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "String",
+              "required": false
+            },
+            {
+              "name": "timestamp",
+              "type": "String",
+              "required": false
+            },
+            {
+              "name": "auto",
+              "type": "String",
+              "required": false
+            },
+            {
+              "name": "updatedWheneverTheUserRecor",
+              "type": "String",
+              "required": false
+            },
+            {
+              "name": "dChanges",
+              "type": "String",
+              "required": false
+            },
+            {
+              "name": "lastLoginAt",
+              "type": "String",
+              "required": false
+            },
+            {
+              "name": "timestamp",
+              "type": "String",
+              "required": false
+            },
+            {
+              "name": "updatedOnEachSuccessfulLogi",
+              "type": "String",
+              "required": false
+            },
+            {
+              "name": "usefulForThe",
+              "type": "String",
+              "required": false
+            }
+          ],
+          "relationships": [],
+          "indexes_or_constraints": [
+            "Unique constraint required where applicable.",
+            "Protected value storage required where applicable."
+          ],
+          "related_requirements": [
+            "FR-001",
+            "FR-002",
+            "FR-003",
+            "FR-004",
+            "FR-005",
+            "FR-006",
+            "FR-007",
+            "FR-008",
+            "FR-009",
+            "FR-011",
+            "FR-012",
+            "FR-013",
+            "FR-014",
+            "FR-015",
+            "FR-DOM-001",
+            "FR-DOM-002",
+            "FR-DOM-003"
+          ]
+        }
+      ],
+      "storage_rules": [
+        "name — string, required (user's full name or display name)",
+        "email — string, required, unique, valid email format (used as the login identifier)",
+        "password — string, required, stored as a hashed value only, never in plain text",
+        "created_at — timestamp, auto-generated on account creation",
+        "updated_at — timestamp, auto-updated whenever the user record changes",
+        "last_login_at — timestamp, updated on each successful login (useful for the 'session persists' acceptance criterion and any future activity tracking)"
+      ],
+      "data_validation_rules": [
+        {
+          "rule_id": "VR-001",
+          "rule": "Email must be in a valid format.",
+          "related_requirements": [
+            "VR-001"
+          ]
+        },
+        {
+          "rule_id": "VR-002",
+          "rule": "Password must meet minimum strength requirements.",
+          "related_requirements": [
+            "VR-002"
+          ]
+        },
+        {
+          "rule_id": "VR-003",
+          "rule": "Confirm password must match the password field.",
+          "related_requirements": [
+            "VR-003"
+          ]
+        }
+      ]
+    },
+    "behavior_view": {
+      "main_success_flow": [
+        {
+          "id": "AC-006",
+          "description": "Given a logged-in user, when they refresh the page, then they remain logged in (session persists)",
+          "related_requirements": [
+            "FR-001",
+            "FR-004",
+            "FR-005",
+            "FR-007",
+            "FR-008",
+            "FR-009",
+            "FR-013",
+            "FR-014",
+            "FR-015",
+            "FR-DOM-001",
+            "FR-DOM-002",
+            "FR-DOM-003"
+          ]
+        }
+      ],
+      "alternative_flows": [
+        {
+          "id": "AC-001",
+          "description": "Given a new, unused email and a valid password, when the user submits the signup form, then their account is created, their password is hashed before storage, and they are automatically logged in and redirected to the home page. Additionally, if the user's email is not verified, placing an order should be blocked until verification is completed.",
+          "related_requirements": [
+            "FR-001",
+            "FR-003",
+            "FR-004",
+            "FR-005",
+            "FR-006",
+            "FR-007",
+            "FR-008",
+            "FR-009",
+            "FR-011",
+            "FR-012",
+            "FR-013",
+            "FR-014",
+            "FR-015",
+            "FR-DOM-001",
+            "FR-DOM-002",
+            "FR-DOM-003"
+          ]
+        },
+        {
+          "id": "AC-005",
+          "description": "Given a logged-in user, when they click 'Logout', then their session ends and they are redirected to the login page",
+          "related_requirements": [
+            "FR-001",
+            "FR-002",
+            "FR-004",
+            "FR-005",
+            "FR-006",
+            "FR-007",
+            "FR-008",
+            "FR-009",
+            "FR-010",
+            "FR-011",
+            "FR-013",
+            "FR-014",
+            "FR-015",
+            "FR-DOM-001",
+            "FR-DOM-002",
+            "FR-DOM-003"
+          ]
+        }
+      ],
+      "exception_flows": [
+        {
+          "id": "AC-002",
+          "description": "Given an email that's already registered, when the user submits the signup form, then they see a clear 'An account with this email already exists' error and remain on the signup page",
+          "related_requirements": [
+            "FR-001",
+            "FR-003",
+            "FR-004",
+            "FR-005",
+            "FR-007",
+            "FR-008",
+            "FR-009",
+            "FR-011",
+            "FR-012",
+            "FR-013",
+            "FR-014",
+            "FR-015",
+            "FR-DOM-001",
+            "FR-DOM-002",
+            "FR-DOM-003"
+          ]
+        },
+        {
+          "id": "AC-003",
+          "description": "Given valid login credentials, when the user submits the login form, then they are logged in within 3 seconds and redirected to the sample home page, with the nav bar showing their logged-in state. Additionally, if there have been 5 consecutive failed login attempts, further login attempts should be rejected for a cooldown period of 15 minutes.",
+          "related_requirements": [
+            "FR-001",
+            "FR-002",
+            "FR-004",
+            "FR-005",
+            "FR-006",
+            "FR-007",
+            "FR-008",
+            "FR-009",
+            "FR-011",
+            "FR-013",
+            "FR-014",
+            "FR-015",
+            "FR-DOM-001",
+            "FR-DOM-002",
+            "FR-DOM-003"
+          ]
+        },
+        {
+          "id": "AC-004",
+          "description": "Given invalid login credentials (wrong email or wrong password), when the user submits the login form, then they see a generic 'Invalid email or password' error and remain on the login page",
+          "related_requirements": [
+            "FR-001",
+            "FR-002",
+            "FR-003",
+            "FR-004",
+            "FR-005",
+            "FR-006",
+            "FR-007",
+            "FR-008",
+            "FR-009",
+            "FR-011",
+            "FR-012",
+            "FR-013",
+            "FR-014",
+            "FR-015",
+            "FR-DOM-001",
+            "FR-DOM-002",
+            "FR-DOM-003"
+          ]
+        }
+      ],
+      "state_changes": [
+        {
+          "description": "On valid credentials: user receives a success response, is issued an auth session/token, and is redirected to the home page",
+          "related_requirements": [
+            "FR-004"
+          ]
+        },
+        {
+          "description": "On invalid credentials: user receives a generic error message ('Invalid email or password') without revealing which field was wrong",
+          "related_requirements": [
+            "FR-005"
+          ]
+        },
+        {
+          "description": "If the email is already taken: user receives a clear error message ('An account with this email already exists') and stays on the form",
+          "related_requirements": [
+            "FR-013"
+          ]
+        },
+        {
+          "description": "On success: user's account is created, password is hashed before storage, user receives a success confirmation, is automatically logged in, and is redirected to the home page",
+          "related_requirements": [
+            "FR-014"
+          ]
+        },
+        {
+          "description": "Given a new, unused email and a valid password, when the user submits the signup form, then their account is created, their password is hashed before storage, and they are automatically logged in and redirected to the home page. Additionally, if the user's email is not verified, placing an order should be blocked until verification is completed.",
+          "related_requirements": [
+            "AC-001"
+          ]
+        },
+        {
+          "description": "Given valid login credentials, when the user submits the login form, then they are logged in within 3 seconds and redirected to the sample home page, with the nav bar showing their logged-in state. Additionally, if there have been 5 consecutive failed login attempts, further login attempts should be rejected for a cooldown period of 15 minutes.",
+          "related_requirements": [
+            "AC-003"
+          ]
+        },
+        {
+          "description": "Given a logged-in user, when they click 'Logout', then their session ends and they are redirected to the login page",
+          "related_requirements": [
+            "AC-005"
+          ]
+        }
+      ]
+    },
+    "error_handling_view": {
+      "validation_errors": [
+        {
+          "source_id": "VR-001",
+          "condition": "Email must be in a valid format.",
+          "handling": "Return a clear validation message and prevent invalid processing."
+        },
+        {
+          "source_id": "VR-002",
+          "condition": "Password must meet minimum strength requirements.",
+          "handling": "Return a clear validation message and prevent invalid processing."
+        },
+        {
+          "source_id": "VR-003",
+          "condition": "Confirm password must match the password field.",
+          "handling": "Return a clear validation message and prevent invalid processing."
+        }
+      ],
+      "business_errors": [
+        {
+          "source_id": "AC-002",
+          "condition": "Given an email that's already registered, when the user submits the signup form, then they see a clear 'An account with this email already exists' error and remain on the signup page",
+          "handling": "Return a clear, user-friendly error and prevent the invalid action."
+        },
+        {
+          "source_id": "AC-003",
+          "condition": "Given valid login credentials, when the user submits the login form, then they are logged in within 3 seconds and redirected to the sample home page, with the nav bar showing their logged-in state. Additionally, if there have been 5 consecutive failed login attempts, further login attempts should be rejected for a cooldown period of 15 minutes.",
+          "handling": "Return a clear, user-friendly error and prevent the invalid action."
+        },
+        {
+          "source_id": "AC-004",
+          "condition": "Given invalid login credentials (wrong email or wrong password), when the user submits the login form, then they see a generic 'Invalid email or password' error and remain on the login page",
+          "handling": "Return a clear, user-friendly error and prevent the invalid action."
+        }
+      ],
+      "authorization_errors": [],
+      "system_errors": [
+        "Unexpected system errors should return safe generic messages without exposing internal details."
+      ],
+      "user_message_rules": [
+        "Form validation errors must be shown inline, without a full page reload"
+      ]
+    },
+    "security_authorization_view": {
+      "authentication_design": [
+        "Apply authentication behaviour required by the SRS and selected architecture."
+      ],
+      "authorization_design": [
+        "Apply role/access rules required by the SRS."
+      ],
+      "sensitive_data_rules": [
+        "Sensitive values must not be exposed in responses, logs, or generated artifacts."
+      ],
+      "risk_mitigations": [
+        {
+          "risk": "{'description': 'Security vulnerabilities related to password handling and session management.'}",
+          "mitigation": "Apply suitable mitigation based on project security policy.",
+          "related_requirements": [
+            "FR-001",
+            "FR-004",
+            "FR-006",
+            "FR-009",
+            "FR-011",
+            "FR-014",
+            "FR-DOM-002"
+          ]
+        },
+        {
+          "risk": "{'description': 'Performance issues under high load.'}",
+          "mitigation": "Apply suitable mitigation based on project security policy.",
+          "related_requirements": [
+            "FR-001",
+            "FR-002",
+            "FR-003",
+            "FR-004",
+            "FR-005",
+            "FR-006",
+            "FR-007",
+            "FR-008",
+            "FR-009",
+            "FR-010",
+            "FR-011",
+            "FR-012",
+            "FR-013",
+            "FR-014",
+            "FR-015",
+            "FR-DOM-001",
+            "FR-DOM-002",
+            "FR-DOM-003"
+          ]
+        }
+      ]
+    },
+    "quality_attributes_view": {
+      "performance": [
+        {
+          "nfr_id": "NFR-001",
+          "description": "Login and signup responses should complete within 2 seconds under normal load",
+          "design_decision": "Optimize design to satisfy the stated performance expectation."
+        },
+        {
+          "nfr_id": "NFR-002",
+          "description": "The system should handle at least 50 concurrent login attempts per second without significant latency",
+          "design_decision": "Optimize design to satisfy the stated performance expectation."
+        },
+        {
+          "nfr_id": "NFR-003",
+          "description": "Passwords must be hashed (never stored or logged in plain text) and never returned in any API response",
+          "design_decision": "Optimize design to satisfy the stated performance expectation."
+        },
+        {
+          "nfr_id": "NFR-005",
+          "description": "Form validation errors must be shown inline, without a full page reload",
+          "design_decision": "Optimize design to satisfy the stated performance expectation."
+        }
+      ],
+      "usability": [],
+      "reliability": [],
+      "scalability": [],
+      "maintainability": [
+        {
+          "nfr_id": "NFR-004",
+          "description": "Auth session/token must persist across a page refresh and expire after a reasonable period of inactivity (e.g. 7 days)",
+          "design_decision": "Apply secure design controls aligned with the stated quality expectation."
+        },
+        {
+          "nfr_id": "NFR-006",
+          "description": "Failed login attempts should not reveal whether the email or the password was incorrect (prevents account enumeration)",
+          "design_decision": "Design must satisfy this non-functional requirement."
+        }
+      ],
+      "accessibility": []
+    }
+  },
+  "frontend_architecture_plan": {
+    "responsibilities": [
+      {
+        "name": "LoginAndSignupFrontendModule",
+        "responsibility": "Handle frontend responsibilities for the Login and Signup feature.",
+        "derived_from": [
+          "A clean, modern design with clear input fields and error messages.",
+          "name — string, required (user's full name or display name)",
+          "email — string, required, unique, valid email format (used as the login identifier)",
+          "password — string, required, stored as a hashed value only, never in plain text"
+        ]
+      }
+    ],
+    "pages_or_components": [
+      {
+        "description": "A clean, modern design with clear input fields and error messages."
+      }
+    ],
+    "state_and_feedback": [
+      "Given a new, unused email and a valid password, when the user submits the signup form, then their account is created, their password is hashed before storage, and they are automatically logged in and redirected to the home page. Additionally, if the user's email is not verified, placing an order should be blocked until verification is completed.",
+      "Given valid login credentials, when the user submits the login form, then they are logged in within 3 seconds and redirected to the sample home page, with the nav bar showing their logged-in state. Additionally, if there have been 5 consecutive failed login attempts, further login attempts should be rejected for a cooldown period of 15 minutes.",
+      "Given a logged-in user, when they click 'Logout', then their session ends and they are redirected to the login page"
+    ]
+  },
+  "backend_architecture_plan": {
+    "responsibilities": [
+      {
+        "name": "LoginAndSignupBackendModule",
+        "responsibility": "Handle backend responsibilities for the Login and Signup feature.",
+        "derived_from": [
+          "User can enter email and password into the login form",
+          "User can click 'Login'",
+          "System validates the input (both fields required, email format correct)",
+          "On valid credentials: user receives a success response, is issued an auth session/token, and is redirected to the home page",
+          "On invalid credentials: user receives a generic error message ('Invalid email or password') without revealing which field was wrong",
+          "User can click 'Show password' to toggle password visibility",
+          "User can click a 'Forgot password?' link",
+          "User can click a link to go to the Signup page instead",
+          "User can enter name, email, password, and confirm password into the signup form",
+          "User can click 'Sign Up'",
+          "System validates the input (all fields required, valid email format, password meets minimum strength, password and confirm-password match)",
+          "System checks whether the email is already registered",
+          "If the email is already taken: user receives a clear error message ('An account with this email already exists') and stays on the form",
+          "On success: user's account is created, password is hashed before storage, user receives a success confirmation, is automatically logged in, and is redirected to the home page",
+          "User can click a link to go to the Login page instead",
+          "After a defined number of consecutive failed login attempts (5), the account should be temporarily locked for a cooldown period (15 minutes) or until the account owner resets their password, whichever comes first.",
+          "When a user requests a password reset, the system issues a single-use, time-limited reset token (expiring after 30 minutes) sent to the account's verified email address. The token must be invalidated immediately after first use.",
+          "Placing an order (checkout) with a newly registered account requires email verification. The customer must be given a clear, immediate way to resend the verification email without losing their cart.",
+          "Email must be in a valid format.",
+          "Password must meet minimum strength requirements.",
+          "Confirm password must match the password field."
+        ]
+      }
+    ],
+    "layers": [
+      {
+        "name": "LoginAndSignupService",
+        "responsibility": "Apply business rules for the Login and Signup feature.",
+        "related_requirements": [
+          "FR-001",
+          "FR-002",
+          "FR-003",
+          "FR-004",
+          "FR-005",
+          "FR-006",
+          "FR-007",
+          "FR-008",
+          "FR-009",
+          "FR-010",
+          "FR-011",
+          "FR-012",
+          "FR-013",
+          "FR-014",
+          "FR-015",
+          "FR-DOM-001",
+          "FR-DOM-002",
+          "FR-DOM-003"
+        ]
+      },
+      {
+        "name": "LoginAndSignupDataModule",
+        "responsibility": "Manage data access required by the feature.",
+        "derived_from": [
+          "name — string, required (user's full name or display name)",
+          "email — string, required, unique, valid email format (used as the login identifier)",
+          "password — string, required, stored as a hashed value only, never in plain text",
+          "created_at — timestamp, auto-generated on account creation",
+          "updated_at — timestamp, auto-updated whenever the user record changes",
+          "last_login_at — timestamp, updated on each successful login (useful for the 'session persists' acceptance criterion and any future activity tracking)"
+        ]
+      }
+    ],
+    "integration_points": [
+      {
+        "type": "API",
+        "description": "POST /api/auth/signup"
+      },
+      {
+        "type": "API",
+        "description": "POST /api/auth/login"
+      },
+      {
+        "type": "API",
+        "description": "GET /api/auth/logout"
+      },
+      {
+        "type": "Dependency",
+        "description": "A secure hashing algorithm for password storage."
+      },
+      {
+        "type": "Dependency",
+        "description": "Session management library compatible with Next.js."
+      }
+    ]
+  },
+  "validation_plan": {
+    "input_validation": [
+      {
+        "rule_id": "VR-001",
+        "rule": "Email must be in a valid format.",
+        "related_requirements": [
+          "VR-001"
+        ]
+      },
+      {
+        "rule_id": "VR-002",
+        "rule": "Password must meet minimum strength requirements.",
+        "related_requirements": [
+          "VR-002"
+        ]
+      },
+      {
+        "rule_id": "VR-003",
+        "rule": "Confirm password must match the password field.",
+        "related_requirements": [
+          "VR-003"
+        ]
+      }
+    ],
+    "processing_validation": [
+      {
+        "source_id": "VR-001",
+        "condition": "Email must be in a valid format.",
+        "handling": "Return a clear validation message and prevent invalid processing."
+      },
+      {
+        "source_id": "VR-002",
+        "condition": "Password must meet minimum strength requirements.",
+        "handling": "Return a clear validation message and prevent invalid processing."
+      },
+      {
+        "source_id": "VR-003",
+        "condition": "Confirm password must match the password field.",
+        "handling": "Return a clear validation message and prevent invalid processing."
+      }
+    ]
+  },
+  "coder_implementation_tasks": [
+    {
+      "task_id": "TASK-001",
+      "task": "Create or update frontend screen/components for the Login and Signup feature.",
+      "layer": "frontend",
+      "suggested_files": [
+        "app/login-and-signup/page.tsx",
+        "components/LoginAndSignupForm.tsx"
+      ],
+      "related_requirements": [
+        "FR-001",
+        "FR-002",
+        "FR-003",
+        "FR-004",
+        "FR-005",
+        "FR-006",
+        "FR-007",
+        "FR-008",
+        "FR-009",
+        "FR-010",
+        "FR-011",
+        "FR-012",
+        "FR-013",
+        "FR-014",
+        "FR-015",
+        "FR-DOM-001",
+        "FR-DOM-002",
+        "FR-DOM-003",
+        "AC-001",
+        "AC-002",
+        "AC-003",
+        "AC-004",
+        "AC-005",
+        "AC-006"
+      ]
+    },
+    {
+      "task_id": "TASK-002",
+      "task": "Implement Next.js Route Handler(s) for the Login and Signup API expectations.",
+      "layer": "backend",
+      "suggested_files": [
+        "app/api/login-and-signup/route.ts",
+        "models/LoginAndSignup.ts"
+      ],
+      "related_requirements": [
+        "FR-001",
+        "FR-002",
+        "FR-003",
+        "FR-004",
+        "FR-005",
+        "FR-006",
+        "FR-007",
+        "FR-008",
+        "FR-009",
+        "FR-010",
+        "FR-011",
+        "FR-012",
+        "FR-013",
+        "FR-014",
+        "FR-015",
+        "FR-DOM-001",
+        "FR-DOM-002",
+        "FR-DOM-003",
+        "AC-001",
+        "AC-002",
+        "AC-003",
+        "AC-004",
+        "AC-005",
+        "AC-006"
+      ]
+    },
+    {
+      "task_id": "TASK-003",
+      "task": "Create or update data model/repository required by the Login and Signup feature.",
+      "layer": "data",
+      "suggested_files": [
+        "backend/models/login_and_signup.model.js",
+        "backend/repositories/login_and_signup.repository.js"
+      ],
+      "related_requirements": [
+        "FR-001",
+        "FR-002",
+        "FR-003",
+        "FR-004",
+        "FR-005",
+        "FR-006",
+        "FR-007",
+        "FR-008",
+        "FR-009",
+        "FR-010",
+        "FR-011",
+        "FR-012",
+        "FR-013",
+        "FR-014",
+        "FR-015",
+        "FR-DOM-001",
+        "FR-DOM-002",
+        "FR-DOM-003"
+      ]
+    },
+    {
+      "task_id": "TASK-004",
+      "task": "Implement validation rules before processing feature requests.",
+      "layer": "validation",
+      "suggested_files": [
+        "backend/validators/login_and_signup.validator.js"
+      ],
+      "related_requirements": [
+        "VR-001",
+        "VR-002",
+        "VR-003"
+      ]
+    },
+    {
+      "task_id": "TASK-005",
+      "task": "Implement success, alternative, and exception handling according to acceptance criteria.",
+      "layer": "backend/frontend",
+      "suggested_files": [],
+      "related_requirements": [
+        "AC-001",
+        "AC-002",
+        "AC-003",
+        "AC-004",
+        "AC-005",
+        "AC-006"
+      ]
+    },
+    {
+      "task_id": "TASK-006",
+      "task": "Implement security controls required by the feature, including authentication/authorization or sensitive data handling where applicable.",
+      "layer": "security",
+      "suggested_files": [],
+      "related_requirements": [
+        "FR-001",
+        "FR-002",
+        "FR-003",
+        "FR-004",
+        "FR-005",
+        "FR-006",
+        "FR-007",
+        "FR-008",
+        "FR-009",
+        "FR-010",
+        "FR-011",
+        "FR-012",
+        "FR-013",
+        "FR-014",
+        "FR-015",
+        "FR-DOM-001",
+        "FR-DOM-002",
+        "FR-DOM-003",
+        "NFR-001",
+        "NFR-002",
+        "NFR-003",
+        "NFR-004",
+        "NFR-005",
+        "NFR-006"
+      ]
+    }
+  ],
+  "implementation_plan": {
+    "backend": {
+      "files": [
+        {
+          "path": "app/api/auth/signup/route.ts",
+          "action": "create",
+          "purpose": "Next.js Route Handler implementing POST for Login and Signup (/api/auth/signup), with request validation before any handler logic.",
+          "implements_endpoints": [
+            "/api/auth/signup"
+          ]
+        },
+        {
+          "path": "app/api/auth/login/route.ts",
+          "action": "create",
+          "purpose": "Next.js Route Handler implementing POST for Login and Signup (/api/auth/login), with request validation before any handler logic.",
+          "implements_endpoints": [
+            "/api/auth/login"
+          ]
+        },
+        {
+          "path": "app/api/auth/logout/route.ts",
+          "action": "create",
+          "purpose": "Next.js Route Handler implementing GET for Login and Signup (/api/auth/logout), with request validation before any handler logic.",
+          "implements_endpoints": [
+            "/api/auth/logout"
+          ]
+        },
+        {
+          "path": "models/LoginAndSignupData.ts",
+          "action": "create",
+          "purpose": "Mongoose model for the LoginAndSignupData entity (must use the `mongoose.models.LoginAndSignupData || mongoose.model(...)` guard to avoid OverwriteModelError).",
+          "implements_endpoints": []
+        }
+      ],
+      "endpoints": [
+        {
+          "method": "POST",
+          "path": "/api/auth/signup",
+          "request_body": [
+            {
+              "field": "field",
+              "type": "string",
+              "required": true,
+              "validation": "name — string, required (user's full name or display name)"
+            },
+            {
+              "field": "field",
+              "type": "string",
+              "required": true,
+              "validation": "email — string, required, unique, valid email format (used as the login identifier)"
+            },
+            {
+              "field": "field",
+              "type": "string",
+              "required": true,
+              "validation": "password — string, required, stored as a hashed value only, never in plain text"
+            }
+          ],
+          "response": "LoginAndSignupSuccessResponse",
+          "error_cases": [
+            "400 when required request fields are missing or invalid",
+            "{'source_id': 'VR-001', 'condition': 'Email must be in a valid format.', 'handling': 'Return a clear validation message and prevent invalid processing.'}",
+            "{'source_id': 'VR-002', 'condition': 'Password must meet minimum strength requirements.', 'handling': 'Return a clear validation message and prevent invalid processing.'}",
+            "{'source_id': 'VR-003', 'condition': 'Confirm password must match the password field.', 'handling': 'Return a clear validation message and prevent invalid processing.'}",
+            "500 when an unexpected server error occurs"
+          ]
+        },
+        {
+          "method": "POST",
+          "path": "/api/auth/login",
+          "request_body": [
+            {
+              "field": "field",
+              "type": "string",
+              "required": true,
+              "validation": "name — string, required (user's full name or display name)"
+            },
+            {
+              "field": "field",
+              "type": "string",
+              "required": true,
+              "validation": "email — string, required, unique, valid email format (used as the login identifier)"
+            },
+            {
+              "field": "field",
+              "type": "string",
+              "required": true,
+              "validation": "password — string, required, stored as a hashed value only, never in plain text"
+            }
+          ],
+          "response": "LoginAndSignupSuccessResponse",
+          "error_cases": [
+            "400 when required request fields are missing or invalid",
+            "{'source_id': 'VR-001', 'condition': 'Email must be in a valid format.', 'handling': 'Return a clear validation message and prevent invalid processing.'}",
+            "{'source_id': 'VR-002', 'condition': 'Password must meet minimum strength requirements.', 'handling': 'Return a clear validation message and prevent invalid processing.'}",
+            "{'source_id': 'VR-003', 'condition': 'Confirm password must match the password field.', 'handling': 'Return a clear validation message and prevent invalid processing.'}",
+            "500 when an unexpected server error occurs"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "/api/auth/logout",
+          "request_body": [
+            {
+              "field": "field",
+              "type": "string",
+              "required": true,
+              "validation": "name — string, required (user's full name or display name)"
+            },
+            {
+              "field": "field",
+              "type": "string",
+              "required": true,
+              "validation": "email — string, required, unique, valid email format (used as the login identifier)"
+            },
+            {
+              "field": "field",
+              "type": "string",
+              "required": true,
+              "validation": "password — string, required, stored as a hashed value only, never in plain text"
+            }
+          ],
+          "response": "LoginAndSignupSuccessResponse",
+          "error_cases": [
+            "400 when required request fields are missing or invalid",
+            "{'source_id': 'VR-001', 'condition': 'Email must be in a valid format.', 'handling': 'Return a clear validation message and prevent invalid processing.'}",
+            "{'source_id': 'VR-002', 'condition': 'Password must meet minimum strength requirements.', 'handling': 'Return a clear validation message and prevent invalid processing.'}",
+            "{'source_id': 'VR-003', 'condition': 'Confirm password must match the password field.', 'handling': 'Return a clear validation message and prevent invalid processing.'}",
+            "500 when an unexpected server error occurs"
+          ]
+        }
+      ],
+      "models": [
+        {
+          "name": "LoginAndSignupData",
+          "file": "models/LoginAndSignupData.ts",
+          "fields": [
+            {
+              "name": "name",
+              "type": "String",
+              "constraints": ""
+            },
+            {
+              "name": "string",
+              "type": "String",
+              "constraints": ""
+            },
+            {
+              "name": "required",
+              "type": "String",
+              "constraints": ""
+            },
+            {
+              "name": "user",
+              "type": "String",
+              "constraints": ""
+            },
+            {
+              "name": "sFullNameOrDisplayName",
+              "type": "String",
+              "constraints": ""
+            },
+            {
+              "name": "email",
+              "type": "String",
+              "constraints": ""
+            },
+            {
+              "name": "string",
+              "type": "String",
+              "constraints": ""
+            },
+            {
+              "name": "required",
+              "type": "String",
+              "constraints": ""
+            },
+            {
+              "name": "unique",
+              "type": "String",
+              "constraints": ""
+            },
+            {
+              "name": "validEmailFormat",
+              "type": "String",
+              "constraints": ""
+            },
+            {
+              "name": "password",
+              "type": "String",
+              "constraints": ""
+            },
+            {
+              "name": "string",
+              "type": "String",
+              "constraints": ""
+            },
+            {
+              "name": "required",
+              "type": "String",
+              "constraints": ""
+            },
+            {
+              "name": "storedAsAHashedValueOnly",
+              "type": "String",
+              "constraints": ""
+            },
+            {
+              "name": "neverInPlainText",
+              "type": "String",
+              "constraints": ""
+            },
+            {
+              "name": "createdAt",
+              "type": "String",
+              "constraints": ""
+            },
+            {
+              "name": "timestamp",
+              "type": "String",
+              "constraints": ""
+            },
+            {
+              "name": "auto",
+              "type": "String",
+              "constraints": ""
+            },
+            {
+              "name": "generatedOnAccountCreation",
+              "type": "String",
+              "constraints": ""
+            },
+            {
+              "name": "updatedAt",
+              "type": "String",
+              "constraints": ""
+            },
+            {
+              "name": "timestamp",
+              "type": "String",
+              "constraints": ""
+            },
+            {
+              "name": "auto",
+              "type": "String",
+              "constraints": ""
+            },
+            {
+              "name": "updatedWheneverTheUserRecor",
+              "type": "String",
+              "constraints": ""
+            },
+            {
+              "name": "dChanges",
+              "type": "String",
+              "constraints": ""
+            },
+            {
+              "name": "lastLoginAt",
+              "type": "String",
+              "constraints": ""
+            },
+            {
+              "name": "timestamp",
+              "type": "String",
+              "constraints": ""
+            },
+            {
+              "name": "updatedOnEachSuccessfulLogi",
+              "type": "String",
+              "constraints": ""
+            },
+            {
+              "name": "usefulForThe",
+              "type": "String",
+              "constraints": ""
+            }
+          ]
+        }
+      ]
+    },
+    "frontend": {
+      "pages": [
+        {
+          "path": "app/login-and-signup/page.tsx",
+          "route": "/login-and-signup",
+          "purpose": "Main page for the Login and Signup feature. UI expectations: A clean, modern design with clear input fields and error messages.",
+          "uses_components": []
+        }
+      ],
+      "components_to_reuse": [],
+      "services": [
+        {
+          "path": "lib/api/loginAndSignup.ts",
+          "functions": [
+            {
+              "name": "postSignup",
+              "calls_endpoint": "POST /api/auth/signup"
+            },
+            {
+              "name": "postLogin",
+              "calls_endpoint": "POST /api/auth/login"
+            },
+            {
+              "name": "getLogout",
+              "calls_endpoint": "GET /api/auth/logout"
+            }
+          ]
+        }
+      ],
+      "routing": {
+        "new_routes": [
+          {
+            "path": "/login-and-signup",
+            "component": "LoginAndSignupPage"
+          }
+        ],
+        "nav_links": [
+          {
+            "to": "/login-and-signup",
+            "label": "Login and Signup"
+          }
+        ]
+      }
+    },
+    "implementation_order": [
+      "Create the Mongoose model(s): models/LoginAndSignupData.ts",
+      "Create app/api/auth/signup/route.ts implementing /api/auth/signup, validating required request fields before use (400 on missing/malformed) -- it is automatically live the instant the file exists, no separate mount step needed.",
+      "Create app/api/auth/login/route.ts implementing /api/auth/login, validating required request fields before use (400 on missing/malformed) -- it is automatically live the instant the file exists, no separate mount step needed.",
+      "Create app/api/auth/logout/route.ts implementing /api/auth/logout, validating required request fields before use (400 on missing/malformed) -- it is automatically live the instant the file exists, no separate mount step needed.",
+      "Create lib/api/loginAndSignup.ts with one function per endpoint.",
+      "Create app/login-and-signup/page.tsx (a Client Component, `\"use client\"` as its first line), reusing approved UI/UX components where available instead of re-authoring their markup.",
+      "Register a real <Link href=\"/login-and-signup\"> in app/page.tsx at the FEATURE_LINKS markers -- a page with no link to it is not complete."
+    ],
+    "constraints": [
+      "The Next.js App Router scaffold already exists and works -- never recreate app/layout.tsx, next.config.mjs, tsconfig.json, or lib/mongodb.ts.",
+      "A Route Handler (route.ts) is live the instant it exists -- there is no router to mount it on, unlike an Express app.js.",
+      "Register new pages by adding a real <Link href=\"...\"> in app/page.tsx (FEATURE_LINKS markers) -- an unreachable page is not done.",
+      "Every Mongoose model file must use the `mongoose.models.X || mongoose.model(...)` guard to avoid OverwriteModelError.",
+      "Approved UI/UX output is a visual reference, not code to import -- use read_ui_component_design/read_ui_page_design to see the approved HTML+Tailwind design, then write real TSX that faithfully matches its structure/classes/content."
+    ]
+  },
+  "traceability_matrix": [
+    {
+      "source_id": "FR-001",
+      "source_type": "FR",
+      "architecture_plan_section": "Design Views / Detailed Design Decisions",
+      "design_element": "User can enter email and password into the login form",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "FR-002",
+      "source_type": "FR",
+      "architecture_plan_section": "Design Views / Detailed Design Decisions",
+      "design_element": "User can click 'Login'",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "FR-003",
+      "source_type": "FR",
+      "architecture_plan_section": "Design Views / Detailed Design Decisions",
+      "design_element": "System validates the input (both fields required, email format correct)",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "FR-004",
+      "source_type": "FR",
+      "architecture_plan_section": "Design Views / Detailed Design Decisions",
+      "design_element": "On valid credentials: user receives a success response, is issued an auth session/token, and is redirected to the home page",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "FR-005",
+      "source_type": "FR",
+      "architecture_plan_section": "Design Views / Detailed Design Decisions",
+      "design_element": "On invalid credentials: user receives a generic error message ('Invalid email or password') without revealing which field was wrong",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "FR-006",
+      "source_type": "FR",
+      "architecture_plan_section": "Design Views / Detailed Design Decisions",
+      "design_element": "User can click 'Show password' to toggle password visibility",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "FR-007",
+      "source_type": "FR",
+      "architecture_plan_section": "Design Views / Detailed Design Decisions",
+      "design_element": "User can click a 'Forgot password?' link",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "FR-008",
+      "source_type": "FR",
+      "architecture_plan_section": "Design Views / Detailed Design Decisions",
+      "design_element": "User can click a link to go to the Signup page instead",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "FR-009",
+      "source_type": "FR",
+      "architecture_plan_section": "Design Views / Detailed Design Decisions",
+      "design_element": "User can enter name, email, password, and confirm password into the signup form",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "FR-010",
+      "source_type": "FR",
+      "architecture_plan_section": "Design Views / Detailed Design Decisions",
+      "design_element": "User can click 'Sign Up'",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "FR-011",
+      "source_type": "FR",
+      "architecture_plan_section": "Design Views / Detailed Design Decisions",
+      "design_element": "System validates the input (all fields required, valid email format, password meets minimum strength, password and confirm-password match)",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "FR-012",
+      "source_type": "FR",
+      "architecture_plan_section": "Design Views / Detailed Design Decisions",
+      "design_element": "System checks whether the email is already registered",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "FR-013",
+      "source_type": "FR",
+      "architecture_plan_section": "Design Views / Detailed Design Decisions",
+      "design_element": "If the email is already taken: user receives a clear error message ('An account with this email already exists') and stays on the form",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "FR-014",
+      "source_type": "FR",
+      "architecture_plan_section": "Design Views / Detailed Design Decisions",
+      "design_element": "On success: user's account is created, password is hashed before storage, user receives a success confirmation, is automatically logged in, and is redirected to the home page",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "FR-015",
+      "source_type": "FR",
+      "architecture_plan_section": "Design Views / Detailed Design Decisions",
+      "design_element": "User can click a link to go to the Login page instead",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "FR-DOM-001",
+      "source_type": "FR",
+      "architecture_plan_section": "Design Views / Detailed Design Decisions",
+      "design_element": "After a defined number of consecutive failed login attempts (5), the account should be temporarily locked for a cooldown period (15 minutes) or until the account owner resets their password, whichever comes first.",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "FR-DOM-002",
+      "source_type": "FR",
+      "architecture_plan_section": "Design Views / Detailed Design Decisions",
+      "design_element": "When a user requests a password reset, the system issues a single-use, time-limited reset token (expiring after 30 minutes) sent to the account's verified email address. The token must be invalidated immediately after first use.",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "FR-DOM-003",
+      "source_type": "FR",
+      "architecture_plan_section": "Design Views / Detailed Design Decisions",
+      "design_element": "Placing an order (checkout) with a newly registered account requires email verification. The customer must be given a clear, immediate way to resend the verification email without losing their cart.",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "AC-001",
+      "source_type": "AC",
+      "architecture_plan_section": "Behavior View / Error Handling View",
+      "design_element": "Given a new, unused email and a valid password, when the user submits the signup form, then their account is created, their password is hashed before storage, and they are automatically logged in and redirected to the home page. Additionally, if the user's email is not verified, placing an order should be blocked until verification is completed.",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "AC-002",
+      "source_type": "AC",
+      "architecture_plan_section": "Behavior View / Error Handling View",
+      "design_element": "Given an email that's already registered, when the user submits the signup form, then they see a clear 'An account with this email already exists' error and remain on the signup page",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "AC-003",
+      "source_type": "AC",
+      "architecture_plan_section": "Behavior View / Error Handling View",
+      "design_element": "Given valid login credentials, when the user submits the login form, then they are logged in within 3 seconds and redirected to the sample home page, with the nav bar showing their logged-in state. Additionally, if there have been 5 consecutive failed login attempts, further login attempts should be rejected for a cooldown period of 15 minutes.",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "AC-004",
+      "source_type": "AC",
+      "architecture_plan_section": "Behavior View / Error Handling View",
+      "design_element": "Given invalid login credentials (wrong email or wrong password), when the user submits the login form, then they see a generic 'Invalid email or password' error and remain on the login page",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "AC-005",
+      "source_type": "AC",
+      "architecture_plan_section": "Behavior View / Error Handling View",
+      "design_element": "Given a logged-in user, when they click 'Logout', then their session ends and they are redirected to the login page",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "AC-006",
+      "source_type": "AC",
+      "architecture_plan_section": "Behavior View / Error Handling View",
+      "design_element": "Given a logged-in user, when they refresh the page, then they remain logged in (session persists)",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "VR-001",
+      "source_type": "VR",
+      "architecture_plan_section": "Interface View / Data View / Error Handling View",
+      "design_element": "Email must be in a valid format.",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "VR-002",
+      "source_type": "VR",
+      "architecture_plan_section": "Interface View / Data View / Error Handling View",
+      "design_element": "Password must meet minimum strength requirements.",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "VR-003",
+      "source_type": "VR",
+      "architecture_plan_section": "Interface View / Data View / Error Handling View",
+      "design_element": "Confirm password must match the password field.",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "NFR-001",
+      "source_type": "NFR",
+      "architecture_plan_section": "Quality Attributes View",
+      "design_element": "Login and signup responses should complete within 2 seconds under normal load",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "NFR-002",
+      "source_type": "NFR",
+      "architecture_plan_section": "Quality Attributes View",
+      "design_element": "The system should handle at least 50 concurrent login attempts per second without significant latency",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "NFR-003",
+      "source_type": "NFR",
+      "architecture_plan_section": "Quality Attributes View",
+      "design_element": "Passwords must be hashed (never stored or logged in plain text) and never returned in any API response",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "NFR-004",
+      "source_type": "NFR",
+      "architecture_plan_section": "Quality Attributes View",
+      "design_element": "Auth session/token must persist across a page refresh and expire after a reasonable period of inactivity (e.g. 7 days)",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "NFR-005",
+      "source_type": "NFR",
+      "architecture_plan_section": "Quality Attributes View",
+      "design_element": "Form validation errors must be shown inline, without a full page reload",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "NFR-006",
+      "source_type": "NFR",
+      "architecture_plan_section": "Quality Attributes View",
+      "design_element": "Failed login attempts should not reveal whether the email or the password was incorrect (prevents account enumeration)",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "CONSTRAINT-001",
+      "source_type": "Constraint",
+      "architecture_plan_section": "Design Considerations / Architecture Overview",
+      "design_element": "The system should use Next.js for frontend development.",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "CONSTRAINT-002",
+      "source_type": "Constraint",
+      "architecture_plan_section": "Design Considerations / Architecture Overview",
+      "design_element": "Passwords must be hashed using a secure algorithm before storage.",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "RISK-001",
+      "source_type": "Risk",
+      "architecture_plan_section": "Design Considerations / Security and Authorization View",
+      "design_element": "Security vulnerabilities related to password handling and session management.",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "RISK-002",
+      "source_type": "Risk",
+      "architecture_plan_section": "Design Considerations / Security and Authorization View",
+      "design_element": "Performance issues under high load.",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "DEPENDENCY-001",
+      "source_type": "Dependency",
+      "architecture_plan_section": "Design Context / Logical View",
+      "design_element": "A secure hashing algorithm for password storage.",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "DEPENDENCY-002",
+      "source_type": "Dependency",
+      "architecture_plan_section": "Design Context / Logical View",
+      "design_element": "Session management library compatible with Next.js.",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "DATA-001",
+      "source_type": "Data",
+      "architecture_plan_section": "Data View",
+      "design_element": "name — string, required (user's full name or display name)",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "DATA-002",
+      "source_type": "Data",
+      "architecture_plan_section": "Data View",
+      "design_element": "email — string, required, unique, valid email format (used as the login identifier)",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "DATA-003",
+      "source_type": "Data",
+      "architecture_plan_section": "Data View",
+      "design_element": "password — string, required, stored as a hashed value only, never in plain text",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "DATA-004",
+      "source_type": "Data",
+      "architecture_plan_section": "Data View",
+      "design_element": "created_at — timestamp, auto-generated on account creation",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "DATA-005",
+      "source_type": "Data",
+      "architecture_plan_section": "Data View",
+      "design_element": "updated_at — timestamp, auto-updated whenever the user record changes",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "DATA-006",
+      "source_type": "Data",
+      "architecture_plan_section": "Data View",
+      "design_element": "last_login_at — timestamp, updated on each successful login (useful for the 'session persists' acceptance criterion and any future activity tracking)",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "API-001",
+      "source_type": "API",
+      "architecture_plan_section": "Interface View",
+      "design_element": "POST /api/auth/signup",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "API-002",
+      "source_type": "API",
+      "architecture_plan_section": "Interface View",
+      "design_element": "POST /api/auth/login",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "API-003",
+      "source_type": "API",
+      "architecture_plan_section": "Interface View",
+      "design_element": "GET /api/auth/logout",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "UI-001",
+      "source_type": "UI",
+      "architecture_plan_section": "Context View / Logical View",
+      "design_element": "A clean, modern design with clear input fields and error messages.",
+      "coverage_status": "covered"
+    }
+  ],
+  "assumptions": [
+    "UI expectations are not detailed, so I'll assume a clean, modern design with clear input fields and error messages.",
+    "API endpoints will follow RESTful conventions."
+  ],
+  "constraints": [
+    "The system should use Next.js for frontend development.",
+    "Passwords must be hashed using a secure algorithm before storage."
+  ],
+  "risks": [
+    {
+      "description": "Security vulnerabilities related to password handling and session management."
+    },
+    {
+      "description": "Performance issues under high load."
+    }
+  ],
+  "dependencies": [
+    "A secure hashing algorithm for password storage.",
+    "Session management library compatible with Next.js."
+  ],
+  "revision_metadata": null,
+  "human_approval_note": "This Architecture Plan must be reviewed and approved before the UI/UX Agent or Coder Agent starts. AUTOMATIC VALIDATION FAILED -- review carefully before approving: Sequence diagram has unclosed combined fragment."
+}

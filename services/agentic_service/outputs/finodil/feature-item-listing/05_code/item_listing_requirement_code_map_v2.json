@@ -1,0 +1,121 @@
+{
+  "files": [
+    {
+      "path": "app/api/items/route.ts",
+      "planned": true,
+      "maps_to": [
+        "FR-002",
+        "FR-003",
+        "FR-DOM-003",
+        "AC-002",
+        "AC-003"
+      ]
+    },
+    {
+      "path": "app/item-listing/page.tsx",
+      "planned": true,
+      "maps_to": [
+        "FR-001",
+        "FR-002",
+        "FR-004",
+        "FR-005",
+        "FR-DOM-003",
+        "AC-001",
+        "AC-002",
+        "AC-004",
+        "AC-005"
+      ]
+    },
+    {
+      "path": "app/login-and-signup/page.tsx",
+      "planned": true,
+      "maps_to": [
+        "FR-001"
+      ]
+    },
+    {
+      "path": "app/page.tsx",
+      "planned": false,
+      "maps_to": []
+    },
+    {
+      "path": "babel.config.qa.js",
+      "planned": false,
+      "maps_to": []
+    },
+    {
+      "path": "generated_tests/mongodb.unit.test.ts",
+      "planned": false,
+      "maps_to": []
+    },
+    {
+      "path": "jest.config.qa.js",
+      "planned": false,
+      "maps_to": []
+    },
+    {
+      "path": "lib/api/itemListing.ts",
+      "planned": true,
+      "maps_to": [
+        "FR-002"
+      ]
+    },
+    {
+      "path": "lib/api/loginAndSignup.ts",
+      "planned": true,
+      "maps_to": [
+        "FR-001",
+        "AC-001"
+      ]
+    },
+    {
+      "path": "lib/auth/session.ts",
+      "planned": true,
+      "maps_to": [
+        "FR-001",
+        "AC-001"
+      ]
+    },
+    {
+      "path": "lib/mongodb.ts",
+      "planned": true,
+      "maps_to": [
+        "NFR-001"
+      ]
+    },
+    {
+      "path": "lib/seedData.ts",
+      "planned": true,
+      "maps_to": [
+        "FR-003",
+        "AC-003"
+      ]
+    },
+    {
+      "path": "lib/types/ItemListing.ts",
+      "planned": true,
+      "maps_to": [
+        "FR-002"
+      ]
+    },
+    {
+      "path": "models/ItemListingData.ts",
+      "planned": true,
+      "maps_to": [
+        "FR-002",
+        "FR-DOM-003",
+        "AC-002"
+      ]
+    },
+    {
+      "path": "package-lock.json",
+      "planned": false,
+      "maps_to": []
+    },
+    {
+      "path": "package.json",
+      "planned": false,
+      "maps_to": []
+    }
+  ]
+}

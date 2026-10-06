@@ -1,0 +1,62 @@
+{
+  "project_name": "Finodil",
+  "feature_name": "Login and Signup",
+  "generated_at": "2026-08-22T16:39:26.122820+00:00",
+  "scan_type": "standard",
+  "gate_decision": "fail",
+  "findings_count": 3,
+  "critical_count": 1,
+  "moderate_count": 2,
+  "warning_count": 0,
+  "findings": [
+    {
+      "id": "SEC-JS-005:app\\login-and-signup\\page.tsx:166",
+      "rule_id": "SEC-JS-005",
+      "layer": "pattern",
+      "severity": "high",
+      "cwe": "CWE-79",
+      "file": "app\\login-and-signup\\page.tsx",
+      "line": 166,
+      "message": "dangerouslySetInnerHTML bypasses React's default escaping; unsanitized HTML here is stored/DOM XSS.",
+      "root_cause": "A dangerouslySetInnerHTML attribute was found at app\\login-and-signup\\page.tsx:166, rendering raw HTML without React's default escaping.",
+      "recommendation": "Remove dangerouslySetInnerHTML and render the content as plain text/JSX, or sanitize the HTML through a trusted library (e.g. DOMPurify) before rendering it."
+    },
+    {
+      "id": "SEC-SECRET-MONGO-URI:lib\\mongodb.ts:6",
+      "rule_id": "SEC-SECRET-MONGO-URI",
+      "layer": "secret",
+      "severity": "critical",
+      "cwe": "CWE-798",
+      "file": "lib\\mongodb.ts",
+      "line": 6,
+      "message": "MongoDB connection string with an embedded, hardcoded credential",
+      "root_cause": "A hardcoded secret literal (mongodb connection string with an embedded, hardcoded credential) was found directly in source at lib\\mongodb.ts:6.",
+      "recommendation": "Move this value to `.env.local` (gitignored) and read it via `process.env.X` at runtime; rotate the exposed credential/key immediately, since it may already be compromised."
+    },
+    {
+      "id": "SEC-LLM:1",
+      "rule_id": "SEC-LLM-REVIEW",
+      "layer": "llm",
+      "severity": "high",
+      "cwe": "CWE-79",
+      "file": "app\\login-and-signup\\page.tsx",
+      "line": 166,
+      "message": "Potential Insecure Direct Object References -- The use of dangerouslySetInnerHTML without proper sanitization can lead to Insecure Direct Object References (IDOR) if user input is improperly handled, allowing attackers to manipulate HTML content.",
+      "root_cause": "The use of dangerouslySetInnerHTML without sanitization on line 166.",
+      "recommendation": "Sanitize user input before setting it with dangerouslySetInnerHTML. Consider using a library like DOMPurify to ensure HTML content is safe."
+    }
+  ],
+  "dependency_scan": {
+    "audit_exit_code": 0,
+    "audit_ran_offline": true,
+    "dependency_summary": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0,
+      "total": 0
+    }
+  },
+  "llm_review_status": "LLM review layer ran successfully: 1 additional finding(s)."
+}

@@ -1,0 +1,74 @@
+{
+  "project_name": "Finodil",
+  "feature_name": "Login and Signup",
+  "generated_at": "2026-08-30T10:44:49.284017+00:00",
+  "scan_type": "ai_model_deep_scan",
+  "gate_decision": "review",
+  "findings_count": 4,
+  "critical_count": 0,
+  "moderate_count": 4,
+  "warning_count": 0,
+  "findings": [
+    {
+      "id": "SEC-JS-006:app\\api\\auth\\login\\route.ts:39",
+      "rule_id": "SEC-JS-006",
+      "layer": "pattern",
+      "severity": "medium",
+      "cwe": "CWE-915",
+      "file": "app\\api\\auth\\login\\route.ts",
+      "line": 39,
+      "message": "Dynamic bracket property access keyed directly by a request-controlled parameter name (e.g. obj[req.query.sort]) is an object-injection / prototype-pollution-adjacent pattern; the accessor should be validated against an explicit allow-list of field names.",
+      "root_cause": "A dynamic bracket property access (obj[key]) was found at app\\api\\auth\\login\\route.ts:39, using a request-controlled value as the property name.",
+      "recommendation": "Validate the property name against an explicit allow-list of known-safe field names before using it to index the object."
+    },
+    {
+      "rule_id": "SEC-AI-DEEPSCAN",
+      "layer": "ai_model_deep_scan",
+      "severity": "high",
+      "cwe": "CWE-312",
+      "file": "lib/api/loginAndSignup.ts",
+      "line": 4,
+      "message": "Broken Authentication - Weak Password Handling -- The password is being sent in plain text during the signup and login processes. This can lead to interception of credentials during transmission.",
+      "root_cause": "The password is being sent in plain text in the request body.",
+      "recommendation": "Use HTTPS to encrypt the data in transit and consider hashing the password before sending it to the server.",
+      "id": "SEC-AI-DEEPSCAN:1"
+    },
+    {
+      "rule_id": "SEC-AI-DEEPSCAN",
+      "layer": "ai_model_deep_scan",
+      "severity": "medium",
+      "cwe": "CWE-20",
+      "file": "lib/api/loginAndSignup.ts",
+      "line": 4,
+      "message": "Security Misconfiguration - Missing Input Validation -- The signup and login functions do not validate the input data before sending it to the server. This can lead to unexpected behavior or security issues.",
+      "root_cause": "The input data is not being validated before being sent to the server.",
+      "recommendation": "Add input validation to ensure that the name, email, and password fields meet the expected criteria before sending the request.",
+      "id": "SEC-AI-DEEPSCAN:2"
+    },
+    {
+      "rule_id": "SEC-AI-DEEPSCAN",
+      "layer": "ai_model_deep_scan",
+      "severity": "medium",
+      "cwe": "CWE-209",
+      "file": "lib/api/loginAndSignup.ts",
+      "line": 13,
+      "message": "Security Misconfiguration - Missing Error Handling -- The error messages returned by the server are not being sanitized. This can leak sensitive information about the server's internal state.",
+      "root_cause": "The error messages are being returned directly to the client.",
+      "recommendation": "Sanitize the error messages before returning them to the client to avoid leaking sensitive information.",
+      "id": "SEC-AI-DEEPSCAN:3"
+    }
+  ],
+  "dependency_scan": {
+    "audit_exit_code": 0,
+    "audit_ran_offline": true,
+    "dependency_summary": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0,
+      "total": 0
+    }
+  },
+  "llm_review_status": "AI model deep scan ran over 3 batch(es) of real source code (3 succeeded, 0 failed): 3 finding(s)."
+}

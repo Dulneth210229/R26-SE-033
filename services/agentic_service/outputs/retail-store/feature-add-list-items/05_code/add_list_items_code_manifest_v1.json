@@ -1,0 +1,62 @@
+{
+  "files": [
+    {
+      "path": "models/AddListItemsData.ts",
+      "action": "create",
+      "description": "Mongoose schema for the AddListItemsData entity to store item information including image URL, name, description, price, quantity, and creation timestamp.",
+      "maps_to": [
+        "AddListItemsData",
+        "FR-001",
+        "FR-002",
+        "FR-DOM-001"
+      ],
+      "actually_touched": true
+    },
+    {
+      "path": "app/api/items/route.ts",
+      "action": "create",
+      "description": "Route Handler implementing the item collection endpoints (create/list) with validation for required fields and image constraints.",
+      "maps_to": [
+        "/api/items",
+        "/api/items",
+        "FR-001",
+        "FR-002",
+        "FR-DOM-001"
+      ],
+      "actually_touched": true
+    },
+    {
+      "path": "lib/api/addListItems.ts",
+      "action": "create",
+      "description": "API service layer to encapsulate calls to the backend endpoints for adding and retrieving items.",
+      "maps_to": [
+        "FR-001",
+        "FR-002",
+        "FR-DOM-001"
+      ],
+      "actually_touched": true
+    },
+    {
+      "path": "app/add-list-items/page.tsx",
+      "action": "create",
+      "description": "Main page component for the Add & List Items feature, including form for adding items and grid for listing them, matching the approved UI design.",
+      "maps_to": [
+        "FR-001",
+        "FR-002",
+        "FR-DOM-001"
+      ],
+      "actually_touched": true
+    },
+    {
+      "path": "app/page.tsx",
+      "action": "modify",
+      "description": "Add a navigation link to the new 'Add & List Items' page from the home page.",
+      "maps_to": [
+        "FR-001",
+        "FR-002",
+        "FR-DOM-001"
+      ],
+      "actually_touched": true
+    }
+  ]
+}

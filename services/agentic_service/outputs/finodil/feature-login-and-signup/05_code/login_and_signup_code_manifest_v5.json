@@ -1,0 +1,54 @@
+{
+  "files": [
+    {
+      "path": "lib/mongodb.ts",
+      "action": "modify",
+      "description": "Remove the hardcoded FALLBACK_MONGODB_URI to eliminate the CWE-798 vulnerability by ensuring only environment variables are used for database connection",
+      "maps_to": [
+        "FR-001",
+        "FR-004",
+        "FR-005",
+        "FR-006",
+        "FR-007",
+        "FR-008",
+        "FR-009",
+        "FR-010",
+        "FR-011",
+        "FR-012",
+        "FR-013",
+        "FR-014",
+        "FR-015",
+        "FR-DOM-001",
+        "FR-DOM-002",
+        "FR-DOM-003"
+      ],
+      "actually_touched": true
+    },
+    {
+      "path": "app/login-and-signup/page.tsx",
+      "action": "modify",
+      "description": "Replace dangerouslySetInnerHTML with plain text rendering to prevent XSS/SQL injection vulnerabilities (CWE-79)",
+      "maps_to": [
+        "FR-001",
+        "FR-002",
+        "FR-003",
+        "FR-004",
+        "FR-005",
+        "FR-006",
+        "FR-007",
+        "FR-008",
+        "FR-009",
+        "FR-010",
+        "FR-011",
+        "FR-012",
+        "FR-013",
+        "FR-014",
+        "FR-015",
+        "FR-DOM-001",
+        "FR-DOM-002",
+        "FR-DOM-003"
+      ],
+      "actually_touched": true
+    }
+  ]
+}

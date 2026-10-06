@@ -1,0 +1,586 @@
+{
+  "document_control": {
+    "document_title": "Architecture Plan: Task Search",
+    "document_type": "Feature Architecture Plan",
+    "project_id": "proj_revladder",
+    "project_name": "TaskFlow",
+    "project_type": "General",
+    "feature_id": "feature_revladder",
+    "feature_name": "Task Search",
+    "target_stack": "MERN",
+    "architecture_style": "mvc",
+    "version": "v1",
+    "generated_by": "Architecture Agent",
+    "input_artifacts": [
+      "Approved SRS JSON",
+      "Approved Enhanced SRS JSON if available"
+    ],
+    "approval_status": "pending"
+  },
+  "feature_overview": {
+    "business_goal": "Support the Task Search feature.",
+    "scope": [
+      "Design the approved Task Search feature only."
+    ],
+    "out_of_scope": [],
+    "user_roles": [
+      "Registered User"
+    ],
+    "feature_boundary": "This Architecture Plan covers only the Task Search feature and excludes unrelated features."
+  },
+  "requirement_interpretation": {
+    "functional_requirements": [
+      {
+        "id": "FR-001",
+        "description": "Users can search tasks by keyword."
+      }
+    ],
+    "acceptance_criteria": [
+      {
+        "id": "AC-001",
+        "description": "Matching tasks are displayed."
+      }
+    ],
+    "validation_rules": [
+      {
+        "id": "VR-001",
+        "description": "Search query must not be empty."
+      }
+    ],
+    "non_functional_requirements": [
+      {
+        "id": "NFR-001",
+        "description": "Search responds within 1s."
+      }
+    ]
+  },
+  "architecture_approach": {
+    "architecture_style": "mvc",
+    "architecture_rationale": "Use mvc to keep the Task Search feature separated into presentation, business logic, and data responsibilities where applicable.",
+    "frontend_overview": "Frontend design should provide the user-facing entry points, inputs, states, and feedback required by the approved SRS.",
+    "backend_overview": "Backend design should process feature requests, enforce business rules, validate inputs, and return structured responses.",
+    "data_overview": "Data design should support the data requirements defined in the approved SRS.",
+    "integration_overview": "Integration design should follow the API expectations and dependencies listed in the approved SRS.",
+    "design_tradeoffs": [
+      "Design is derived directly from the approved SRS to preserve traceability and feature scope.",
+      "Design is kept feature-scoped to preserve feature-by-feature SDLC development.",
+      "Internal generation or repair details are kept in backend logs and are not exposed in the approval-ready Architecture Plan."
+    ]
+  },
+  "design_views": {
+    "context_view": {
+      "actors": [
+        "Registered User"
+      ],
+      "external_systems": [],
+      "feature_boundary": "Task Search feature boundary.",
+      "main_interactions": [
+        "Registered User interacts with the Task Search feature.",
+        "Users can search tasks by keyword."
+      ]
+    },
+    "logical_view": {
+      "frontend_modules": [
+        {
+          "name": "TaskSearchFrontendModule",
+          "responsibility": "Handle frontend responsibilities for the Task Search feature.",
+          "derived_from": [
+            "A search input box",
+            "Search keyword"
+          ]
+        }
+      ],
+      "backend_modules": [
+        {
+          "name": "TaskSearchBackendModule",
+          "responsibility": "Handle backend responsibilities for the Task Search feature.",
+          "derived_from": [
+            "Users can search tasks by keyword.",
+            "Search query must not be empty."
+          ]
+        }
+      ],
+      "domain_services": [
+        {
+          "name": "TaskSearchService",
+          "responsibility": "Apply business rules for the Task Search feature.",
+          "related_requirements": [
+            "FR-001"
+          ]
+        }
+      ],
+      "data_modules": [
+        {
+          "name": "TaskSearchDataModule",
+          "responsibility": "Manage data access required by the feature.",
+          "derived_from": [
+            "Represents a matched task"
+          ]
+        }
+      ],
+      "integration_points": [
+        {
+          "type": "API",
+          "description": "Search tasks"
+        }
+      ]
+    },
+    "interface_view": {
+      "api_endpoints": [
+        {
+          "endpoint": "/api/task-search",
+          "method": "GET",
+          "purpose": "Search tasks",
+          "request_model": "TaskSearchRequest",
+          "success_response_model": "TaskSearchSuccessResponse",
+          "error_response_model": "TaskSearchErrorResponse",
+          "related_requirements": [
+            "FR-001"
+          ]
+        }
+      ],
+      "request_models": [
+        {
+          "name": "TaskSearchRequest",
+          "fields": [
+            {
+              "name": "query",
+              "type": "string",
+              "format": "Search keyword",
+              "required": true
+            }
+          ],
+          "related_requirements": [
+            "FR-001"
+          ]
+        }
+      ],
+      "response_models": [
+        {
+          "name": "TaskSearchSuccessResponse",
+          "type": "success",
+          "fields": [
+            {
+              "name": "results",
+              "type": "array",
+              "description": "Matching tasks"
+            }
+          ],
+          "related_requirements": [
+            "FR-001"
+          ]
+        },
+        {
+          "name": "TaskSearchErrorResponse",
+          "type": "error",
+          "fields": [],
+          "related_requirements": []
+        }
+      ]
+    },
+    "data_view": {
+      "data_entities": [
+        {
+          "name": "TaskSearchData",
+          "purpose": "Core data entity for the Task Search feature.",
+          "fields": [
+            {
+              "name": "representsAMatchedTask",
+              "type": "String",
+              "required": false
+            }
+          ],
+          "relationships": [],
+          "indexes_or_constraints": [],
+          "related_requirements": [
+            "FR-001"
+          ]
+        }
+      ],
+      "storage_rules": [
+        "Represents a matched task"
+      ],
+      "data_validation_rules": [
+        {
+          "rule_id": "VR-001",
+          "rule": "Search query must not be empty.",
+          "related_requirements": [
+            "VR-001"
+          ]
+        }
+      ]
+    },
+    "behavior_view": {
+      "main_success_flow": [
+        {
+          "id": "AC-001",
+          "description": "Matching tasks are displayed.",
+          "related_requirements": [
+            "FR-001"
+          ]
+        }
+      ],
+      "alternative_flows": [],
+      "exception_flows": [],
+      "state_changes": [
+        {
+          "description": "Feature state changes should follow the approved Task Search acceptance criteria.",
+          "related_requirements": []
+        }
+      ]
+    },
+    "error_handling_view": {
+      "validation_errors": [
+        {
+          "source_id": "VR-001",
+          "condition": "Violation of VR-001",
+          "handling": "Reject the request with an HTTP 400 response referencing VR-001, show the user a message identifying the invalid field(s), and do not process or persist the request."
+        }
+      ],
+      "business_errors": [],
+      "authorization_errors": [],
+      "system_errors": [
+        "Unexpected system errors should return safe generic messages without exposing internal details."
+      ],
+      "user_message_rules": [
+        "All user-facing errors must be clear, non-technical, and aligned with the approved SRS."
+      ]
+    },
+    "security_authorization_view": {
+      "authentication_design": [],
+      "authorization_design": [],
+      "sensitive_data_rules": [],
+      "risk_mitigations": []
+    },
+    "quality_attributes_view": {
+      "performance": [],
+      "usability": [],
+      "reliability": [],
+      "scalability": [],
+      "maintainability": [
+        {
+          "nfr_id": "NFR-001",
+          "description": "Search responds within 1s.",
+          "design_decision": "Design must satisfy this non-functional requirement."
+        }
+      ],
+      "accessibility": []
+    }
+  },
+  "frontend_architecture_plan": {
+    "responsibilities": [
+      {
+        "name": "TaskSearchFrontendModule",
+        "responsibility": "Handle frontend responsibilities for the Task Search feature.",
+        "derived_from": [
+          "A search input box",
+          "Search keyword"
+        ]
+      }
+    ],
+    "pages_or_components": [
+      {
+        "id": "UI-001",
+        "description": "A search input box"
+      }
+    ],
+    "state_and_feedback": [
+      "Matching tasks are displayed."
+    ]
+  },
+  "backend_architecture_plan": {
+    "responsibilities": [
+      {
+        "name": "TaskSearchBackendModule",
+        "responsibility": "Handle backend responsibilities for the Task Search feature.",
+        "derived_from": [
+          "Users can search tasks by keyword.",
+          "Search query must not be empty."
+        ]
+      }
+    ],
+    "layers": [
+      {
+        "name": "TaskSearchService",
+        "responsibility": "Apply business rules for the Task Search feature.",
+        "related_requirements": [
+          "FR-001"
+        ]
+      },
+      {
+        "name": "TaskSearchDataModule",
+        "responsibility": "Manage data access required by the feature.",
+        "derived_from": [
+          "Represents a matched task"
+        ]
+      }
+    ],
+    "integration_points": [
+      {
+        "type": "API",
+        "description": "Search tasks"
+      }
+    ]
+  },
+  "validation_plan": {
+    "input_validation": [
+      {
+        "rule_id": "VR-001",
+        "rule": "Search query must not be empty.",
+        "related_requirements": [
+          "VR-001"
+        ]
+      }
+    ],
+    "processing_validation": [
+      {
+        "rule_id": "VR-001",
+        "rule": "Search query must not be empty.",
+        "related_requirements": [
+          "VR-001"
+        ]
+      }
+    ]
+  },
+  "coder_implementation_tasks": [
+    {
+      "task_id": "TASK-001",
+      "task": "Create or update frontend screen/components for the Task Search feature.",
+      "layer": "frontend",
+      "suggested_files": [
+        "app/task-search/page.tsx",
+        "components/TaskSearchForm.tsx"
+      ],
+      "related_requirements": [
+        "FR-001",
+        "AC-001"
+      ]
+    },
+    {
+      "task_id": "TASK-002",
+      "task": "Implement Next.js Route Handler(s) for the Task Search API expectations.",
+      "layer": "backend",
+      "suggested_files": [
+        "app/api/task-search/route.ts",
+        "models/TaskSearch.ts"
+      ],
+      "related_requirements": [
+        "FR-001",
+        "AC-001"
+      ]
+    },
+    {
+      "task_id": "TASK-003",
+      "task": "Create or update data model/repository required by the Task Search feature.",
+      "layer": "data",
+      "suggested_files": [
+        "backend/models/task_search.model.js",
+        "backend/repositories/task_search.repository.js"
+      ],
+      "related_requirements": [
+        "FR-001"
+      ]
+    },
+    {
+      "task_id": "TASK-004",
+      "task": "Implement validation rules before processing feature requests.",
+      "layer": "validation",
+      "suggested_files": [
+        "backend/validators/task_search.validator.js"
+      ],
+      "related_requirements": [
+        "VR-001"
+      ]
+    },
+    {
+      "task_id": "TASK-005",
+      "task": "Implement success, alternative, and exception handling according to acceptance criteria.",
+      "layer": "backend/frontend",
+      "suggested_files": [],
+      "related_requirements": [
+        "AC-001"
+      ]
+    },
+    {
+      "task_id": "TASK-006",
+      "task": "Implement security controls required by the feature, including authentication/authorization or sensitive data handling where applicable.",
+      "layer": "security",
+      "suggested_files": [],
+      "related_requirements": [
+        "FR-001",
+        "NFR-001"
+      ]
+    }
+  ],
+  "implementation_plan": {
+    "backend": {
+      "files": [
+        {
+          "path": "app/api/task-search/route.ts",
+          "action": "create",
+          "purpose": "Next.js Route Handler implementing GET for Task Search (/api/task-search), with request validation before any handler logic.",
+          "implements_endpoints": [
+            "/api/task-search"
+          ]
+        },
+        {
+          "path": "models/TaskSearchData.ts",
+          "action": "create",
+          "purpose": "Mongoose model for the TaskSearchData entity (must use the `mongoose.models.TaskSearchData || mongoose.model(...)` guard to avoid OverwriteModelError).",
+          "implements_endpoints": []
+        }
+      ],
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/api/task-search",
+          "request_body": [
+            {
+              "field": "query",
+              "type": "string",
+              "required": true,
+              "validation": "Search keyword"
+            }
+          ],
+          "response": "TaskSearchSuccessResponse",
+          "error_cases": [
+            "400 when required request fields are missing or invalid",
+            "{'source_id': 'VR-001', 'condition': 'Violation of VR-001', 'handling': 'Reject the request with an HTTP 400 response referencing VR-001, show the user a message identifying the invalid field(s), and do not process or persist the request.'}",
+            "500 when an unexpected server error occurs"
+          ]
+        }
+      ],
+      "models": [
+        {
+          "name": "TaskSearchData",
+          "file": "models/TaskSearchData.ts",
+          "fields": [
+            {
+              "name": "representsAMatchedTask",
+              "type": "String",
+              "constraints": ""
+            }
+          ]
+        }
+      ]
+    },
+    "frontend": {
+      "pages": [
+        {
+          "path": "app/task-search/page.tsx",
+          "route": "/task-search",
+          "purpose": "Main page for the Task Search feature. UI expectations: A search input box",
+          "uses_components": []
+        }
+      ],
+      "components_to_reuse": [],
+      "services": [
+        {
+          "path": "lib/api/taskSearch.ts",
+          "functions": [
+            {
+              "name": "getTaskSearch",
+              "calls_endpoint": "GET /api/task-search"
+            }
+          ]
+        }
+      ],
+      "routing": {
+        "new_routes": [
+          {
+            "path": "/task-search",
+            "component": "TaskSearchPage"
+          }
+        ],
+        "nav_links": [
+          {
+            "to": "/task-search",
+            "label": "Task Search"
+          }
+        ]
+      }
+    },
+    "implementation_order": [
+      "Create the Mongoose model(s): models/TaskSearchData.ts",
+      "Create app/api/task-search/route.ts implementing /api/task-search, validating required request fields before use (400 on missing/malformed) -- it is automatically live the instant the file exists, no separate mount step needed.",
+      "Create lib/api/taskSearch.ts with one function per endpoint.",
+      "Create app/task-search/page.tsx (a Client Component, `\"use client\"` as its first line), reusing approved UI/UX components where available instead of re-authoring their markup.",
+      "Register a real <Link href=\"/task-search\"> in app/page.tsx at the FEATURE_LINKS markers -- a page with no link to it is not complete."
+    ],
+    "constraints": [
+      "The Next.js App Router scaffold already exists and works -- never recreate app/layout.tsx, next.config.mjs, tsconfig.json, or lib/mongodb.ts.",
+      "A Route Handler (route.ts) is live the instant it exists -- there is no router to mount it on, unlike an Express app.js.",
+      "Register new pages by adding a real <Link href=\"...\"> in app/page.tsx (FEATURE_LINKS markers) -- an unreachable page is not done.",
+      "Every Mongoose model file must use the `mongoose.models.X || mongoose.model(...)` guard to avoid OverwriteModelError.",
+      "Approved UI/UX output is a visual reference, not code to import -- use read_ui_component_design/read_ui_page_design to see the approved HTML+Tailwind design, then write real TSX that faithfully matches its structure/classes/content."
+    ]
+  },
+  "traceability_matrix": [
+    {
+      "source_id": "FR-001",
+      "source_type": "FR",
+      "architecture_plan_section": "Design Views / Detailed Design Decisions",
+      "design_element": "Users can search tasks by keyword.",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "AC-001",
+      "source_type": "AC",
+      "architecture_plan_section": "Behavior View / Error Handling View",
+      "design_element": "Matching tasks are displayed.",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "VR-001",
+      "source_type": "VR",
+      "architecture_plan_section": "Interface View / Data View / Error Handling View",
+      "design_element": "Search query must not be empty.",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "NFR-001",
+      "source_type": "NFR",
+      "architecture_plan_section": "Quality Attributes View",
+      "design_element": "Search responds within 1s.",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "DATA-001",
+      "source_type": "Data",
+      "architecture_plan_section": "Data View",
+      "design_element": "Represents a matched task",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "API-001",
+      "source_type": "API",
+      "architecture_plan_section": "Interface View",
+      "design_element": "Search tasks",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "UI-001",
+      "source_type": "UI",
+      "architecture_plan_section": "Context View / Logical View",
+      "design_element": "A search input box",
+      "coverage_status": "covered"
+    }
+  ],
+  "assumptions": [],
+  "constraints": [
+    "Search must be rate-limited to 10 requests per minute."
+  ],
+  "risks": [],
+  "dependencies": [],
+  "revision_metadata": {
+    "revision_type": "architecture_plan_revision",
+    "revision_comment": "Add a constraint that search must be rate-limited to 10 requests per minute.",
+    "revised_by": "human_user",
+    "revision_summary": "Added a rate-limiting constraint as requested.",
+    "applied_changes": [
+      "Added to constraints: Search must be rate-limited to 10 requests per minute."
+    ],
+    "unmatched_operations": []
+  },
+  "human_approval_note": "This Architecture Plan must be reviewed and approved before the UI/UX Agent or Coder Agent starts."
+}

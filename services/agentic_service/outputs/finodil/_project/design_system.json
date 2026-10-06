@@ -1,0 +1,100 @@
+{
+  "colors": {},
+  "typography": {},
+  "spacing": {},
+  "components": {
+    "LoginForm": {
+      "content_elements": [
+        "email",
+        "password"
+      ],
+      "introduced_by_feature": "Login and Signup"
+    },
+    "PasswordToggleButton": {
+      "content_elements": [
+        "show-password",
+        "hide-password"
+      ],
+      "introduced_by_feature": "Login and Signup"
+    },
+    "ForgotPasswordLink": {
+      "content_elements": [
+        "forgot-password-link-text"
+      ],
+      "introduced_by_feature": "Login and Signup"
+    },
+    "SignupLink": {
+      "content_elements": [
+        "signup-link-text"
+      ],
+      "introduced_by_feature": "Login and Signup"
+    },
+    "SignupForm": {
+      "content_elements": [
+        "name",
+        "email",
+        "password",
+        "confirm-password"
+      ],
+      "introduced_by_feature": "Login and Signup"
+    },
+    "LoginLink": {
+      "content_elements": [
+        "login-link-text"
+      ],
+      "introduced_by_feature": "Login and Signup"
+    },
+    "UserProfileCard": {
+      "content_elements": [
+        "user-name",
+        "email",
+        "profile-image"
+      ],
+      "introduced_by_feature": "Login and Signup"
+    },
+    "EditProfileButton": {
+      "content_elements": [
+        "edit-profile-button-text"
+      ],
+      "introduced_by_feature": "Login and Signup"
+    },
+    "ItemList": {
+      "content_elements": [
+        "name",
+        "description",
+        "price",
+        "quantity",
+        "category"
+      ],
+      "introduced_by_feature": "Item Listing"
+    },
+    "LoadingIndicator": {
+      "content_elements": [
+        "Loading..."
+      ],
+      "introduced_by_feature": "Item Listing"
+    },
+    "ErrorMessage": {
+      "content_elements": [
+        "Failed to load items. Please try again later."
+      ],
+      "introduced_by_feature": "Item Listing"
+    },
+    "EmptyState": {
+      "content_elements": [
+        "No items found."
+      ],
+      "introduced_by_feature": "Item Listing"
+    }
+  },
+  "tokens": {
+    "color.danger": {
+      "value": "#B00020",
+      "introduced_by_feature": "Login and Signup"
+    },
+    "color.primary": {
+      "value": "#3B82F6",
+      "introduced_by_feature": "Item Listing"
+    }
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "routes": [],
+  "api_endpoints": [
+    "/api/items"
+  ],
+  "models": [],
+  "shared_components": [],
+  "features": {
+    "feature_bd2b44a1": {
+      "feature_name": "Add & List Items",
+      "files": [
+        "app/add-list-items/page.tsx",
+        "app/api/items/route.ts",
+        "app/page.tsx",
+        "lib/api/addListItems.ts",
+        "lib/types/AddListItemsData.ts",
+        "models/AddListItemsData.ts",
+        "package-lock.json"
+      ]
+    }
+  }
+}

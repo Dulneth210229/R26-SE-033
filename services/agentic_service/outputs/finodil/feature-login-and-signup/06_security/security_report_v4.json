@@ -1,0 +1,122 @@
+{
+  "project_name": "Finodil",
+  "feature_name": "Login and Signup",
+  "generated_at": "2026-08-22T17:08:15.053613+00:00",
+  "scan_type": "ai_model_deep_scan",
+  "gate_decision": "fail",
+  "findings_count": 8,
+  "critical_count": 4,
+  "moderate_count": 4,
+  "warning_count": 0,
+  "findings": [
+    {
+      "id": "SEC-JS-005:app\\login-and-signup\\page.tsx:166",
+      "rule_id": "SEC-JS-005",
+      "layer": "pattern",
+      "severity": "high",
+      "cwe": "CWE-79",
+      "file": "app\\login-and-signup\\page.tsx",
+      "line": 166,
+      "message": "dangerouslySetInnerHTML bypasses React's default escaping; unsanitized HTML here is stored/DOM XSS.",
+      "root_cause": "A dangerouslySetInnerHTML attribute was found at app\\login-and-signup\\page.tsx:166, rendering raw HTML without React's default escaping.",
+      "recommendation": "Remove dangerouslySetInnerHTML and render the content as plain text/JSX, or sanitize the HTML through a trusted library (e.g. DOMPurify) before rendering it."
+    },
+    {
+      "id": "SEC-SECRET-MONGO-URI:lib\\mongodb.ts:6",
+      "rule_id": "SEC-SECRET-MONGO-URI",
+      "layer": "secret",
+      "severity": "critical",
+      "cwe": "CWE-798",
+      "file": "lib\\mongodb.ts",
+      "line": 6,
+      "message": "MongoDB connection string with an embedded, hardcoded credential",
+      "root_cause": "A hardcoded secret literal (mongodb connection string with an embedded, hardcoded credential) was found directly in source at lib\\mongodb.ts:6.",
+      "recommendation": "Move this value to `.env.local` (gitignored) and read it via `process.env.X` at runtime; rotate the exposed credential/key immediately, since it may already be compromised."
+    },
+    {
+      "id": "SEC-AI-DEEPSCAN:1",
+      "rule_id": "SEC-AI-DEEPSCAN",
+      "layer": "ai_model_deep_scan",
+      "severity": "high",
+      "cwe": "CWE-532",
+      "file": "app/api/auth/login/route.ts",
+      "line": 18,
+      "message": "Plaintext Password Logging -- The login endpoint logs the plaintext password, which can lead to sensitive information exposure if logs are accessed by unauthorized parties.",
+      "root_cause": "console.log('Login attempt:', email, password);",
+      "recommendation": "Remove or replace the console.log statement to prevent logging sensitive information."
+    },
+    {
+      "id": "SEC-AI-DEEPSCAN:2",
+      "rule_id": "SEC-AI-DEEPSCAN",
+      "layer": "ai_model_deep_scan",
+      "severity": "critical",
+      "cwe": "CWE-943",
+      "file": "app/api/auth/login/route.ts",
+      "line": 31,
+      "message": "NoSQL Injection via Query Parameters -- The login endpoint merges a client-supplied `filter` object directly into the MongoDB query, allowing for NoSQL injection attacks.",
+      "root_cause": "const user = await LoginAndSignupData.findOne({ email, ...filter });",
+      "recommendation": "Sanitize and validate the `filter` object to prevent injection attacks. Avoid using client-supplied parameters directly in database queries."
+    },
+    {
+      "id": "SEC-AI-DEEPSCAN:3",
+      "rule_id": "SEC-AI-DEEPSCAN",
+      "layer": "ai_model_deep_scan",
+      "severity": "critical",
+      "cwe": "CWE-916",
+      "file": "app/api/auth/signup/route.ts",
+      "line": 57,
+      "message": "Weak Password Hashing Cost Factor -- The signup endpoint uses a bcrypt cost factor of 1, which is too weak and makes brute-forcing the hash cheap.",
+      "root_cause": "const hashedPassword = await bcrypt.hash(password, 1);",
+      "recommendation": "Increase the bcrypt cost factor to a value of at least 10 to enhance password hashing security."
+    },
+    {
+      "id": "SEC-AI-DEEPSCAN:4",
+      "rule_id": "SEC-AI-DEEPSCAN",
+      "layer": "ai_model_deep_scan",
+      "severity": "high",
+      "cwe": "CWE-79",
+      "file": "app/login-and-signup/page.tsx",
+      "line": 102,
+      "message": "Cross-Site Scripting (XSS) -- The error message is rendered using dangerouslySetInnerHTML, which can allow an attacker to inject malicious scripts if the error message includes user input or API responses.",
+      "root_cause": "dangerouslySetInnerHTML={{ __html: error }}",
+      "recommendation": "Replace dangerouslySetInnerHTML with plain text rendering to prevent XSS. For example, use {error} instead of {{ __html: error }}."
+    },
+    {
+      "id": "SEC-AI-DEEPSCAN:5",
+      "rule_id": "SEC-AI-DEEPSCAN",
+      "layer": "ai_model_deep_scan",
+      "severity": "critical",
+      "cwe": "CWE-798",
+      "file": "lib/mongodb.ts",
+      "line": 6,
+      "message": "Hardcoded Credentials -- A hardcoded MongoDB connection string with a fake but realistic credential is present in the code.",
+      "root_cause": "const FALLBACK_MONGODB_URI = \"mongodb+srv://finodil_admin:Sup3rSecretPass!@cluster0.abcde.mongodb.net/finodil\";",
+      "recommendation": "Remove the hardcoded credentials and use environment variables to store sensitive information securely."
+    },
+    {
+      "id": "SEC-AI-DEEPSCAN:6",
+      "rule_id": "SEC-AI-DEEPSCAN",
+      "layer": "ai_model_deep_scan",
+      "severity": "high",
+      "cwe": "CWE-798",
+      "file": "models/LoginAndSignupData.ts",
+      "line": 14,
+      "message": "Password Storage Vulnerability -- The password field is stored in plaintext, which poses a risk of sensitive data exposure if the database is compromised.",
+      "root_cause": "The password field is defined without any encryption or hashing.",
+      "recommendation": "Hash the password using a strong hashing algorithm like bcrypt before storing it in the database. For example, use `bcrypt.hashSync(password, saltRounds)` to hash the password before saving it."
+    }
+  ],
+  "dependency_scan": {
+    "audit_exit_code": 0,
+    "audit_ran_offline": true,
+    "dependency_summary": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0,
+      "total": 0
+    }
+  },
+  "llm_review_status": "AI model deep scan ran over 3 batch(es) of real source code (3 succeeded, 0 failed): 6 finding(s)."
+}

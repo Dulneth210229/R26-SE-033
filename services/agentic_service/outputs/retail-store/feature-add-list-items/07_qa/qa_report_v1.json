@@ -1,0 +1,157 @@
+{
+  "project_name": "Retail Store",
+  "feature_name": "Add & List Items",
+  "generated_at": "2026-08-31T10:58:26.829480+00:00",
+  "framework_used": "jest",
+  "tests_generated": 8,
+  "tests_passed": 3,
+  "tests_failed": 5,
+  "tests_by_category": {
+    "unit": {
+      "total": 1,
+      "passed": 1,
+      "failed": 0
+    },
+    "integration": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "regression": {
+      "total": 5,
+      "passed": 0,
+      "failed": 5
+    }
+  },
+  "test_cases": [
+    {
+      "name": "connectToDatabase() resolves without throwing when its required env var is unset",
+      "category": "unit",
+      "target_file": "lib/mongodb.ts",
+      "target_function": "connectToDatabase",
+      "inputs": "called with no real database connection configured",
+      "expected_behavior": "resolves to null or a defined value, never throws",
+      "test_file": "mongodb.unit.test.ts",
+      "method": "deterministic-fallback",
+      "status": "passed",
+      "duration_ms": 59,
+      "failure_message": null,
+      "root_cause": null,
+      "recommendation": null
+    },
+    {
+      "name": "GET app/api/items/route.ts is callable and does not crash on its own broken code",
+      "category": "integration",
+      "target_file": "app/api/items/route.ts",
+      "target_function": "GET",
+      "inputs": "a minimal synthetic Request with an empty JSON body",
+      "expected_behavior": "returns a real Response object, or throws only a deliberate, recognizable rejection -- never an unhandled crash",
+      "test_file": "items.integration.test.ts",
+      "method": "deterministic-fallback",
+      "status": "passed",
+      "duration_ms": 59,
+      "failure_message": null,
+      "root_cause": null,
+      "recommendation": null
+    },
+    {
+      "name": "POST app/api/items/route.ts is callable and does not crash on its own broken code",
+      "category": "integration",
+      "target_file": "app/api/items/route.ts",
+      "target_function": "POST",
+      "inputs": "a minimal synthetic Request with an empty JSON body",
+      "expected_behavior": "returns a real Response object, or throws only a deliberate, recognizable rejection -- never an unhandled crash",
+      "test_file": "items.integration.test.ts",
+      "method": "deterministic-fallback",
+      "status": "passed",
+      "duration_ms": 1,
+      "failure_message": null,
+      "root_cause": null,
+      "recommendation": null
+    },
+    {
+      "name": "AC-001: Given a user fills in name, price, quantity, and an image, when they submit the form, then a new item is created and appears in the list immediately.",
+      "category": "regression",
+      "target_file": "",
+      "target_function": "",
+      "inputs": "",
+      "expected_behavior": "A new item should be created and returned in the response.",
+      "test_file": "Add-List-Items.regression.test.ts",
+      "method": "llm",
+      "status": "failed",
+      "duration_ms": 1,
+      "failure_message": "ReferenceError: POST is not defined\n    at Object.<anonymous> (/workspace/generated_tests/Add-List-Items.regression.test.ts:73:22)\n    at Promise.then.completed (/workspace/node_modules/jest-circus/build/utils.js:298:28)\n    at new Promise (<anonymous>)\n    at callAsyncCircusFn (/workspace/node_modules/jest-circus/build/utils.js:231:10)\n    at _callCircusTest (/workspace/node_modules/jest-circus/build/run.js:316:40)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at _runTest (/workspace/node_modules/jest-circus/build/run.js:252:3)\n    at _runTestsForDescribeBlock (/workspace/node_modules/jest-circus/build/run.js:126:9)\n    at _runTestsForDescribeBlock (/workspace/node_modules/jest-circus/build/run.js:121:9)\n    at run (/workspace/node_modules/jest-circus/build/run.js:71:3)\n    at runAndTransformResultsToJestFormat (/workspace/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:122:21)\n    at jestAdapter (/workspace/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:79:19)\n    at runTestInternal (/workspace/node_modules/jest-runner/build/runTest.js:367:16)\n    at runTest (/workspace/node_modules/jest-runner/build/runTest.js:444:34)\n    at Object.worker (/workspace/node_modules/jest-runner/build/testWorker.js:106:12)",
+      "root_cause": "The test is trying to use 'POST' which is not defined. This could be due to missing import or incorrect usage of HTTP method.",
+      "recommendation": "Ensure that the 'POST' method is correctly imported from an appropriate library, such as 'axios' or 'fetch'."
+    },
+    {
+      "name": "AC-002: Given a user submits the form with a missing required field (name, price, or quantity) or a negative price/quantity, when they submit, then the form shows a clear validation error and does not create the item.",
+      "category": "regression",
+      "target_file": "",
+      "target_function": "",
+      "inputs": "",
+      "expected_behavior": "A validation error should be returned if any required fields are missing or if price/quantity is invalid.",
+      "test_file": "Add-List-Items.regression.test.ts",
+      "method": "llm",
+      "status": "failed",
+      "duration_ms": 0,
+      "failure_message": "ReferenceError: POST is not defined\n    at Object.<anonymous> (/workspace/generated_tests/Add-List-Items.regression.test.ts:101:34)\n    at Promise.then.completed (/workspace/node_modules/jest-circus/build/utils.js:298:28)\n    at new Promise (<anonymous>)\n    at callAsyncCircusFn (/workspace/node_modules/jest-circus/build/utils.js:231:10)\n    at _callCircusTest (/workspace/node_modules/jest-circus/build/run.js:316:40)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at _runTest (/workspace/node_modules/jest-circus/build/run.js:252:3)\n    at _runTestsForDescribeBlock (/workspace/node_modules/jest-circus/build/run.js:126:9)\n    at _runTestsForDescribeBlock (/workspace/node_modules/jest-circus/build/run.js:121:9)\n    at run (/workspace/node_modules/jest-circus/build/run.js:71:3)\n    at runAndTransformResultsToJestFormat (/workspace/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:122:21)\n    at jestAdapter (/workspace/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:79:19)\n    at runTestInternal (/workspace/node_modules/jest-runner/build/runTest.js:367:16)\n    at runTest (/workspace/node_modules/jest-runner/build/runTest.js:444:34)\n    at Object.worker (/workspace/node_modules/jest-runner/build/testWorker.js:106:12)",
+      "root_cause": "The test is trying to use 'POST' which is not defined. This could be due to missing import or incorrect usage of HTTP method.",
+      "recommendation": "Ensure that the 'POST' method is correctly imported from an appropriate library, such as 'axios' or 'fetch'."
+    },
+    {
+      "name": "AC-003: Given a user uploads a file that isn't an image or exceeds the size limit, when they submit, then the form shows a clear error and does not create the item.",
+      "category": "regression",
+      "target_file": "",
+      "target_function": "",
+      "inputs": "",
+      "expected_behavior": "An error should be returned if the uploaded file is not an image or exceeds the size limit.",
+      "test_file": "Add-List-Items.regression.test.ts",
+      "method": "llm",
+      "status": "failed",
+      "duration_ms": 0,
+      "failure_message": "ReferenceError: POST is not defined\n    at Object.<anonymous> (/workspace/generated_tests/Add-List-Items.regression.test.ts:145:34)\n    at Promise.then.completed (/workspace/node_modules/jest-circus/build/utils.js:298:28)\n    at new Promise (<anonymous>)\n    at callAsyncCircusFn (/workspace/node_modules/jest-circus/build/utils.js:231:10)\n    at _callCircusTest (/workspace/node_modules/jest-circus/build/run.js:316:40)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at _runTest (/workspace/node_modules/jest-circus/build/run.js:252:3)\n    at _runTestsForDescribeBlock (/workspace/node_modules/jest-circus/build/run.js:126:9)\n    at _runTestsForDescribeBlock (/workspace/node_modules/jest-circus/build/run.js:121:9)\n    at run (/workspace/node_modules/jest-circus/build/run.js:71:3)\n    at runAndTransformResultsToJestFormat (/workspace/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:122:21)\n    at jestAdapter (/workspace/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:79:19)\n    at runTestInternal (/workspace/node_modules/jest-runner/build/runTest.js:367:16)\n    at runTest (/workspace/node_modules/jest-runner/build/runTest.js:444:34)\n    at Object.worker (/workspace/node_modules/jest-runner/build/testWorker.js:106:12)",
+      "root_cause": "The test is trying to use 'POST' which is not defined. This could be due to missing import or incorrect usage of HTTP method.",
+      "recommendation": "Ensure that the 'POST' method is correctly imported from an appropriate library, such as 'axios' or 'fetch'."
+    },
+    {
+      "name": "AC-004: Given no items have been added yet, when the list is opened, then a clear 'No items added yet' empty state is shown instead of a blank page.",
+      "category": "regression",
+      "target_file": "",
+      "target_function": "",
+      "inputs": "",
+      "expected_behavior": "A response with seed data should be returned if no items are found in the database.",
+      "test_file": "Add-List-Items.regression.test.ts",
+      "method": "llm",
+      "status": "failed",
+      "duration_ms": 72,
+      "failure_message": "ReferenceError: GET is not defined\n    at Object.<anonymous> (/workspace/generated_tests/Add-List-Items.regression.test.ts:14:22)\n    at Promise.then.completed (/workspace/node_modules/jest-circus/build/utils.js:298:28)\n    at new Promise (<anonymous>)\n    at callAsyncCircusFn (/workspace/node_modules/jest-circus/build/utils.js:231:10)\n    at _callCircusTest (/workspace/node_modules/jest-circus/build/run.js:316:40)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at _runTest (/workspace/node_modules/jest-circus/build/run.js:252:3)\n    at _runTestsForDescribeBlock (/workspace/node_modules/jest-circus/build/run.js:126:9)\n    at _runTestsForDescribeBlock (/workspace/node_modules/jest-circus/build/run.js:121:9)\n    at run (/workspace/node_modules/jest-circus/build/run.js:71:3)\n    at runAndTransformResultsToJestFormat (/workspace/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:122:21)\n    at jestAdapter (/workspace/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:79:19)\n    at runTestInternal (/workspace/node_modules/jest-runner/build/runTest.js:367:16)\n    at runTest (/workspace/node_modules/jest-runner/build/runTest.js:444:34)\n    at Object.worker (/workspace/node_modules/jest-runner/build/testWorker.js:106:12)",
+      "root_cause": "The test is trying to use 'GET' which is not defined. This could be due to missing import or incorrect usage of HTTP method.",
+      "recommendation": "Ensure that the 'GET' method is correctly imported from an appropriate library, such as 'axios' or 'fetch'."
+    },
+    {
+      "name": "AC-005: Given items exist, when the list is opened, then every item's image, name, description, price, and quantity are displayed correctly.",
+      "category": "regression",
+      "target_file": "",
+      "target_function": "",
+      "inputs": "",
+      "expected_behavior": "All items' details should be returned correctly if items exist in the database.",
+      "test_file": "Add-List-Items.regression.test.ts",
+      "method": "llm",
+      "status": "failed",
+      "duration_ms": 0,
+      "failure_message": "ReferenceError: GET is not defined\n    at Object.<anonymous> (/workspace/generated_tests/Add-List-Items.regression.test.ts:42:22)\n    at Promise.then.completed (/workspace/node_modules/jest-circus/build/utils.js:298:28)\n    at new Promise (<anonymous>)\n    at callAsyncCircusFn (/workspace/node_modules/jest-circus/build/utils.js:231:10)\n    at _callCircusTest (/workspace/node_modules/jest-circus/build/run.js:316:40)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at _runTest (/workspace/node_modules/jest-circus/build/run.js:252:3)\n    at _runTestsForDescribeBlock (/workspace/node_modules/jest-circus/build/run.js:126:9)\n    at _runTestsForDescribeBlock (/workspace/node_modules/jest-circus/build/run.js:121:9)\n    at run (/workspace/node_modules/jest-circus/build/run.js:71:3)\n    at runAndTransformResultsToJestFormat (/workspace/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:122:21)\n    at jestAdapter (/workspace/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:79:19)\n    at runTestInternal (/workspace/node_modules/jest-runner/build/runTest.js:367:16)\n    at runTest (/workspace/node_modules/jest-runner/build/runTest.js:444:34)\n    at Object.worker (/workspace/node_modules/jest-runner/build/testWorker.js:106:12)",
+      "root_cause": "The test is trying to use 'GET' which is not defined. This could be due to missing import or incorrect usage of HTTP method.",
+      "recommendation": "Ensure that the 'GET' method is correctly imported from an appropriate library, such as 'axios' or 'fetch'."
+    }
+  ],
+  "out_of_scope_modules": [
+    "app/add-list-items/items/page.tsx",
+    "app/add-list-items/page.tsx",
+    "app/layout.tsx",
+    "app/page.tsx",
+    "components/PreviewRouteAnnouncer.tsx"
+  ],
+  "raw_stderr": "",
+  "environment_failure": null
+}

@@ -1,0 +1,98 @@
+{
+  "project_name": "Retail Store",
+  "feature_name": "Add & List Items",
+  "generated_at": "2026-08-31T10:19:48.989533+00:00",
+  "scan_type": "ai_model_deep_scan",
+  "gate_decision": "review",
+  "findings_count": 6,
+  "critical_count": 0,
+  "moderate_count": 6,
+  "warning_count": 0,
+  "findings": [
+    {
+      "rule_id": "SEC-AI-DEEPSCAN",
+      "layer": "ai_model_deep_scan",
+      "severity": "high",
+      "cwe": "CWE-319",
+      "file": "app/api/items/route.ts",
+      "line": 21,
+      "message": "Sensitive Data Exposure -- The code logs error messages to the console with stack traces, which can expose sensitive information about the application's internal structure and state.",
+      "root_cause": "Logging error messages with stack traces in a production environment.",
+      "recommendation": "Remove or replace console.error statements with a more secure logging mechanism that does not expose sensitive information. Consider using a structured logging library and configuring it to exclude sensitive data from logs.",
+      "id": "SEC-AI-DEEPSCAN:1"
+    },
+    {
+      "rule_id": "SEC-AI-DEEPSCAN",
+      "layer": "ai_model_deep_scan",
+      "severity": "high",
+      "cwe": "CWE-319",
+      "file": "app/api/items/route.ts",
+      "line": 48,
+      "message": "Sensitive Data Exposure -- The code logs error messages to the console with stack traces, which can expose sensitive information about the application's internal structure and state.",
+      "root_cause": "Logging error messages with stack traces in a production environment.",
+      "recommendation": "Remove or replace console.error statements with a more secure logging mechanism that does not expose sensitive information. Consider using a structured logging library and configuring it to exclude sensitive data from logs.",
+      "id": "SEC-AI-DEEPSCAN:2"
+    },
+    {
+      "rule_id": "SEC-AI-DEEPSCAN",
+      "layer": "ai_model_deep_scan",
+      "severity": "high",
+      "cwe": "CWE-319",
+      "file": "lib/api/addListItems.ts",
+      "line": 19,
+      "message": "Sensitive Data Exposure -- The code logs error messages to the console with stack traces, which can expose sensitive information about the application's internal structure and state.",
+      "root_cause": "Logging error messages with stack traces in a production environment.",
+      "recommendation": "Remove or replace console.error statements with a more secure logging mechanism that does not expose sensitive information. Consider using a structured logging library and configuring it to exclude sensitive data from logs.",
+      "id": "SEC-AI-DEEPSCAN:3"
+    },
+    {
+      "rule_id": "SEC-AI-DEEPSCAN",
+      "layer": "ai_model_deep_scan",
+      "severity": "high",
+      "cwe": "CWE-319",
+      "file": "lib/api/addListItems.ts",
+      "line": 39,
+      "message": "Sensitive Data Exposure -- The code logs error messages to the console with stack traces, which can expose sensitive information about the application's internal structure and state.",
+      "root_cause": "Logging error messages with stack traces in a production environment.",
+      "recommendation": "Remove or replace console.error statements with a more secure logging mechanism that does not expose sensitive information. Consider using a structured logging library and configuring it to exclude sensitive data from logs.",
+      "id": "SEC-AI-DEEPSCAN:4"
+    },
+    {
+      "rule_id": "SEC-AI-DEEPSCAN",
+      "layer": "ai_model_deep_scan",
+      "severity": "medium",
+      "cwe": "CWE-918",
+      "file": "app/api/items/route.ts",
+      "line": 37,
+      "message": "Security Misconfiguration -- The code does not validate the 'image' URL in the POST request, which could potentially allow users to upload malicious content or perform SSRF attacks.",
+      "root_cause": "Lack of validation for the 'image' URL in the POST request.",
+      "recommendation": "Implement a more robust URL validation mechanism to ensure that only valid and safe URLs are accepted. Consider using a library like `validator.js` to validate URLs and check for potential SSRF risks.",
+      "id": "SEC-AI-DEEPSCAN:5"
+    },
+    {
+      "rule_id": "SEC-AI-DEEPSCAN",
+      "layer": "ai_model_deep_scan",
+      "severity": "medium",
+      "cwe": "CWE-79",
+      "file": "app/api/items/route.ts",
+      "line": 25,
+      "message": "Security Misconfiguration -- The code does not sanitize user input before returning it in the API response, which could lead to XSS attacks if the data is rendered on the client side.",
+      "root_cause": "Returning unsanitized user input in the API response.",
+      "recommendation": "Sanitize all user inputs before returning them in the API response. Consider using a library like `xss` to sanitize HTML content and prevent XSS attacks.",
+      "id": "SEC-AI-DEEPSCAN:6"
+    }
+  ],
+  "dependency_scan": {
+    "audit_exit_code": 0,
+    "audit_ran_offline": true,
+    "dependency_summary": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0,
+      "total": 0
+    }
+  },
+  "llm_review_status": "AI model deep scan ran over 2 batch(es) of real source code (2 succeeded, 0 failed): 6 finding(s)."
+}

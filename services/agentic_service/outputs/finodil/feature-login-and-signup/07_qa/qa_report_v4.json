@@ -1,0 +1,144 @@
+{
+  "project_name": "Finodil",
+  "feature_name": "Login and Signup",
+  "generated_at": "2026-08-26T16:31:21.502767+00:00",
+  "framework_used": "jest",
+  "tests_generated": 7,
+  "tests_passed": 0,
+  "tests_failed": 0,
+  "tests_skipped": 7,
+  "tests_by_category": {
+    "unit": {
+      "total": 1,
+      "passed": 0,
+      "failed": 0,
+      "skipped": 1
+    },
+    "integration": {
+      "total": 0,
+      "passed": 0,
+      "failed": 0,
+      "skipped": 0
+    },
+    "regression": {
+      "total": 6,
+      "passed": 0,
+      "failed": 0,
+      "skipped": 6
+    }
+  },
+  "test_cases": [
+    {
+      "name": "connectToDatabase() resolves without throwing when its required env var is unset",
+      "category": "unit",
+      "target_file": "lib/mongodb.ts",
+      "target_function": "connectToDatabase",
+      "inputs": "called with no real database connection configured",
+      "expected_behavior": "resolves to null or a defined value, never throws",
+      "test_file": "mongodb.unit.test.ts",
+      "method": "deterministic-fallback",
+      "status": "skipped",
+      "duration_ms": null,
+      "failure_message": "This test file did not produce a matching result -- it may have failed to load/parse; see stderr below.",
+      "root_cause": null,
+      "recommendation": null
+    },
+    {
+      "name": "AC-001: Given a new, unused email and a valid password, when the user submits the signup form, then their account is created, their password is hashed before storage, and they are automatically logged in and redirected to the home page",
+      "category": "regression",
+      "target_file": "",
+      "target_function": "",
+      "inputs": "",
+      "expected_behavior": "A new user account should be created with the provided email and a hashed password. The user should be logged in and redirected to the home page.",
+      "test_file": "Login-and-Signup.regression.test.ts",
+      "method": "llm",
+      "status": "skipped",
+      "duration_ms": null,
+      "failure_message": "This test file did not produce a matching result -- it may have failed to load/parse; see stderr below.",
+      "root_cause": null,
+      "recommendation": null
+    },
+    {
+      "name": "AC-002: Given an email that's already registered, when the user submits the signup form, then they see a clear 'An account with this email already exists' error and remain on the signup page",
+      "category": "regression",
+      "target_file": "",
+      "target_function": "",
+      "inputs": "",
+      "expected_behavior": "If the email is already registered, the user should receive an error message stating 'An account with this email already exists' and remain on the signup page.",
+      "test_file": "Login-and-Signup.regression.test.ts",
+      "method": "llm",
+      "status": "skipped",
+      "duration_ms": null,
+      "failure_message": "This test file did not produce a matching result -- it may have failed to load/parse; see stderr below.",
+      "root_cause": null,
+      "recommendation": null
+    },
+    {
+      "name": "AC-003: Given valid login credentials, when the user submits the login form, then they are logged in within 3 seconds and redirected to the sample home page, with the nav bar showing their logged-in state",
+      "category": "regression",
+      "target_file": "",
+      "target_function": "",
+      "inputs": "",
+      "expected_behavior": "With valid credentials, the user should be logged in within 3 seconds and redirected to the home page. The navigation bar should indicate that the user is logged in.",
+      "test_file": "Login-and-Signup.regression.test.ts",
+      "method": "llm",
+      "status": "skipped",
+      "duration_ms": null,
+      "failure_message": "This test file did not produce a matching result -- it may have failed to load/parse; see stderr below.",
+      "root_cause": null,
+      "recommendation": null
+    },
+    {
+      "name": "AC-004: Given invalid login credentials (wrong email or wrong password), when the user submits the login form, then they see a generic 'Invalid email or password' error and remain on the login page",
+      "category": "regression",
+      "target_file": "",
+      "target_function": "",
+      "inputs": "",
+      "expected_behavior": "With invalid credentials, the user should receive an error message stating 'Invalid email or password' and remain on the login page.",
+      "test_file": "Login-and-Signup.regression.test.ts",
+      "method": "llm",
+      "status": "skipped",
+      "duration_ms": null,
+      "failure_message": "This test file did not produce a matching result -- it may have failed to load/parse; see stderr below.",
+      "root_cause": null,
+      "recommendation": null
+    },
+    {
+      "name": "AC-005: Given a logged-in user, when they click 'Logout', then their session ends and they are redirected to the login page",
+      "category": "regression",
+      "target_file": "",
+      "target_function": "",
+      "inputs": "",
+      "expected_behavior": "When a logged-in user clicks 'Logout', their session should end and they should be redirected to the login page.",
+      "test_file": "Login-and-Signup.regression.test.ts",
+      "method": "llm",
+      "status": "skipped",
+      "duration_ms": null,
+      "failure_message": "This test file did not produce a matching result -- it may have failed to load/parse; see stderr below.",
+      "root_cause": null,
+      "recommendation": null
+    },
+    {
+      "name": "AC-006: Given a logged-in user, when they refresh the page, then they remain logged in (session persists)",
+      "category": "regression",
+      "target_file": "",
+      "target_function": "",
+      "inputs": "",
+      "expected_behavior": "When a logged-in user refreshes the page, their session should persist and they should remain logged in.",
+      "test_file": "Login-and-Signup.regression.test.ts",
+      "method": "llm",
+      "status": "skipped",
+      "duration_ms": null,
+      "failure_message": "This test file did not produce a matching result -- it may have failed to load/parse; see stderr below.",
+      "root_cause": null,
+      "recommendation": null
+    }
+  ],
+  "out_of_scope_modules": [
+    "app/layout.tsx",
+    "app/login-and-signup/page.tsx",
+    "app/page.tsx",
+    "components/PreviewRouteAnnouncer.tsx"
+  ],
+  "raw_stderr": ""
+}

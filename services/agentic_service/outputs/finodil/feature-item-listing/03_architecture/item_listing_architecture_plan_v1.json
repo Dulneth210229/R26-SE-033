@@ -1,0 +1,1254 @@
+{
+  "document_control": {
+    "document_title": "Architecture Plan: Item Listing",
+    "document_type": "Feature Architecture Plan",
+    "project_id": "proj_2ba24bc0",
+    "project_name": "Finodil",
+    "project_type": "E-commerce",
+    "feature_id": "feature_5ff762e5",
+    "feature_name": "Item Listing",
+    "target_stack": "Next.js",
+    "architecture_style": "modular",
+    "version": "v1",
+    "generated_by": "Architecture Agent",
+    "input_artifacts": [
+      "Approved SRS JSON",
+      "Approved Enhanced SRS JSON if available"
+    ],
+    "approval_status": "pending"
+  },
+  "feature_overview": {
+    "business_goal": "let logged-in users browse the available items/products in one place so they can see what's in stock before deciding what to look into further — this is a browsing/catalog view, not a management tool.",
+    "scope": [
+      "Displaying a list of sample items with basic details (name, description, price, quantity, category).",
+      "Handling loading and error states for the item listing."
+    ],
+    "out_of_scope": [
+      "Add/edit/delete functionality for items.",
+      "Pagination for large catalogs."
+    ],
+    "user_roles": [
+      "logged-in users"
+    ],
+    "feature_boundary": "This Architecture Plan covers only the Item Listing feature and excludes unrelated features."
+  },
+  "requirement_interpretation": {
+    "functional_requirements": [
+      {
+        "id": "FR-001",
+        "description": "Only authenticated (logged-in) users can access the Item Listing page; an unauthenticated user is redirected to the login page.",
+        "priority": "Must Have"
+      },
+      {
+        "id": "FR-002",
+        "description": "The page displays a list of items, each showing its name, description, price, quantity, and category.",
+        "priority": "Must Have"
+      },
+      {
+        "id": "FR-003",
+        "description": "The database is pre-seeded with at least 8-10 sample items so the page has real content to show immediately, with no manual data entry needed first.",
+        "priority": "Must Have"
+      },
+      {
+        "id": "FR-004",
+        "description": "If there are no items, the page shows a clear empty state ('No items found').",
+        "priority": "Must Have"
+      },
+      {
+        "id": "FR-005",
+        "description": "While items are loading, the page shows a loading indicator; if the fetch fails, it shows a clear error message instead of a blank page.",
+        "priority": "Must Have"
+      },
+      {
+        "id": "FR-006",
+        "description": "A link to the Item Listing page is added to the site's main navigation so a logged-in user can reach it.",
+        "priority": "Must Have"
+      },
+      {
+        "id": "FR-DOM-001",
+        "description": "The system must separate product catalog data from inventory data to prevent overselling and ensure accurate stock levels.",
+        "origin": "domain_agent",
+        "domain_citation": {
+          "source_document": "ecommerce_domain_knowledge (1).txt",
+          "chunk_id": "doc_6824476c#80"
+        },
+        "priority": "Must Have"
+      },
+      {
+        "id": "FR-DOM-002",
+        "description": "The system must use stock movement logs instead of silent quantity updates to track changes in inventory accurately.",
+        "origin": "domain_agent",
+        "domain_citation": {
+          "source_document": "ecommerce_domain_knowledge (1).txt",
+          "chunk_id": "doc_6824476c#80"
+        },
+        "priority": "Must Have"
+      },
+      {
+        "id": "FR-DOM-003",
+        "description": "The system must display product availability clearly to customers, indicating whether an item is in stock or out of stock.",
+        "origin": "domain_agent",
+        "domain_citation": {
+          "source_document": "ecommerce_domain_knowledge (1).txt",
+          "chunk_id": "doc_6824476c#80"
+        },
+        "priority": "Must Have"
+      }
+    ],
+    "acceptance_criteria": [
+      {
+        "id": "AC-001",
+        "description": "The Item Listing page is accessible only to logged-in users; unauthenticated users are redirected to the login page."
+      },
+      {
+        "id": "AC-002",
+        "description": "The page displays a list of items with their name, description, price, quantity, and category."
+      },
+      {
+        "id": "AC-003",
+        "description": "The database contains at least 8-10 pre-seeded sample items with accurate product details, including name, description, price, quantity, and category.",
+        "modified_by_domain_agent": true,
+        "original_description": "The database contains at least 8-10 pre-seeded sample items.",
+        "domain_citation": {
+          "source_document": "ecommerce_domain_knowledge (1).txt",
+          "chunk_id": "doc_6824476c#3"
+        }
+      },
+      {
+        "id": "AC-004",
+        "description": "If there are no items, the page shows a clear empty state ('No items found')."
+      },
+      {
+        "id": "AC-005",
+        "description": "While items are loading, the page shows a loading indicator; if the fetch fails, it shows a clear error message instead of a blank page."
+      },
+      {
+        "id": "AC-006",
+        "description": "A link to the Item Listing page is added to the site's main navigation."
+      }
+    ],
+    "validation_rules": [],
+    "non_functional_requirements": [
+      {
+        "id": "NFR-001",
+        "description": "The listing should load within a couple of seconds for a small catalog (under a few hundred items) — no pagination needed at this scale.",
+        "category": "Performance"
+      }
+    ]
+  },
+  "architecture_approach": {
+    "architecture_style": "modular",
+    "architecture_rationale": "Use modular to keep the Item Listing feature separated into presentation, business logic, and data responsibilities where applicable.",
+    "frontend_overview": "Frontend design should provide the user-facing entry points, inputs, states, and feedback required by the approved SRS.",
+    "backend_overview": "Backend design should process feature requests, enforce business rules, validate inputs, and return structured responses.",
+    "data_overview": "Data design should support the data requirements defined in the approved SRS.",
+    "integration_overview": "Integration design should follow the API expectations and dependencies listed in the approved SRS.",
+    "design_tradeoffs": [
+      "Design is derived directly from the approved SRS to preserve traceability and feature scope.",
+      "Design is kept feature-scoped to preserve feature-by-feature SDLC development.",
+      "Internal generation or repair details are kept in backend logs and are not exposed in the approval-ready Architecture Plan."
+    ]
+  },
+  "design_views": {
+    "context_view": {
+      "actors": [
+        "logged-in users"
+      ],
+      "external_systems": [
+        "No external dependencies were identified during generation -- this has not been reviewed for dependencies, not confirmed to have none."
+      ],
+      "feature_boundary": "Item Listing feature boundary.",
+      "main_interactions": [
+        "logged-in users interacts with the Item Listing feature.",
+        "Only authenticated (logged-in) users can access the Item Listing page; an unauthenticated user is redirected to the login page.",
+        "The page displays a list of items, each showing its name, description, price, quantity, and category.",
+        "The database is pre-seeded with at least 8-10 sample items so the page has real content to show immediately, with no manual data entry needed first.",
+        "If there are no items, the page shows a clear empty state ('No items found').",
+        "While items are loading, the page shows a loading indicator; if the fetch fails, it shows a clear error message instead of a blank page.",
+        "A link to the Item Listing page is added to the site's main navigation so a logged-in user can reach it.",
+        "The system must separate product catalog data from inventory data to prevent overselling and ensure accurate stock levels.",
+        "The system must use stock movement logs instead of silent quantity updates to track changes in inventory accurately.",
+        "The system must display product availability clearly to customers, indicating whether an item is in stock or out of stock."
+      ]
+    },
+    "logical_view": {
+      "frontend_modules": [
+        {
+          "name": "ItemListingFrontendModule",
+          "responsibility": "Handle frontend responsibilities for the Item Listing feature.",
+          "derived_from": [
+            "A clean grid or table layout consistent with the rest of the app's existing styling.",
+            "Responsive on both desktop and mobile widths.",
+            "id",
+            "name (string)",
+            "description (string)",
+            "price (number)",
+            "quantity (number)",
+            "category (string)",
+            "createdAt (date)"
+          ]
+        }
+      ],
+      "backend_modules": [
+        {
+          "name": "ItemListingBackendModule",
+          "responsibility": "Handle backend responsibilities for the Item Listing feature.",
+          "derived_from": [
+            "Only authenticated (logged-in) users can access the Item Listing page; an unauthenticated user is redirected to the login page.",
+            "The page displays a list of items, each showing its name, description, price, quantity, and category.",
+            "The database is pre-seeded with at least 8-10 sample items so the page has real content to show immediately, with no manual data entry needed first.",
+            "If there are no items, the page shows a clear empty state ('No items found').",
+            "While items are loading, the page shows a loading indicator; if the fetch fails, it shows a clear error message instead of a blank page.",
+            "A link to the Item Listing page is added to the site's main navigation so a logged-in user can reach it.",
+            "The system must separate product catalog data from inventory data to prevent overselling and ensure accurate stock levels.",
+            "The system must use stock movement logs instead of silent quantity updates to track changes in inventory accurately.",
+            "The system must display product availability clearly to customers, indicating whether an item is in stock or out of stock."
+          ]
+        }
+      ],
+      "domain_services": [
+        {
+          "name": "ItemListingService",
+          "responsibility": "Apply business rules for the Item Listing feature.",
+          "related_requirements": [
+            "FR-001",
+            "FR-002",
+            "FR-003",
+            "FR-004",
+            "FR-005",
+            "FR-006",
+            "FR-DOM-001",
+            "FR-DOM-002",
+            "FR-DOM-003"
+          ]
+        }
+      ],
+      "data_modules": [
+        {
+          "name": "ItemListingDataModule",
+          "responsibility": "Manage data access required by the feature.",
+          "derived_from": [
+            "id",
+            "name (string)",
+            "description (string)",
+            "price (number)",
+            "quantity (number)",
+            "category (string)",
+            "createdAt (date)",
+            "Items table: id (PK), name (string), description (text), price (decimal), quantity (integer), category (string), createdAt (date)."
+          ]
+        }
+      ],
+      "integration_points": [
+        {
+          "type": "API",
+          "description": "GET /api/items — returns the list of sample items."
+        },
+        {
+          "type": "Dependency",
+          "description": "No external dependencies were identified during generation -- this has not been reviewed for dependencies, not confirmed to have none."
+        }
+      ]
+    },
+    "interface_view": {
+      "api_endpoints": [
+        {
+          "endpoint": "/api/items",
+          "method": "GET",
+          "purpose": "Support the Item Listing feature.",
+          "request_model": "ItemListingRequest",
+          "success_response_model": "ItemListingSuccessResponse",
+          "error_response_model": "ItemListingErrorResponse",
+          "related_requirements": [
+            "FR-001",
+            "FR-002",
+            "FR-003",
+            "FR-004",
+            "FR-005",
+            "FR-006",
+            "FR-DOM-001",
+            "FR-DOM-002",
+            "FR-DOM-003"
+          ]
+        }
+      ],
+      "request_models": [
+        {
+          "name": "ItemListingRequest",
+          "fields": [
+            {
+              "name": "field",
+              "type": "string",
+              "format": "id",
+              "required": true
+            },
+            {
+              "name": "field",
+              "type": "string",
+              "format": "name (string)",
+              "required": true
+            },
+            {
+              "name": "field",
+              "type": "string",
+              "format": "description (string)",
+              "required": true
+            },
+            {
+              "name": "field",
+              "type": "string",
+              "format": "price (number)",
+              "required": true
+            },
+            {
+              "name": "field",
+              "type": "string",
+              "format": "quantity (number)",
+              "required": true
+            },
+            {
+              "name": "field",
+              "type": "string",
+              "format": "category (string)",
+              "required": true
+            },
+            {
+              "name": "field",
+              "type": "string",
+              "format": "createdAt (date)",
+              "required": true
+            }
+          ],
+          "related_requirements": [
+            "FR-001",
+            "FR-002",
+            "FR-003",
+            "FR-004",
+            "FR-005",
+            "FR-006",
+            "FR-DOM-001",
+            "FR-DOM-002",
+            "FR-DOM-003"
+          ]
+        }
+      ],
+      "response_models": [
+        {
+          "name": "ItemListingSuccessResponse",
+          "type": "success",
+          "fields": [
+            {
+              "name": "field",
+              "type": "string",
+              "description": "name (string)"
+            },
+            {
+              "name": "field",
+              "type": "string",
+              "description": "description (string)"
+            },
+            {
+              "name": "field",
+              "type": "string",
+              "description": "price (number)"
+            },
+            {
+              "name": "field",
+              "type": "string",
+              "description": "quantity (number)"
+            },
+            {
+              "name": "field",
+              "type": "string",
+              "description": "category (string)"
+            }
+          ],
+          "related_requirements": [
+            "FR-001",
+            "FR-002",
+            "FR-003",
+            "FR-004",
+            "FR-005",
+            "FR-006",
+            "FR-DOM-001",
+            "FR-DOM-002",
+            "FR-DOM-003"
+          ]
+        },
+        {
+          "name": "ItemListingErrorResponse",
+          "type": "error",
+          "fields": [],
+          "related_requirements": []
+        }
+      ]
+    },
+    "data_view": {
+      "data_entities": [
+        {
+          "name": "ItemListingData",
+          "purpose": "Core data entity for the Item Listing feature.",
+          "fields": [
+            {
+              "name": "name",
+              "type": "String",
+              "required": false
+            },
+            {
+              "name": "description",
+              "type": "String",
+              "required": false
+            },
+            {
+              "name": "price",
+              "type": "Number",
+              "required": false
+            },
+            {
+              "name": "quantity",
+              "type": "Number",
+              "required": false
+            },
+            {
+              "name": "category",
+              "type": "String",
+              "required": false
+            },
+            {
+              "name": "createdAt",
+              "type": "Date",
+              "required": false
+            },
+            {
+              "name": "itemsTable",
+              "type": "String",
+              "required": false
+            },
+            {
+              "name": "name",
+              "type": "String",
+              "required": false
+            },
+            {
+              "name": "string",
+              "type": "String",
+              "required": false
+            }
+          ],
+          "relationships": [],
+          "indexes_or_constraints": [],
+          "related_requirements": [
+            "FR-002"
+          ]
+        }
+      ],
+      "storage_rules": [
+        "id",
+        "name (string)",
+        "description (string)",
+        "price (number)",
+        "quantity (number)",
+        "category (string)",
+        "createdAt (date)",
+        "Items table: id (PK), name (string), description (text), price (decimal), quantity (integer), category (string), createdAt (date)."
+      ],
+      "data_validation_rules": []
+    },
+    "behavior_view": {
+      "main_success_flow": [
+        {
+          "id": "AC-002",
+          "description": "The page displays a list of items with their name, description, price, quantity, and category.",
+          "related_requirements": [
+            "FR-001",
+            "FR-002",
+            "FR-003",
+            "FR-004",
+            "FR-005",
+            "FR-006",
+            "FR-DOM-001",
+            "FR-DOM-002",
+            "FR-DOM-003"
+          ]
+        },
+        {
+          "id": "AC-003",
+          "description": "The database contains at least 8-10 pre-seeded sample items with accurate product details, including name, description, price, quantity, and category.",
+          "related_requirements": [
+            "FR-002",
+            "FR-003",
+            "FR-004",
+            "FR-005",
+            "FR-DOM-001",
+            "FR-DOM-002",
+            "FR-DOM-003"
+          ]
+        },
+        {
+          "id": "AC-004",
+          "description": "If there are no items, the page shows a clear empty state ('No items found').",
+          "related_requirements": [
+            "FR-001",
+            "FR-002",
+            "FR-003",
+            "FR-004",
+            "FR-005",
+            "FR-006"
+          ]
+        },
+        {
+          "id": "AC-006",
+          "description": "A link to the Item Listing page is added to the site's main navigation.",
+          "related_requirements": [
+            "FR-001",
+            "FR-002",
+            "FR-003",
+            "FR-004",
+            "FR-005",
+            "FR-006",
+            "FR-DOM-001",
+            "FR-DOM-002",
+            "FR-DOM-003"
+          ]
+        }
+      ],
+      "alternative_flows": [
+        {
+          "id": "AC-001",
+          "description": "The Item Listing page is accessible only to logged-in users; unauthenticated users are redirected to the login page.",
+          "related_requirements": [
+            "FR-001",
+            "FR-002",
+            "FR-003",
+            "FR-004",
+            "FR-005",
+            "FR-006",
+            "FR-DOM-001",
+            "FR-DOM-002",
+            "FR-DOM-003"
+          ]
+        }
+      ],
+      "exception_flows": [
+        {
+          "id": "AC-005",
+          "description": "While items are loading, the page shows a loading indicator; if the fetch fails, it shows a clear error message instead of a blank page.",
+          "related_requirements": [
+            "FR-001",
+            "FR-002",
+            "FR-003",
+            "FR-004",
+            "FR-005",
+            "FR-006",
+            "FR-DOM-002",
+            "FR-DOM-003"
+          ]
+        }
+      ],
+      "state_changes": [
+        {
+          "description": "Only authenticated (logged-in) users can access the Item Listing page; an unauthenticated user is redirected to the login page.",
+          "related_requirements": [
+            "FR-001"
+          ]
+        },
+        {
+          "description": "The system must use stock movement logs instead of silent quantity updates to track changes in inventory accurately.",
+          "related_requirements": [
+            "FR-DOM-002"
+          ]
+        },
+        {
+          "description": "The Item Listing page is accessible only to logged-in users; unauthenticated users are redirected to the login page.",
+          "related_requirements": [
+            "AC-001"
+          ]
+        }
+      ]
+    },
+    "error_handling_view": {
+      "validation_errors": [],
+      "business_errors": [
+        {
+          "source_id": "AC-005",
+          "condition": "While items are loading, the page shows a loading indicator; if the fetch fails, it shows a clear error message instead of a blank page.",
+          "handling": "Return a clear, user-friendly error and prevent the invalid action."
+        }
+      ],
+      "authorization_errors": [
+        {
+          "source_id": "AC-001",
+          "condition": "The Item Listing page is accessible only to logged-in users; unauthenticated users are redirected to the login page.",
+          "handling": "Prevent unauthorized access and return an authorization-safe response."
+        }
+      ],
+      "system_errors": [
+        "Unexpected system errors should return safe generic messages without exposing internal details."
+      ],
+      "user_message_rules": [
+        "All user-facing errors must be clear, non-technical, and aligned with the approved SRS."
+      ]
+    },
+    "security_authorization_view": {
+      "authentication_design": [
+        "Apply authentication behaviour required by the SRS and selected architecture."
+      ],
+      "authorization_design": [
+        "Apply role/access rules required by the SRS."
+      ],
+      "sensitive_data_rules": [],
+      "risk_mitigations": [
+        {
+          "risk": "{'description': 'No feature-specific risks were identified during generation -- this has not been reviewed for risk, not confirmed risk-free.'}",
+          "mitigation": "Apply suitable mitigation based on project security policy.",
+          "related_requirements": [
+            "FR-003"
+          ]
+        }
+      ]
+    },
+    "quality_attributes_view": {
+      "performance": [
+        {
+          "nfr_id": "NFR-001",
+          "description": "The listing should load within a couple of seconds for a small catalog (under a few hundred items) — no pagination needed at this scale.",
+          "design_decision": "Optimize design to satisfy the stated performance expectation."
+        }
+      ],
+      "usability": [],
+      "reliability": [],
+      "scalability": [],
+      "maintainability": [],
+      "accessibility": []
+    }
+  },
+  "frontend_architecture_plan": {
+    "responsibilities": [
+      {
+        "name": "ItemListingFrontendModule",
+        "responsibility": "Handle frontend responsibilities for the Item Listing feature.",
+        "derived_from": [
+          "A clean grid or table layout consistent with the rest of the app's existing styling.",
+          "Responsive on both desktop and mobile widths.",
+          "id",
+          "name (string)",
+          "description (string)",
+          "price (number)",
+          "quantity (number)",
+          "category (string)",
+          "createdAt (date)"
+        ]
+      }
+    ],
+    "pages_or_components": [
+      {
+        "description": "A clean grid or table layout consistent with the rest of the app's existing styling."
+      },
+      {
+        "description": "Responsive on both desktop and mobile widths."
+      }
+    ],
+    "state_and_feedback": [
+      "The Item Listing page is accessible only to logged-in users; unauthenticated users are redirected to the login page.",
+      "The page displays a list of items with their name, description, price, quantity, and category.",
+      "If there are no items, the page shows a clear empty state ('No items found').",
+      "While items are loading, the page shows a loading indicator; if the fetch fails, it shows a clear error message instead of a blank page."
+    ]
+  },
+  "backend_architecture_plan": {
+    "responsibilities": [
+      {
+        "name": "ItemListingBackendModule",
+        "responsibility": "Handle backend responsibilities for the Item Listing feature.",
+        "derived_from": [
+          "Only authenticated (logged-in) users can access the Item Listing page; an unauthenticated user is redirected to the login page.",
+          "The page displays a list of items, each showing its name, description, price, quantity, and category.",
+          "The database is pre-seeded with at least 8-10 sample items so the page has real content to show immediately, with no manual data entry needed first.",
+          "If there are no items, the page shows a clear empty state ('No items found').",
+          "While items are loading, the page shows a loading indicator; if the fetch fails, it shows a clear error message instead of a blank page.",
+          "A link to the Item Listing page is added to the site's main navigation so a logged-in user can reach it.",
+          "The system must separate product catalog data from inventory data to prevent overselling and ensure accurate stock levels.",
+          "The system must use stock movement logs instead of silent quantity updates to track changes in inventory accurately.",
+          "The system must display product availability clearly to customers, indicating whether an item is in stock or out of stock."
+        ]
+      }
+    ],
+    "layers": [
+      {
+        "name": "ItemListingService",
+        "responsibility": "Apply business rules for the Item Listing feature.",
+        "related_requirements": [
+          "FR-001",
+          "FR-002",
+          "FR-003",
+          "FR-004",
+          "FR-005",
+          "FR-006",
+          "FR-DOM-001",
+          "FR-DOM-002",
+          "FR-DOM-003"
+        ]
+      },
+      {
+        "name": "ItemListingDataModule",
+        "responsibility": "Manage data access required by the feature.",
+        "derived_from": [
+          "id",
+          "name (string)",
+          "description (string)",
+          "price (number)",
+          "quantity (number)",
+          "category (string)",
+          "createdAt (date)",
+          "Items table: id (PK), name (string), description (text), price (decimal), quantity (integer), category (string), createdAt (date)."
+        ]
+      }
+    ],
+    "integration_points": [
+      {
+        "type": "API",
+        "description": "GET /api/items — returns the list of sample items."
+      },
+      {
+        "type": "Dependency",
+        "description": "No external dependencies were identified during generation -- this has not been reviewed for dependencies, not confirmed to have none."
+      }
+    ]
+  },
+  "validation_plan": {
+    "input_validation": [],
+    "processing_validation": []
+  },
+  "coder_implementation_tasks": [
+    {
+      "task_id": "TASK-001",
+      "task": "Create or update frontend screen/components for the Item Listing feature.",
+      "layer": "frontend",
+      "suggested_files": [
+        "app/item-listing/page.tsx",
+        "components/ItemListingForm.tsx"
+      ],
+      "related_requirements": [
+        "FR-001",
+        "FR-002",
+        "FR-003",
+        "FR-004",
+        "FR-005",
+        "FR-006",
+        "FR-DOM-001",
+        "FR-DOM-002",
+        "FR-DOM-003",
+        "AC-001",
+        "AC-002",
+        "AC-003",
+        "AC-004",
+        "AC-005",
+        "AC-006"
+      ]
+    },
+    {
+      "task_id": "TASK-002",
+      "task": "Implement Next.js Route Handler(s) for the Item Listing API expectations.",
+      "layer": "backend",
+      "suggested_files": [
+        "app/api/item-listing/route.ts",
+        "models/ItemListing.ts"
+      ],
+      "related_requirements": [
+        "FR-001",
+        "FR-002",
+        "FR-003",
+        "FR-004",
+        "FR-005",
+        "FR-006",
+        "FR-DOM-001",
+        "FR-DOM-002",
+        "FR-DOM-003",
+        "AC-001",
+        "AC-002",
+        "AC-003",
+        "AC-004",
+        "AC-005",
+        "AC-006"
+      ]
+    },
+    {
+      "task_id": "TASK-003",
+      "task": "Create or update data model/repository required by the Item Listing feature.",
+      "layer": "data",
+      "suggested_files": [
+        "backend/models/item_listing.model.js",
+        "backend/repositories/item_listing.repository.js"
+      ],
+      "related_requirements": [
+        "FR-001",
+        "FR-002",
+        "FR-003",
+        "FR-004",
+        "FR-005",
+        "FR-006",
+        "FR-DOM-001",
+        "FR-DOM-002",
+        "FR-DOM-003"
+      ]
+    },
+    {
+      "task_id": "TASK-004",
+      "task": "Implement success, alternative, and exception handling according to acceptance criteria.",
+      "layer": "backend/frontend",
+      "suggested_files": [],
+      "related_requirements": [
+        "AC-001",
+        "AC-002",
+        "AC-003",
+        "AC-004",
+        "AC-005",
+        "AC-006"
+      ]
+    },
+    {
+      "task_id": "TASK-005",
+      "task": "Implement security controls required by the feature, including authentication/authorization or sensitive data handling where applicable.",
+      "layer": "security",
+      "suggested_files": [],
+      "related_requirements": [
+        "FR-001",
+        "FR-002",
+        "FR-003",
+        "FR-004",
+        "FR-005",
+        "FR-006",
+        "FR-DOM-001",
+        "FR-DOM-002",
+        "FR-DOM-003",
+        "NFR-001"
+      ]
+    }
+  ],
+  "implementation_plan": {
+    "backend": {
+      "files": [
+        {
+          "path": "app/api/items/route.ts",
+          "action": "create",
+          "purpose": "Next.js Route Handler implementing GET for Item Listing (/api/items), with request validation before any handler logic.",
+          "implements_endpoints": [
+            "/api/items"
+          ]
+        },
+        {
+          "path": "models/ItemListingData.ts",
+          "action": "create",
+          "purpose": "Mongoose model for the ItemListingData entity (must use the `mongoose.models.ItemListingData || mongoose.model(...)` guard to avoid OverwriteModelError).",
+          "implements_endpoints": []
+        }
+      ],
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/api/items",
+          "request_body": [
+            {
+              "field": "field",
+              "type": "string",
+              "required": true,
+              "validation": "id"
+            },
+            {
+              "field": "field",
+              "type": "string",
+              "required": true,
+              "validation": "name (string)"
+            },
+            {
+              "field": "field",
+              "type": "string",
+              "required": true,
+              "validation": "description (string)"
+            },
+            {
+              "field": "field",
+              "type": "string",
+              "required": true,
+              "validation": "price (number)"
+            },
+            {
+              "field": "field",
+              "type": "string",
+              "required": true,
+              "validation": "quantity (number)"
+            },
+            {
+              "field": "field",
+              "type": "string",
+              "required": true,
+              "validation": "category (string)"
+            },
+            {
+              "field": "field",
+              "type": "string",
+              "required": true,
+              "validation": "createdAt (date)"
+            }
+          ],
+          "response": "ItemListingSuccessResponse",
+          "error_cases": [
+            "400 when required request fields are missing or invalid",
+            "500 when an unexpected server error occurs"
+          ]
+        }
+      ],
+      "models": [
+        {
+          "name": "ItemListingData",
+          "file": "models/ItemListingData.ts",
+          "fields": [
+            {
+              "name": "name",
+              "type": "String",
+              "constraints": ""
+            },
+            {
+              "name": "description",
+              "type": "String",
+              "constraints": ""
+            },
+            {
+              "name": "price",
+              "type": "Number",
+              "constraints": ""
+            },
+            {
+              "name": "quantity",
+              "type": "Number",
+              "constraints": ""
+            },
+            {
+              "name": "category",
+              "type": "String",
+              "constraints": ""
+            },
+            {
+              "name": "createdAt",
+              "type": "Date",
+              "constraints": ""
+            },
+            {
+              "name": "itemsTable",
+              "type": "String",
+              "constraints": ""
+            },
+            {
+              "name": "name",
+              "type": "String",
+              "constraints": ""
+            },
+            {
+              "name": "string",
+              "type": "String",
+              "constraints": ""
+            }
+          ]
+        }
+      ]
+    },
+    "frontend": {
+      "pages": [
+        {
+          "path": "app/item-listing/page.tsx",
+          "route": "/item-listing",
+          "purpose": "Main page for the Item Listing feature. UI expectations: A clean grid or table layout consistent with the rest of the app's existing styling.; Responsive on both desktop and mobile widths.",
+          "uses_components": []
+        }
+      ],
+      "components_to_reuse": [],
+      "services": [
+        {
+          "path": "lib/api/itemListing.ts",
+          "functions": [
+            {
+              "name": "getItems",
+              "calls_endpoint": "GET /api/items"
+            }
+          ]
+        }
+      ],
+      "routing": {
+        "new_routes": [
+          {
+            "path": "/item-listing",
+            "component": "ItemListingPage"
+          }
+        ],
+        "nav_links": [
+          {
+            "to": "/item-listing",
+            "label": "Item Listing"
+          }
+        ]
+      }
+    },
+    "implementation_order": [
+      "Create the Mongoose model(s): models/ItemListingData.ts",
+      "Create app/api/items/route.ts implementing /api/items, validating required request fields before use (400 on missing/malformed) -- it is automatically live the instant the file exists, no separate mount step needed.",
+      "Create lib/api/itemListing.ts with one function per endpoint.",
+      "Create app/item-listing/page.tsx (a Client Component, `\"use client\"` as its first line), reusing approved UI/UX components where available instead of re-authoring their markup.",
+      "Register a real <Link href=\"/item-listing\"> in app/page.tsx at the FEATURE_LINKS markers -- a page with no link to it is not complete."
+    ],
+    "constraints": [
+      "The Next.js App Router scaffold already exists and works -- never recreate app/layout.tsx, next.config.mjs, tsconfig.json, or lib/mongodb.ts.",
+      "A Route Handler (route.ts) is live the instant it exists -- there is no router to mount it on, unlike an Express app.js.",
+      "Register new pages by adding a real <Link href=\"...\"> in app/page.tsx (FEATURE_LINKS markers) -- an unreachable page is not done.",
+      "Every Mongoose model file must use the `mongoose.models.X || mongoose.model(...)` guard to avoid OverwriteModelError.",
+      "Approved UI/UX output is a visual reference, not code to import -- use read_ui_component_design/read_ui_page_design to see the approved HTML+Tailwind design, then write real TSX that faithfully matches its structure/classes/content."
+    ]
+  },
+  "traceability_matrix": [
+    {
+      "source_id": "FR-001",
+      "source_type": "FR",
+      "architecture_plan_section": "Design Views / Detailed Design Decisions",
+      "design_element": "Only authenticated (logged-in) users can access the Item Listing page; an unauthenticated user is redirected to the login page.",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "FR-002",
+      "source_type": "FR",
+      "architecture_plan_section": "Design Views / Detailed Design Decisions",
+      "design_element": "The page displays a list of items, each showing its name, description, price, quantity, and category.",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "FR-003",
+      "source_type": "FR",
+      "architecture_plan_section": "Design Views / Detailed Design Decisions",
+      "design_element": "The database is pre-seeded with at least 8-10 sample items so the page has real content to show immediately, with no manual data entry needed first.",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "FR-004",
+      "source_type": "FR",
+      "architecture_plan_section": "Design Views / Detailed Design Decisions",
+      "design_element": "If there are no items, the page shows a clear empty state ('No items found').",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "FR-005",
+      "source_type": "FR",
+      "architecture_plan_section": "Design Views / Detailed Design Decisions",
+      "design_element": "While items are loading, the page shows a loading indicator; if the fetch fails, it shows a clear error message instead of a blank page.",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "FR-006",
+      "source_type": "FR",
+      "architecture_plan_section": "Design Views / Detailed Design Decisions",
+      "design_element": "A link to the Item Listing page is added to the site's main navigation so a logged-in user can reach it.",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "FR-DOM-001",
+      "source_type": "FR",
+      "architecture_plan_section": "Design Views / Detailed Design Decisions",
+      "design_element": "The system must separate product catalog data from inventory data to prevent overselling and ensure accurate stock levels.",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "FR-DOM-002",
+      "source_type": "FR",
+      "architecture_plan_section": "Design Views / Detailed Design Decisions",
+      "design_element": "The system must use stock movement logs instead of silent quantity updates to track changes in inventory accurately.",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "FR-DOM-003",
+      "source_type": "FR",
+      "architecture_plan_section": "Design Views / Detailed Design Decisions",
+      "design_element": "The system must display product availability clearly to customers, indicating whether an item is in stock or out of stock.",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "AC-001",
+      "source_type": "AC",
+      "architecture_plan_section": "Behavior View / Error Handling View",
+      "design_element": "The Item Listing page is accessible only to logged-in users; unauthenticated users are redirected to the login page.",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "AC-002",
+      "source_type": "AC",
+      "architecture_plan_section": "Behavior View / Error Handling View",
+      "design_element": "The page displays a list of items with their name, description, price, quantity, and category.",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "AC-003",
+      "source_type": "AC",
+      "architecture_plan_section": "Behavior View / Error Handling View",
+      "design_element": "The database contains at least 8-10 pre-seeded sample items with accurate product details, including name, description, price, quantity, and category.",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "AC-004",
+      "source_type": "AC",
+      "architecture_plan_section": "Behavior View / Error Handling View",
+      "design_element": "If there are no items, the page shows a clear empty state ('No items found').",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "AC-005",
+      "source_type": "AC",
+      "architecture_plan_section": "Behavior View / Error Handling View",
+      "design_element": "While items are loading, the page shows a loading indicator; if the fetch fails, it shows a clear error message instead of a blank page.",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "AC-006",
+      "source_type": "AC",
+      "architecture_plan_section": "Behavior View / Error Handling View",
+      "design_element": "A link to the Item Listing page is added to the site's main navigation.",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "NFR-001",
+      "source_type": "NFR",
+      "architecture_plan_section": "Quality Attributes View",
+      "design_element": "The listing should load within a couple of seconds for a small catalog (under a few hundred items) — no pagination needed at this scale.",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "CONSTRAINT-001",
+      "source_type": "Constraint",
+      "architecture_plan_section": "Design Considerations / Architecture Overview",
+      "design_element": "Next.js for frontend development.",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "CONSTRAINT-002",
+      "source_type": "Constraint",
+      "architecture_plan_section": "Design Considerations / Architecture Overview",
+      "design_element": "Modular architectural style.",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "CONSTRAINT-003",
+      "source_type": "Constraint",
+      "architecture_plan_section": "Design Considerations / Architecture Overview",
+      "design_element": "The system must use atomic database operations to ensure data consistency and prevent race conditions.",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "RISK-001",
+      "source_type": "Risk",
+      "architecture_plan_section": "Design Considerations / Security and Authorization View",
+      "design_element": "No feature-specific risks were identified during generation -- this has not been reviewed for risk, not confirmed risk-free.",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "DEPENDENCY-001",
+      "source_type": "Dependency",
+      "architecture_plan_section": "Design Context / Logical View",
+      "design_element": "No external dependencies were identified during generation -- this has not been reviewed for dependencies, not confirmed to have none.",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "DATA-001",
+      "source_type": "Data",
+      "architecture_plan_section": "Data View",
+      "design_element": "id",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "DATA-002",
+      "source_type": "Data",
+      "architecture_plan_section": "Data View",
+      "design_element": "name (string)",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "DATA-003",
+      "source_type": "Data",
+      "architecture_plan_section": "Data View",
+      "design_element": "description (string)",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "DATA-004",
+      "source_type": "Data",
+      "architecture_plan_section": "Data View",
+      "design_element": "price (number)",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "DATA-005",
+      "source_type": "Data",
+      "architecture_plan_section": "Data View",
+      "design_element": "quantity (number)",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "DATA-006",
+      "source_type": "Data",
+      "architecture_plan_section": "Data View",
+      "design_element": "category (string)",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "DATA-007",
+      "source_type": "Data",
+      "architecture_plan_section": "Data View",
+      "design_element": "createdAt (date)",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "DATA-008",
+      "source_type": "Data",
+      "architecture_plan_section": "Data View",
+      "design_element": "Items table: id (PK), name (string), description (text), price (decimal), quantity (integer), category (string), createdAt (date).",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "API-001",
+      "source_type": "API",
+      "architecture_plan_section": "Interface View",
+      "design_element": "GET /api/items — returns the list of sample items.",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "UI-001",
+      "source_type": "UI",
+      "architecture_plan_section": "Context View / Logical View",
+      "design_element": "A clean grid or table layout consistent with the rest of the app's existing styling.",
+      "coverage_status": "covered"
+    },
+    {
+      "source_id": "UI-002",
+      "source_type": "UI",
+      "architecture_plan_section": "Context View / Logical View",
+      "design_element": "Responsive on both desktop and mobile widths.",
+      "coverage_status": "covered"
+    }
+  ],
+  "assumptions": [
+    "The UI expectations and API expectations were inferred from the functional requirements.",
+    "No specific constraints were provided, so only target stack and architectural style are mentioned.",
+    "input_requirements was empty -- copied from data_requirements.",
+    "risks was empty -- an honest 'not evaluated' placeholder was added, not a claim of none.",
+    "dependencies was empty -- an honest 'not evaluated' placeholder was added, not a claim of none."
+  ],
+  "constraints": [
+    "Next.js for frontend development.",
+    "Modular architectural style.",
+    "The system must use atomic database operations to ensure data consistency and prevent race conditions."
+  ],
+  "risks": [
+    {
+      "description": "No feature-specific risks were identified during generation -- this has not been reviewed for risk, not confirmed risk-free."
+    }
+  ],
+  "dependencies": [
+    "No external dependencies were identified during generation -- this has not been reviewed for dependencies, not confirmed to have none."
+  ],
+  "revision_metadata": null,
+  "human_approval_note": "This Architecture Plan must be reviewed and approved before the UI/UX Agent or Coder Agent starts."
+}

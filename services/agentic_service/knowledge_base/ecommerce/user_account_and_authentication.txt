@@ -1,0 +1,36 @@
+User Account and Authentication Conventions (E-Commerce Domain Knowledge)
+
+Account Lockout After Failed Attempts
+To prevent brute-force password guessing, an account should be temporarily locked after a
+defined number of consecutive failed login attempts (commonly 5). Once locked, further login
+attempts should be rejected for a cooldown period (e.g. 15 minutes) or until the account owner
+resets their password, whichever comes first. The failed-attempt counter must reset to zero after
+a successful login. Lockout messaging shown to the user should not reveal whether the email
+address itself is registered, to avoid account enumeration.
+
+Password Reset Token Expiry
+When a user requests a password reset, the system issues a single-use, time-limited reset token
+(commonly expiring after 30-60 minutes) sent to the account's verified email address. The token
+must be invalidated immediately after first use, and must not be reusable even if the reset flow
+is interrupted partway through. Requesting a new reset token should invalidate any previous
+unused reset token for that account.
+
+Email Verification Gating Checkout
+Depending on the business model, an unverified email address may still be allowed to browse and
+add items to a cart, but placing an order (checkout) with a newly registered account should
+generally require email verification, since order confirmations, shipping updates, and receipts
+depend on a reachable email address. If verification is required before checkout, the customer
+must be given a clear, immediate way to resend the verification email without losing their cart.
+
+Session and Token Expiry
+Authentication sessions (whether cookie-based or JWT-based) should have a defined expiry, and
+sensitive account actions (changing password, changing payment methods, viewing full order
+history with addresses) should ideally require a recently-authenticated session rather than an
+old, long-lived token. Logging out on one device should not silently invalidate sessions on other
+already-logged-in devices unless the system explicitly implements "log out everywhere."
+
+Role Separation
+Customer accounts and admin/staff accounts should be modeled as distinct roles with distinct
+permission sets. An admin managing the product catalog, orders, or refunds must not use the same
+authentication/authorization path as a customer browsing and checking out, even if both flows
+share the same underlying user-identity system.

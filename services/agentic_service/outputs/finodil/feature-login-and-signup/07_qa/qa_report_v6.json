@@ -1,0 +1,54 @@
+{
+  "project_name": "Finodil",
+  "feature_name": "Login and Signup",
+  "generated_at": "2026-08-28T14:58:01.103801+00:00",
+  "framework_used": "jest",
+  "tests_generated": 1,
+  "tests_passed": 1,
+  "tests_failed": 0,
+  "tests_skipped": 0,
+  "tests_by_category": {
+    "unit": {
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0
+    },
+    "integration": {
+      "total": 0,
+      "passed": 0,
+      "failed": 0,
+      "skipped": 0
+    },
+    "regression": {
+      "total": 0,
+      "passed": 0,
+      "failed": 0,
+      "skipped": 0
+    }
+  },
+  "test_cases": [
+    {
+      "name": "connectToDatabase() resolves without throwing when its required env var is unset",
+      "category": "unit",
+      "target_file": "lib/mongodb.ts",
+      "target_function": "connectToDatabase",
+      "inputs": "called with no real database connection configured",
+      "expected_behavior": "resolves to null or a defined value, never throws",
+      "test_file": "mongodb.unit.test.ts",
+      "method": "deterministic-fallback",
+      "status": "passed",
+      "duration_ms": 45,
+      "failure_message": null,
+      "root_cause": null,
+      "recommendation": null
+    }
+  ],
+  "out_of_scope_modules": [
+    "app/layout.tsx",
+    "app/login-and-signup/page.tsx",
+    "app/page.tsx",
+    "components/PreviewRouteAnnouncer.tsx"
+  ],
+  "raw_stderr": ""
+}

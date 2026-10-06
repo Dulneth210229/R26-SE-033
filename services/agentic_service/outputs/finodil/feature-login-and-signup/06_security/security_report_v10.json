@@ -1,0 +1,25 @@
+{
+  "project_name": "Finodil",
+  "feature_name": "Login and Signup",
+  "generated_at": "2026-08-25T07:48:57.022276+00:00",
+  "scan_type": "standard",
+  "gate_decision": "pass",
+  "findings_count": 0,
+  "critical_count": 0,
+  "moderate_count": 0,
+  "warning_count": 0,
+  "findings": [],
+  "dependency_scan": {
+    "audit_exit_code": 0,
+    "audit_ran_offline": true,
+    "dependency_summary": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0,
+      "total": 0
+    }
+  },
+  "llm_review_status": "LLM review layer ran successfully: 0 additional finding(s)."
+}

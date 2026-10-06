@@ -1,0 +1,8 @@
+{
+  "added": [],
+  "modified": [
+    "app/api/auth/login/route.ts",
+    "app/api/auth/signup/route.ts"
+  ],
+  "deleted": []
+}

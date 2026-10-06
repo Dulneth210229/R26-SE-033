@@ -1,0 +1,134 @@
+{
+  "project_name": "Finodil",
+  "feature_name": "Login and Signup",
+  "generated_at": "2026-08-25T13:42:30.648214+00:00",
+  "scan_type": "ai_model_deep_scan",
+  "gate_decision": "fail",
+  "findings_count": 9,
+  "critical_count": 1,
+  "moderate_count": 5,
+  "warning_count": 3,
+  "findings": [
+    {
+      "id": "SEC-JS-006:app\\api\\auth\\login\\route.ts:39",
+      "rule_id": "SEC-JS-006",
+      "layer": "pattern",
+      "severity": "medium",
+      "cwe": "CWE-915",
+      "file": "app\\api\\auth\\login\\route.ts",
+      "line": 39,
+      "message": "Dynamic bracket property access keyed directly by a request-controlled parameter name (e.g. obj[req.query.sort]) is an object-injection / prototype-pollution-adjacent pattern; the accessor should be validated against an explicit allow-list of field names.",
+      "root_cause": "A dynamic bracket property access (obj[key]) was found at app\\api\\auth\\login\\route.ts:39, using a request-controlled value as the property name.",
+      "recommendation": "Validate the property name against an explicit allow-list of known-safe field names before using it to index the object."
+    },
+    {
+      "rule_id": "SEC-AI-DEEPSCAN",
+      "layer": "ai_model_deep_scan",
+      "severity": "medium",
+      "cwe": "CWE-521",
+      "file": "models/LoginAndSignupData.ts",
+      "line": 13,
+      "message": "Hardcoded Password Minimum Length -- The password field has a hardcoded minimum length of 6 characters, which may be considered weak and could potentially be bypassed by attackers.",
+      "root_cause": "The 'minlength' property is set to a hardcoded value of 6 in the password field schema.",
+      "recommendation": "Increase the minimum length requirement for passwords and consider implementing additional validation such as complexity requirements (e.g., including uppercase letters, numbers, and special characters).",
+      "id": "SEC-AI-DEEPSCAN:1"
+    },
+    {
+      "rule_id": "SEC-AI-DEEPSCAN",
+      "layer": "ai_model_deep_scan",
+      "severity": "critical",
+      "cwe": "CWE-798",
+      "file": "models/LoginAndSignupData.ts",
+      "line": 10,
+      "message": "Password Stored in Plaintext -- The password field is stored in plaintext without any hashing or encryption, which poses a significant risk of exposing user passwords if the database is compromised.",
+      "root_cause": "The password field does not have any hashing or encryption applied before being stored in the database.",
+      "recommendation": "Implement a strong password-hashing algorithm (e.g., bcrypt, Argon2) to hash passwords before storing them in the database. Ensure that the salt is properly managed and rotated as needed.",
+      "id": "SEC-AI-DEEPSCAN:2"
+    },
+    {
+      "rule_id": "SEC-AI-DEEPSCAN",
+      "layer": "ai_model_deep_scan",
+      "severity": "high",
+      "cwe": "CWE-89",
+      "file": "app/api/auth/login/route.ts",
+      "line": 35,
+      "message": "NoSQL Injection -- The code does not validate the 'filter' object properly, allowing potential NoSQL injection attacks.",
+      "root_cause": "The 'filter' object is directly used in the query without proper validation or sanitization.",
+      "recommendation": "Validate and sanitize the 'filter' object to ensure only allowed fields are used in the query.",
+      "id": "SEC-AI-DEEPSCAN:3"
+    },
+    {
+      "rule_id": "SEC-AI-DEEPSCAN",
+      "layer": "ai_model_deep_scan",
+      "severity": "medium",
+      "cwe": "CWE-200",
+      "file": "app/api/auth/login/route.ts",
+      "line": 75,
+      "message": "Sensitive Data Exposure -- The code returns sensitive user data (id, name, email) in the API response after a successful login.",
+      "root_cause": "The 'user' object is returned with sensitive fields in the API response.",
+      "recommendation": "Remove or obfuscate sensitive user data from the API response.",
+      "id": "SEC-AI-DEEPSCAN:4"
+    },
+    {
+      "rule_id": "SEC-AI-DEEPSCAN",
+      "layer": "ai_model_deep_scan",
+      "severity": "medium",
+      "cwe": "CWE-200",
+      "file": "app/api/auth/signup/route.ts",
+      "line": 98,
+      "message": "Sensitive Data Exposure -- The code returns sensitive user data (id, name, email) in the API response after a successful signup.",
+      "root_cause": "The 'newUser' object is returned with sensitive fields in the API response.",
+      "recommendation": "Remove or obfuscate sensitive user data from the API response.",
+      "id": "SEC-AI-DEEPSCAN:5"
+    },
+    {
+      "rule_id": "SEC-AI-DEEPSCAN",
+      "layer": "ai_model_deep_scan",
+      "severity": "low",
+      "cwe": "CWE-312",
+      "file": "app/api/auth/login/route.ts",
+      "line": 69,
+      "message": "Security Misconfiguration -- The code logs error messages that may leak internal details about the server.",
+      "root_cause": "Error messages are logged with detailed information.",
+      "recommendation": "Use generic error messages and avoid logging sensitive details.",
+      "id": "SEC-AI-DEEPSCAN:6"
+    },
+    {
+      "rule_id": "SEC-AI-DEEPSCAN",
+      "layer": "ai_model_deep_scan",
+      "severity": "low",
+      "cwe": "CWE-312",
+      "file": "app/api/auth/signup/route.ts",
+      "line": 109,
+      "message": "Security Misconfiguration -- The code logs error messages that may leak internal details about the server.",
+      "root_cause": "Error messages are logged with detailed information.",
+      "recommendation": "Use generic error messages and avoid logging sensitive details.",
+      "id": "SEC-AI-DEEPSCAN:7"
+    },
+    {
+      "rule_id": "SEC-AI-DEEPSCAN",
+      "layer": "ai_model_deep_scan",
+      "severity": "low",
+      "cwe": "CWE-312",
+      "file": "app/api/auth/logout/route.ts",
+      "line": 13,
+      "message": "Security Misconfiguration -- The code logs error messages that may leak internal details about the server.",
+      "root_cause": "Error messages are logged with detailed information.",
+      "recommendation": "Use generic error messages and avoid logging sensitive details.",
+      "id": "SEC-AI-DEEPSCAN:8"
+    }
+  ],
+  "dependency_scan": {
+    "audit_exit_code": 0,
+    "audit_ran_offline": true,
+    "dependency_summary": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0,
+      "total": 0
+    }
+  },
+  "llm_review_status": "AI model deep scan ran over 3 batch(es) of real source code (3 succeeded, 0 failed): 8 finding(s)."
+}

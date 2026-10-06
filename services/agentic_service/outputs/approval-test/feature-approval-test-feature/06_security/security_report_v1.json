@@ -1,0 +1,18 @@
+{
+  "project_name": "Approval Test",
+  "feature_name": "Approval Test Feature",
+  "generated_at": "2026-08-31T09:35:58.146366+00:00",
+  "scan_type": "standard",
+  "gate_decision": "pass",
+  "findings_count": 0,
+  "critical_count": 0,
+  "moderate_count": 0,
+  "warning_count": 0,
+  "findings": [],
+  "dependency_scan": {
+    "audit_exit_code": 0,
+    "audit_ran_offline": true,
+    "dependency_summary": {}
+  },
+  "llm_review_status": "Skipped -- LLM provider unreachable in this run (RuntimeError). The three deterministic layers above (pattern, secret, dependency) are unaffected and are this report's evidence."
+}

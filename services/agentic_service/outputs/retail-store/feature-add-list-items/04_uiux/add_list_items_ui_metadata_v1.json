@@ -1,0 +1,83 @@
+{
+  "pages": [
+    {
+      "page_id": "add-item-page",
+      "name": "Add Item",
+      "route": "/add-item",
+      "actors": [
+        "any user"
+      ],
+      "covers_requirements": [
+        "FR-001",
+        "US-001",
+        "AC-001",
+        "AC-002",
+        "AC-003"
+      ],
+      "components": [
+        {
+          "name": "AddItemForm",
+          "reused_from_design_system": false,
+          "new_component_justification": "No existing component in the design system fits the specific requirements of this form.",
+          "covers_ui_expectations": [
+            "An 'Add Item' form with an image upload control, name, description, price, and quantity fields, and a submit button."
+          ],
+          "content_elements": [
+            "image",
+            "name",
+            "description",
+            "price",
+            "quantity"
+          ]
+        }
+      ],
+      "states": [
+        "idle",
+        "loading",
+        "error",
+        "success"
+      ],
+      "new_design_tokens": []
+    },
+    {
+      "page_id": "list-items-page",
+      "name": "List Items",
+      "route": "/list-items",
+      "actors": [
+        "any user"
+      ],
+      "covers_requirements": [
+        "FR-002",
+        "US-002",
+        "AC-004",
+        "AC-005"
+      ],
+      "components": [
+        {
+          "name": "ItemListGrid",
+          "reused_from_design_system": false,
+          "new_component_justification": "No existing component in the design system fits the specific requirements of this grid layout.",
+          "covers_ui_expectations": [
+            "A grid or card-based list layout (so item images are visible at a glance), consistent with the app's existing styling."
+          ],
+          "content_elements": [
+            "image",
+            "name",
+            "description",
+            "price",
+            "quantity"
+          ]
+        }
+      ],
+      "states": [
+        "idle",
+        "loading",
+        "error",
+        "success"
+      ],
+      "new_design_tokens": []
+    }
+  ],
+  "color_theme": "indigo",
+  "notes": ""
+}

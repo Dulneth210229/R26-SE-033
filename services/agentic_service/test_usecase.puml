@@ -1,0 +1,65 @@
+@startuml
+title E-commerce Authentication Use Case Diagram
+
+left to right direction
+
+' =========================
+' Actors
+' =========================
+actor "Customer" as Customer
+actor "Admin" as Admin
+actor "Email Service" as EmailService
+
+' =========================
+' System Boundary
+' =========================
+rectangle "E-commerce Authentication Module" {
+
+  ' Signup Feature
+  usecase "Create Account" as UC_Signup
+  usecase "Enter Registration Details" as UC_EnterDetails
+  usecase "Validate Registration Data" as UC_ValidateSignup
+  usecase "Check Existing Email" as UC_CheckEmail
+  usecase "Hash Password" as UC_HashPassword
+  usecase "Send Welcome Email" as UC_WelcomeEmail
+
+  ' Login Feature
+  usecase "Login to Account" as UC_Login 
+  usecase "Enter Email and Password" as UC_EnterLogin
+  usecase "Validate Login Credentials" as UC_ValidateLogin
+  usecase "Generate JWT Token" as UC_GenerateToken
+  usecase "View Authentication Error" as UC_AuthError
+}
+
+' =========================
+' Actor Associations
+' =========================
+Customer --> UC_Signup
+Customer --> UC_Login
+
+Admin --> UC_Login
+
+EmailService --> UC_WelcomeEmail
+
+' =========================
+' Include Relationships
+' Include means mandatory/reused behavior.
+' =========================
+UC_Signup --> UC_EnterDetails : <<include>>
+UC_Signup --> UC_ValidateSignup : <<include>>
+UC_ValidateSignup --> UC_CheckEmail : <<include>>
+UC_ValidateSignup --> UC_HashPassword : <<include>>
+UC_Signup --> UC_WelcomeEmail : <<include>>
+
+UC_Login --> UC_EnterLogin : <<include>>
+UC_Login --> UC_ValidateLogin : <<include>>
+UC_ValidateLogin --> UC_GenerateToken : <<include>>
+
+' =========================
+' Extend Relationships
+' Extend means optional/conditional behavior.
+' =========================
+UC_AuthError ..> UC_Login : <<extend>>
+UC_AuthError ..> UC_Signup : <<extend>>
+
+@enduml

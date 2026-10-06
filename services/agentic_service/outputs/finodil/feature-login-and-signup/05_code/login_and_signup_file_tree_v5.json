@@ -1,0 +1,8 @@
+{
+  "added": [],
+  "modified": [
+    "app/login-and-signup/page.tsx",
+    "lib/mongodb.ts"
+  ],
+  "deleted": []
+}

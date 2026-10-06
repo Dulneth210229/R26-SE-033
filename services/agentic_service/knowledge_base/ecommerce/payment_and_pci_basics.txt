@@ -1,0 +1,35 @@
+Payment and PCI-DSS Basics (E-Commerce Domain Knowledge)
+
+Never Store Raw Card Data
+An e-commerce system must never store the raw Primary Account Number (PAN), full magnetic-stripe
+data, or the card verification value (CVV/CVC) in its own database, logs, or backups, even
+temporarily or "just for debugging." This is a hard PCI-DSS requirement, not a style preference.
+All card data must be handled by a PCI-compliant payment gateway (e.g. Stripe, Braintree, Adyen)
+and referenced afterward only by an opaque token or payment-method ID returned by that gateway.
+
+Tokenization
+Instead of storing card details, the system stores a payment token issued by the payment gateway
+after the customer enters their card details directly with the gateway (via a hosted field,
+iframe, or SDK that never transmits raw card data through the merchant's own servers). This token
+can be safely stored and reused for future charges, refunds, or recurring billing.
+
+3-D Secure / Strong Customer Authentication (SCA)
+For card payments, especially within regions requiring SCA (e.g. the EU under PSD2), the system
+should support 3-D Secure (3DS) challenge flows, where the customer may be redirected to their
+bank to confirm the payment via OTP or biometric approval before the charge is finalized. The
+system must handle both the "challenge required" and "no challenge needed" gateway responses.
+
+Idempotent Payment Intents
+Every checkout attempt must create the payment charge using an idempotency key (a unique
+identifier for that specific checkout attempt). This prevents the customer from being charged
+twice if a network retry, double-click, or timeout causes the same payment request to be sent
+more than once. The payment gateway will recognize the same idempotency key and return the
+original result instead of creating a second charge.
+
+Refund vs. Void
+A "void" cancels an authorized payment before it has been captured/settled -- no money has
+actually moved yet, so nothing is returned to the customer's statement. A "refund" reverses a
+payment that has already been captured/settled -- money already moved and must be sent back,
+which can take several business days to appear on the customer's statement. The system must
+choose void vs. refund correctly based on the payment's current capture status, not always
+default to "refund."

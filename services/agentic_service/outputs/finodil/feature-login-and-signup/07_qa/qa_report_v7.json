@@ -1,0 +1,84 @@
+{
+  "project_name": "Finodil",
+  "feature_name": "Login and Signup",
+  "generated_at": "2026-08-28T15:21:10.847192+00:00",
+  "framework_used": "jest",
+  "tests_generated": 3,
+  "tests_passed": 1,
+  "tests_failed": 2,
+  "tests_skipped": 0,
+  "tests_by_category": {
+    "unit": {
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0
+    },
+    "integration": {
+      "total": 0,
+      "passed": 0,
+      "failed": 0,
+      "skipped": 0
+    },
+    "regression": {
+      "total": 2,
+      "passed": 0,
+      "failed": 2,
+      "skipped": 0
+    }
+  },
+  "test_cases": [
+    {
+      "name": "connectToDatabase() resolves without throwing when its required env var is unset",
+      "category": "unit",
+      "target_file": "lib/mongodb.ts",
+      "target_function": "connectToDatabase",
+      "inputs": "called with no real database connection configured",
+      "expected_behavior": "resolves to null or a defined value, never throws",
+      "test_file": "mongodb.unit.test.ts",
+      "method": "deterministic-fallback",
+      "status": "passed",
+      "duration_ms": 58,
+      "failure_message": null,
+      "root_cause": null,
+      "recommendation": null
+    },
+    {
+      "name": "AC-003: Given valid login credentials, when the user submits the login form, then they are logged in within 3 seconds and redirected to the sample home page, with the nav bar showing their logged-in state",
+      "category": "regression",
+      "target_file": "",
+      "target_function": "",
+      "inputs": "",
+      "expected_behavior": "Given valid login credentials, when the user submits the login form, then they are logged in within 3 seconds and redirected to the sample home page, with the nav bar showing their logged-in state",
+      "test_file": "Login-and-Signup.regression.test.ts",
+      "method": "llm",
+      "status": "failed",
+      "duration_ms": 69,
+      "failure_message": "ReferenceError: POST is not defined\n    at Object.<anonymous> (/workspace/generated_tests/Login-and-Signup.regression.test.ts:38:22)\n    at Promise.then.completed (/workspace/node_modules/jest-circus/build/utils.js:298:28)\n    at new Promise (<anonymous>)\n    at callAsyncCircusFn (/workspace/node_modules/jest-circus/build/utils.js:231:10)\n    at _callCircusTest (/workspace/node_modules/jest-circus/build/run.js:316:40)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at _runTest (/workspace/node_modules/jest-circus/build/run.js:252:3)\n    at _runTestsForDescribeBlock (/workspace/node_modules/jest-circus/build/run.js:126:9)\n    at _runTestsForDescribeBlock (/workspace/node_modules/jest-circus/build/run.js:121:9)\n    at run (/workspace/node_modules/jest-circus/build/run.js:71:3)\n    at runAndTransformResultsToJestFormat (/workspace/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:122:21)\n    at jestAdapter (/workspace/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:79:19)\n    at runTestInternal (/workspace/node_modules/jest-runner/build/runTest.js:367:16)\n    at runTest (/workspace/node_modules/jest-runner/build/runTest.js:444:34)\n    at Object.worker (/workspace/node_modules/jest-runner/build/testWorker.js:106:12)",
+      "root_cause": "The test is trying to use 'POST' but it is not defined. This could be due to missing import or incorrect usage.",
+      "recommendation": "Ensure that the 'POST' method is correctly imported from a suitable module, such as 'axios' or 'fetch'. For example, if using axios, add `import axios from 'axios';` at the top of your test file."
+    },
+    {
+      "name": "AC-004: Given invalid login credentials (wrong email or wrong password), when the user submits the login form, then they see a generic 'Invalid email or password' error and remain on the login page",
+      "category": "regression",
+      "target_file": "",
+      "target_function": "",
+      "inputs": "",
+      "expected_behavior": "Given invalid login credentials (wrong email or wrong password), when the user submits the login form, then they see a generic 'Invalid email or password' error and remain on the login page",
+      "test_file": "Login-and-Signup.regression.test.ts",
+      "method": "llm",
+      "status": "failed",
+      "duration_ms": 0,
+      "failure_message": "ReferenceError: POST is not defined\n    at Object.<anonymous> (/workspace/generated_tests/Login-and-Signup.regression.test.ts:64:22)\n    at Promise.then.completed (/workspace/node_modules/jest-circus/build/utils.js:298:28)\n    at new Promise (<anonymous>)\n    at callAsyncCircusFn (/workspace/node_modules/jest-circus/build/utils.js:231:10)\n    at _callCircusTest (/workspace/node_modules/jest-circus/build/run.js:316:40)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at _runTest (/workspace/node_modules/jest-circus/build/run.js:252:3)\n    at _runTestsForDescribeBlock (/workspace/node_modules/jest-circus/build/run.js:126:9)\n    at _runTestsForDescribeBlock (/workspace/node_modules/jest-circus/build/run.js:121:9)\n    at run (/workspace/node_modules/jest-circus/build/run.js:71:3)\n    at runAndTransformResultsToJestFormat (/workspace/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:122:21)\n    at jestAdapter (/workspace/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:79:19)\n    at runTestInternal (/workspace/node_modules/jest-runner/build/runTest.js:367:16)\n    at runTest (/workspace/node_modules/jest-runner/build/runTest.js:444:34)\n    at Object.worker (/workspace/node_modules/jest-runner/build/testWorker.js:106:12)",
+      "root_cause": "The test is trying to use 'POST' but it is not defined. This could be due to missing import or incorrect usage.",
+      "recommendation": "Ensure that the 'POST' method is correctly imported from a suitable module, such as 'axios' or 'fetch'. For example, if using axios, add `import axios from 'axios';` at the top of your test file."
+    }
+  ],
+  "out_of_scope_modules": [
+    "app/layout.tsx",
+    "app/login-and-signup/page.tsx",
+    "app/page.tsx",
+    "components/PreviewRouteAnnouncer.tsx"
+  ],
+  "raw_stderr": ""
+}
